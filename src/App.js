@@ -85,25 +85,31 @@ const REPLACED_PARTS = [
 ].sort();
 
 // --- PHILIPPINES LOCATION DATA (derived from municipalities.json + barangays.json) ---
-const _municipalityIdMap = {};
-const _barangaysByMunicipality = {};
 
-for (const m of municipalitiesData) {
-  _municipalityIdMap[m.municipality_name] = m.municipality_id;
-}
-
+// Step 1: map municipality_id -> barangay names
+const _barangaysByMunId = {};
 for (const b of barangaysData) {
-  if (!_barangaysByMunicipality[b.municipality_id]) {
-    _barangaysByMunicipality[b.municipality_id] = [];
+  if (!_barangaysByMunId[b.municipality_id]) _barangaysByMunId[b.municipality_id] = [];
+  _barangaysByMunId[b.municipality_id].push(b.barangay_name);
+}
+
+// Step 2: map municipality_name -> combined barangays (handles duplicate names across provinces)
+const _barangaysByMunicipality = {};
+for (const m of municipalitiesData) {
+  const barangays = _barangaysByMunId[m.municipality_id] || [];
+  if (barangays.length === 0) continue;
+  if (!_barangaysByMunicipality[m.municipality_name]) {
+    _barangaysByMunicipality[m.municipality_name] = new Set();
   }
-  _barangaysByMunicipality[b.municipality_id].push(b.barangay_name);
+  for (const b of barangays) _barangaysByMunicipality[m.municipality_name].add(b);
 }
 
-for (const id of Object.keys(_barangaysByMunicipality)) {
-  _barangaysByMunicipality[id].sort();
+// Convert sets to sorted arrays
+for (const name of Object.keys(_barangaysByMunicipality)) {
+  _barangaysByMunicipality[name] = [..._barangaysByMunicipality[name]].sort();
 }
 
-const MUNICIPALITY_LIST = Object.keys(_municipalityIdMap).sort();
+const MUNICIPALITY_LIST = Object.keys(_barangaysByMunicipality).sort();
 
 
 const DECLINE_REASONS = [
@@ -1526,9 +1532,7 @@ function PackageSelectionScreen({ onSelect }) {
 function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
   const [errors, setErrors] = useState({});
   const availableModels = data.make ? models[data.make] || ['Other'] : [];
-  const availableBarangays = data.city
-    ? _barangaysByMunicipality[_municipalityIdMap[data.city]] || []
-    : [];
+  const availableBarangays = data.city ? _barangaysByMunicipality[data.city] || [] : [];
 
   const validate = () => {
     const e = {};
