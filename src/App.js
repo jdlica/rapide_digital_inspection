@@ -1402,22 +1402,25 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-function TopBar({ user, onLogout, onDashboard, showDashboard = true }) {
+function TopBar({ user, onLogout, onDashboard, onManage }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isAdmin = user.role === 'admin' || user.role === 'service_manager';
+
   return (
-    <div
-      style={{
-        background: BRAND.yellow,
-        padding: '12px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <>
+      <div
+        style={{
+          background: BRAND.yellow,
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 200,
+        }}
+      >
         <div
           style={{
             fontFamily: "'Arial Black', sans-serif",
@@ -1430,58 +1433,262 @@ function TopBar({ user, onLogout, onDashboard, showDashboard = true }) {
         >
           Rapidé
         </div>
-        {showDashboard &&
-          (user.role === 'admin' || user.role === 'service_manager') && (
-            <button
-              onClick={onDashboard}
-              style={{
-                background: BRAND.black,
-                color: BRAND.white,
-                border: 'none',
-                padding: '8px 18px',
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              Dashboard
-            </button>
-          )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: BRAND.black }}>
-          {user.name}
-        </span>
-        <span
-          style={{
-            fontSize: 11,
-            padding: '4px 10px',
-            background: BRAND.black,
-            color: BRAND.yellow,
-            borderRadius: 6,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-          }}
-        >
-          {user.role}
-        </span>
         <button
-          onClick={onLogout}
+          onClick={() => setMenuOpen(true)}
           style={{
-            background: BRAND.white,
-            color: BRAND.red,
+            background: 'none',
             border: 'none',
-            padding: '8px 16px',
-            borderRadius: 8,
-            fontWeight: 700,
-            fontSize: 13,
             cursor: 'pointer',
+            padding: '4px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 5,
           }}
         >
-          Logout
+          <span style={{ display: 'block', width: 24, height: 3, background: BRAND.black, borderRadius: 2 }} />
+          <span style={{ display: 'block', width: 24, height: 3, background: BRAND.black, borderRadius: 2 }} />
+          <span style={{ display: 'block', width: 24, height: 3, background: BRAND.black, borderRadius: 2 }} />
         </button>
       </div>
+
+      {/* Overlay */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 300,
+            background: 'rgba(0,0,0,0.4)',
+          }}
+        />
+      )}
+
+      {/* Drawer */}
+      <div
+        style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0,
+          width: 280, zIndex: 400,
+          background: BRAND.white,
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+          display: 'flex', flexDirection: 'column',
+          transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.25s ease',
+        }}
+      >
+        {/* Drawer header */}
+        <div
+          style={{
+            background: BRAND.yellow,
+            padding: '20px 20px 16px',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{user.name}</div>
+            <div style={{
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+              color: BRAND.black, opacity: 0.6, marginTop: 2,
+            }}>{user.role}</div>
+          </div>
+          <button
+            onClick={() => setMenuOpen(false)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: BRAND.black, lineHeight: 1 }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Menu items */}
+        <div style={{ flex: 1, padding: '12px 0' }}>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => { onDashboard(); setMenuOpen(false); }}
+                style={drawerItemStyle}
+              >
+                <span style={drawerIconStyle}>📋</span> Dashboard
+              </button>
+              <button
+                onClick={() => { onManage(); setMenuOpen(false); }}
+                style={drawerItemStyle}
+              >
+                <span style={drawerIconStyle}>⚙️</span> Manage
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Logout at bottom */}
+        <div style={{ padding: '12px 0', borderTop: `1px solid ${BRAND.grayBorder}` }}>
+          <button
+            onClick={() => { onLogout(); setMenuOpen(false); }}
+            style={{ ...drawerItemStyle, color: BRAND.red }}
+          >
+            <span style={drawerIconStyle}>🚪</span> Logout
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+const drawerItemStyle = {
+  width: '100%', background: 'none', border: 'none',
+  padding: '14px 24px', textAlign: 'left',
+  fontSize: 15, fontWeight: 600, color: BRAND.black,
+  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
+};
+const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
+
+// ============================================================
+// MANAGE SCREEN
+// ============================================================
+function ManageScreen({ technicians, brands, models, onAddTechnician, onAddBrand, onAddModel }) {
+  const [showAddTech, setShowAddTech] = useState(false);
+  const [showAddBrand, setShowAddBrand] = useState(false);
+  const [showAddModel, setShowAddModel] = useState(false);
+  const [newTechName, setNewTechName] = useState('');
+  const [newBrandName, setNewBrandName] = useState('');
+  const [newModelName, setNewModelName] = useState('');
+  const [newModelBrand, setNewModelBrand] = useState('');
+
+  const sectionStyle = {
+    background: BRAND.white,
+    borderRadius: 12,
+    border: `2px solid ${BRAND.grayBorder}`,
+    padding: '20px 20px',
+    marginBottom: 16,
+  };
+  const sectionHeaderStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  };
+  const sectionTitleStyle = { fontSize: 16, fontWeight: 800, color: BRAND.black, margin: 0 };
+  const chipStyle = {
+    display: 'inline-block',
+    background: BRAND.grayLight,
+    border: `1px solid ${BRAND.grayBorder}`,
+    borderRadius: 8,
+    padding: '5px 12px',
+    fontSize: 13,
+    fontWeight: 600,
+    color: BRAND.black,
+    margin: '4px 4px 4px 0',
+  };
+
+  return (
+    <div className="form-screen">
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 24, fontWeight: 900, color: BRAND.black, margin: 0 }}>Manage</h2>
+        <p style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}>
+          Technicians, Brands & Models
+        </p>
+      </div>
+
+      {/* Technicians */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Technicians</h3>
+          <PrimaryButton
+            onClick={() => setShowAddTech(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div>
+          {technicians.map((t) => (
+            <span key={t.id} style={chipStyle}>{t.name}</span>
+          ))}
+          {technicians.length === 0 && (
+            <p style={{ color: BRAND.gray, fontSize: 14, margin: 0 }}>No technicians yet.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Car Brands */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Car Brands</h3>
+          <PrimaryButton
+            onClick={() => setShowAddBrand(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div>
+          {brands.map((b) => (
+            <span key={b} style={chipStyle}>{b}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Car Models */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Car Models</h3>
+          <PrimaryButton
+            onClick={() => setShowAddModel(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div>
+          {Object.entries(models).map(([brand, modelList]) =>
+            modelList.map((m) => (
+              <span key={`${brand}-${m}`} style={chipStyle}>{brand} – {m}</span>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Add Technician Modal */}
+      {showAddTech && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Technician</h3>
+            <TextInput label="Full Name" required value={newTechName} onChange={setNewTechName} placeholder="Technician name" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddTech(false); setNewTechName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newTechName.trim()) { onAddTechnician(newTechName.trim()); setNewTechName(''); setShowAddTech(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Brand Modal */}
+      {showAddBrand && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Car Brand</h3>
+            <TextInput label="Brand Name" required value={newBrandName} onChange={setNewBrandName} placeholder="e.g. Volvo" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddBrand(false); setNewBrandName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newBrandName.trim()) { onAddBrand(newBrandName.trim()); setNewBrandName(''); setShowAddBrand(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Model Modal */}
+      {showAddModel && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Car Model</h3>
+            <div style={{ marginBottom: 16 }}>
+              <SearchableDropdown label="Brand" required options={brands} value={newModelBrand} onChange={setNewModelBrand} placeholder="Select brand..." />
+            </div>
+            <TextInput label="Model Name" required value={newModelName} onChange={setNewModelName} placeholder="e.g. Corolla Cross" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddModel(false); setNewModelName(''); setNewModelBrand(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newModelName.trim() && newModelBrand) { onAddModel(newModelBrand, newModelName.trim()); setNewModelName(''); setNewModelBrand(''); setShowAddModel(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -2468,22 +2675,10 @@ function AdminDashboard({
   onView,
   onNewInspection,
   technicians,
-  brands,
-  models,
-  onAddTechnician,
-  onAddBrand,
-  onAddModel,
 }) {
   const [search, setSearch] = useState('');
   const [filterPkg, setFilterPkg] = useState('');
   const [filterTech, setFilterTech] = useState('');
-  const [showAddTech, setShowAddTech] = useState(false);
-  const [showAddBrand, setShowAddBrand] = useState(false);
-  const [showAddModel, setShowAddModel] = useState(false);
-  const [newTechName, setNewTechName] = useState('');
-  const [newBrandName, setNewBrandName] = useState('');
-  const [newModelName, setNewModelName] = useState('');
-  const [newModelBrand, setNewModelBrand] = useState('');
 
   const filtered = inspections.filter((ins) => {
     if (
@@ -2534,35 +2729,12 @@ function AdminDashboard({
             {inspections.length} inspections completed
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <PrimaryButton
-            onClick={() => setShowAddTech(true)}
-            variant="secondary"
-            style={{ fontSize: 12, padding: '8px 14px', minHeight: 40 }}
-          >
-            + Technician
-          </PrimaryButton>
-          <PrimaryButton
-            onClick={() => setShowAddBrand(true)}
-            variant="secondary"
-            style={{ fontSize: 12, padding: '8px 14px', minHeight: 40 }}
-          >
-            + Brand
-          </PrimaryButton>
-          <PrimaryButton
-            onClick={() => setShowAddModel(true)}
-            variant="secondary"
-            style={{ fontSize: 12, padding: '8px 14px', minHeight: 40 }}
-          >
-            + Model
-          </PrimaryButton>
-          <PrimaryButton
-            onClick={onNewInspection}
-            style={{ fontSize: 12, padding: '8px 14px', minHeight: 40 }}
-          >
-            + New Inspection
-          </PrimaryButton>
-        </div>
+        <PrimaryButton
+          onClick={onNewInspection}
+          style={{ fontSize: 12, padding: '8px 14px', minHeight: 40 }}
+        >
+          + New Inspection
+        </PrimaryButton>
       </div>
 
       {/* Filters */}
@@ -2741,211 +2913,6 @@ function AdminDashboard({
         </table>
       </div>
 
-      {/* Add Technician Modal */}
-      {showAddTech && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 1000,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-          }}
-        >
-          <div
-            style={{
-              background: BRAND.white,
-              borderRadius: 16,
-              padding: 32,
-              maxWidth: 400,
-              width: '100%',
-            }}
-          >
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>
-              Add Technician
-            </h3>
-            <TextInput
-              label="Full Name"
-              required
-              value={newTechName}
-              onChange={setNewTechName}
-              placeholder="Technician name"
-            />
-            <div
-              style={{
-                display: 'flex',
-                gap: 12,
-                marginTop: 20,
-                justifyContent: 'flex-end',
-              }}
-            >
-              <PrimaryButton
-                onClick={() => {
-                  setShowAddTech(false);
-                  setNewTechName('');
-                }}
-                variant="secondary"
-              >
-                Cancel
-              </PrimaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  if (newTechName.trim()) {
-                    onAddTechnician(newTechName.trim());
-                    setNewTechName('');
-                    setShowAddTech(false);
-                  }
-                }}
-              >
-                Add
-              </PrimaryButton>
-            </div>
-          </div>
-        </div>
-      )}
-      {showAddBrand && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 1000,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-          }}
-        >
-          <div
-            style={{
-              background: BRAND.white,
-              borderRadius: 16,
-              padding: 32,
-              maxWidth: 400,
-              width: '100%',
-            }}
-          >
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>
-              Add Car Brand
-            </h3>
-            <TextInput
-              label="Brand Name"
-              required
-              value={newBrandName}
-              onChange={setNewBrandName}
-              placeholder="e.g. Volvo"
-            />
-            <div
-              style={{
-                display: 'flex',
-                gap: 12,
-                marginTop: 20,
-                justifyContent: 'flex-end',
-              }}
-            >
-              <PrimaryButton
-                onClick={() => {
-                  setShowAddBrand(false);
-                  setNewBrandName('');
-                }}
-                variant="secondary"
-              >
-                Cancel
-              </PrimaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  if (newBrandName.trim()) {
-                    onAddBrand(newBrandName.trim());
-                    setNewBrandName('');
-                    setShowAddBrand(false);
-                  }
-                }}
-              >
-                Add
-              </PrimaryButton>
-            </div>
-          </div>
-        </div>
-      )}
-      {showAddModel && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 1000,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-          }}
-        >
-          <div
-            style={{
-              background: BRAND.white,
-              borderRadius: 16,
-              padding: 32,
-              maxWidth: 400,
-              width: '100%',
-            }}
-          >
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>
-              Add Car Model
-            </h3>
-            <div style={{ marginBottom: 16 }}>
-              <SearchableDropdown
-                label="Brand"
-                required
-                options={brands}
-                value={newModelBrand}
-                onChange={setNewModelBrand}
-                placeholder="Select brand..."
-              />
-            </div>
-            <TextInput
-              label="Model Name"
-              required
-              value={newModelName}
-              onChange={setNewModelName}
-              placeholder="e.g. Corolla Cross"
-            />
-            <div
-              style={{
-                display: 'flex',
-                gap: 12,
-                marginTop: 20,
-                justifyContent: 'flex-end',
-              }}
-            >
-              <PrimaryButton
-                onClick={() => {
-                  setShowAddModel(false);
-                  setNewModelName('');
-                  setNewModelBrand('');
-                }}
-                variant="secondary"
-              >
-                Cancel
-              </PrimaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  if (newModelName.trim() && newModelBrand) {
-                    onAddModel(newModelBrand, newModelName.trim());
-                    setNewModelName('');
-                    setNewModelBrand('');
-                    setShowAddModel(false);
-                  }
-                }}
-              >
-                Add
-              </PrimaryButton>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -3638,7 +3605,7 @@ export default function App() {
             setViewingInspection(null);
             setScreen('dashboard');
           }}
-          showDashboard={screen !== 'dashboard'}
+          onManage={() => setScreen('manage')}
         />
       )}
 
@@ -3700,17 +3667,23 @@ export default function App() {
         />
       )}
 
-      {screen === 'dashboard' && !viewingInspection && (
-        <AdminDashboard
-          inspections={inspections}
-          onView={(ins) => setViewingInspection(ins)}
-          onNewInspection={() => setScreen('packageSelect')}
+      {screen === 'manage' && (
+        <ManageScreen
           technicians={technicians}
           brands={brands}
           models={models}
           onAddTechnician={handleAddTechnician}
           onAddBrand={handleAddBrand}
           onAddModel={handleAddModel}
+        />
+      )}
+
+      {screen === 'dashboard' && !viewingInspection && (
+        <AdminDashboard
+          inspections={inspections}
+          onView={(ins) => setViewingInspection(ins)}
+          onNewInspection={() => setScreen('packageSelect')}
+          technicians={technicians}
         />
       )}
 
