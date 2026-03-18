@@ -905,6 +905,7 @@ function MultiSelectDropdown({
   onChange,
   label,
   placeholder,
+  required,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -939,6 +940,7 @@ function MultiSelectDropdown({
           }}
         >
           {label}
+          {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
       <div
@@ -1547,6 +1549,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
     if (!data.firstName) e.firstName = true;
     if (!data.lastName) e.lastName = true;
     if (!data.mobileNo) e.mobileNo = true;
+    if (!data.email) e.email = true;
     if (!data.city) e.city = true;
     if (!data.barangay) e.barangay = true;
     setErrors(e);
@@ -1820,13 +1823,21 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
               placeholder="+63 9XX XXX XXXX"
             />
           </div>
-          <TextInput
-            label="Email"
-            value={data.email || ''}
-            onChange={(v) => update('email', v)}
-            placeholder="Email (optional)"
-            type="email"
-          />
+          <div
+            style={{
+              border: errors.email ? `2px solid ${BRAND.red}` : 'none',
+              borderRadius: 12,
+            }}
+          >
+            <TextInput
+              label="Email"
+              required
+              value={data.email || ''}
+              onChange={(v) => update('email', v)}
+              placeholder="Enter email"
+              type="email"
+            />
+          </div>
           <div
             style={{
               border: errors.city ? `2px solid ${BRAND.red}` : 'none',
@@ -1919,11 +1930,14 @@ function ServiceQuestionsScreen({
   };
 
   const handleNext = () => {
-    if (!data.technicianId) {
-      setErrors({ technicianId: true });
-      return;
-    }
-    onNext();
+    const e = {};
+    if (!data.lastPmsMonth) e.lastPmsMonth = true;
+    if (!data.lastPmsYear) e.lastPmsYear = true;
+    if (!data.replacedParts || data.replacedParts.length === 0) e.replacedParts = true;
+    if (!data.currentProblems || !data.currentProblems.trim()) e.currentProblems = true;
+    if (!data.technicianId) e.technicianId = true;
+    setErrors(e);
+    if (Object.keys(e).length === 0) onNext();
   };
 
   return (
@@ -1964,9 +1978,16 @@ function ServiceQuestionsScreen({
             }}
           >
             When was your last Change Oil / PMS?
+            <span style={{ color: BRAND.red }}> *</span>
           </label>
           <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ flex: 1 }}>
+            <div
+              style={{
+                flex: 1,
+                border: errors.lastPmsMonth ? `2px solid ${BRAND.red}` : 'none',
+                borderRadius: 12,
+              }}
+            >
               <SearchableDropdown
                 options={months}
                 value={data.lastPmsMonth}
@@ -1974,7 +1995,13 @@ function ServiceQuestionsScreen({
                 placeholder="Month"
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div
+              style={{
+                flex: 1,
+                border: errors.lastPmsYear ? `2px solid ${BRAND.red}` : 'none',
+                borderRadius: 12,
+              }}
+            >
               <SearchableDropdown
                 options={years}
                 value={data.lastPmsYear}
@@ -1985,13 +2012,21 @@ function ServiceQuestionsScreen({
           </div>
         </div>
 
-        <MultiSelectDropdown
-          label="What parts were replaced in your last service?"
-          options={REPLACED_PARTS}
-          value={data.replacedParts || []}
-          onChange={(v) => update('replacedParts', v)}
-          placeholder="Select parts..."
-        />
+        <div
+          style={{
+            border: errors.replacedParts ? `2px solid ${BRAND.red}` : 'none',
+            borderRadius: 12,
+          }}
+        >
+          <MultiSelectDropdown
+            label="What parts were replaced in your last service?"
+            required
+            options={REPLACED_PARTS}
+            value={data.replacedParts || []}
+            onChange={(v) => update('replacedParts', v)}
+            placeholder="Select parts..."
+          />
+        </div>
 
         <div>
           <label
@@ -2004,6 +2039,7 @@ function ServiceQuestionsScreen({
             }}
           >
             Any problems with your vehicle at the moment?
+            <span style={{ color: BRAND.red }}> *</span>
           </label>
           <textarea
             value={data.currentProblems || ''}
@@ -2013,7 +2049,7 @@ function ServiceQuestionsScreen({
               width: '100%',
               minHeight: 100,
               padding: '12px 14px',
-              border: `2px solid ${BRAND.grayBorder}`,
+              border: `2px solid ${errors.currentProblems ? BRAND.red : BRAND.grayBorder}`,
               borderRadius: 10,
               fontSize: 15,
               outline: 'none',
