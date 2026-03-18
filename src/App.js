@@ -1195,15 +1195,16 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
           {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap' }}>
         {options.map((o) => (
           <button
             key={o}
             type="button"
             onClick={() => onChange(o)}
             style={{
+              flex: 1,
               minHeight: 48,
-              padding: '10px 20px',
+              padding: '10px 8px',
               borderRadius: 10,
               border: `2px solid ${
                 value === o ? BRAND.yellow : BRAND.grayBorder
@@ -1214,9 +1215,10 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
               fontSize: 15,
               cursor: 'pointer',
               transition: 'all 0.15s',
+              whiteSpace: 'nowrap',
             }}
           >
-            {value === o && <span style={{ marginRight: 6 }}>✓</span>}
+            <span style={{ visibility: value === o ? 'visible' : 'hidden', marginRight: 4 }}>✓</span>
             {o}
           </button>
         ))}
