@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import makeModelData from './data/make_model.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -23,166 +24,17 @@ const BRAND = {
   white: '#FFFFFF',
 };
 
-// --- MASTER DATA ---
-const CAR_BRANDS = [
-  'Toyota',
-  'Mitsubishi',
-  'Ford',
-  'Nissan',
-  'Suzuki',
-  'Honda',
-  'Hyundai',
-  'Kia',
-  'Isuzu',
-  'Mazda',
-  'Chevrolet',
-  'Geely',
-  'MG',
-  'Chery',
-  'GAC',
-  'Foton',
-  'BYD',
-  'GWM',
-  'Omoda',
-  'Jaecoo',
-  'BAIC',
-  'Lynk & Co',
-  'Kaicene',
-  'BMW',
-  'Mercedes-Benz',
-  'Subaru',
-  'Lexus',
-  'Audi',
-  'Mini',
-  'Changan',
-  'Tesla',
-  'Jetour',
-  'JAC',
-  'Porsche',
-  'Volkswagen',
-  'Land Rover',
-  'Jaguar',
-  'Aston Martin',
-  'Lotus',
-  'Bentley',
-  'Rolls-Royce',
-  'Ferrari',
-  'Lamborghini',
-  'Alfa Romeo',
-  'Maserati',
-  'Volvo',
-  'Mahindra',
-  'Tata Motors',
-  'VinFast',
-  'Cadillac',
-].sort();
-
-const CAR_MODELS = {
-  Toyota: [
-    'Vios',
-    'Hilux',
-    'Fortuner',
-    'Innova',
-    'Wigo',
-    'Rush',
-    'Camry',
-    'Corolla Altis',
-    'RAV4',
-    'Land Cruiser',
-    'HiAce',
-    'Avanza',
-    'Raize',
-    'Veloz',
-    'Yaris Cross',
-  ],
-  Mitsubishi: [
-    'Mirage',
-    'Mirage G4',
-    'Xpander',
-    'Montero Sport',
-    'Strada',
-    'L300',
-    'Outlander',
-    'ASX',
-    'Xpander Cross',
-  ],
-  Ford: [
-    'Ranger',
-    'Everest',
-    'Territory',
-    'EcoSport',
-    'Expedition',
-    'Explorer',
-    'Mustang',
-    'Transit',
-  ],
-  Nissan: [
-    'Navara',
-    'Terra',
-    'Almera',
-    'Patrol',
-    'Urvan',
-    'Kicks',
-    'X-Trail',
-    'Leaf',
-    'GT-R',
-  ],
-  Suzuki: [
-    'Ertiga',
-    'Swift',
-    'Celerio',
-    'Dzire',
-    'Vitara',
-    'Jimny',
-    'S-Presso',
-    'XL7',
-    'Ciaz',
-  ],
-  Honda: [
-    'City',
-    'Civic',
-    'CR-V',
-    'BR-V',
-    'HR-V',
-    'Jazz',
-    'Accord',
-    'Odyssey',
-    'Brio',
-  ],
-  Hyundai: [
-    'Accent',
-    'Tucson',
-    'Creta',
-    'Stargazer',
-    'Kona',
-    'Santa Fe',
-    'Staria',
-    'Palisade',
-    'Ioniq 5',
-  ],
-  Kia: [
-    'Seltos',
-    'Sportage',
-    'Stonic',
-    'Carnival',
-    'Sorento',
-    'EV6',
-    'Picanto',
-  ],
-  Isuzu: ['D-Max', 'mu-X', 'Traviz', 'QKR'],
-  Mazda: [
-    '2',
-    '3',
-    'CX-3',
-    'CX-5',
-    'CX-8',
-    'CX-30',
-    'CX-9',
-    'MX-5',
-    'BT-50',
-    'CX-60',
-  ],
-};
+// --- MASTER DATA (derived from make_model.json) ---
+const _modelsMap = {};
+for (const entry of makeModelData) {
+  if (!entry.make || entry.deleted_at != null) continue;
+  if (!_modelsMap[entry.make]) _modelsMap[entry.make] = new Set();
+  if (entry.model) _modelsMap[entry.make].add(entry.model);
+}
+const CAR_BRANDS = Object.keys(_modelsMap).sort();
+const CAR_MODELS = Object.fromEntries(
+  Object.entries(_modelsMap).map(([make, set]) => [make, [...set].sort()])
+);
 
 const REPLACED_PARTS = [
   'DRIVE BELT',

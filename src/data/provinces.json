@@ -1,0 +1,658 @@
+[
+  {
+    "province_id": 1,
+    "region_id": 1,
+    "province_name": "Metro Manila",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 2,
+    "region_id": 3,
+    "province_name": "Ilocos Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 3,
+    "region_id": 3,
+    "province_name": "Ilocos Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 4,
+    "region_id": 3,
+    "province_name": "La Union",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 5,
+    "region_id": 3,
+    "province_name": "Pangasinan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 6,
+    "region_id": 4,
+    "province_name": "Batanes",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 7,
+    "region_id": 4,
+    "province_name": "Cagayan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 8,
+    "region_id": 4,
+    "province_name": "Isabela",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 9,
+    "region_id": 4,
+    "province_name": "Nueva Vizcaya",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 10,
+    "region_id": 4,
+    "province_name": "Quirino",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 11,
+    "region_id": 5,
+    "province_name": "Bataan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 12,
+    "region_id": 5,
+    "province_name": "Bulacan",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 13,
+    "region_id": 5,
+    "province_name": "Nueva Ecija",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 14,
+    "region_id": 5,
+    "province_name": "Pampanga",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 15,
+    "region_id": 5,
+    "province_name": "Tarlac",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 16,
+    "region_id": 5,
+    "province_name": "Zambales",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 17,
+    "region_id": 5,
+    "province_name": "Aurora",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 18,
+    "region_id": 6,
+    "province_name": "Batangas",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 19,
+    "region_id": 6,
+    "province_name": "Cavite",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 20,
+    "region_id": 6,
+    "province_name": "Laguna",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 21,
+    "region_id": 6,
+    "province_name": "Quezon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 22,
+    "region_id": 6,
+    "province_name": "Rizal",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 23,
+    "region_id": 7,
+    "province_name": "Marinduque",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 24,
+    "region_id": 7,
+    "province_name": "Occidental Mindoro",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 25,
+    "region_id": 7,
+    "province_name": "Oriental Mindoro",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 26,
+    "region_id": 7,
+    "province_name": "Palawan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 27,
+    "region_id": 7,
+    "province_name": "Romblon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 28,
+    "region_id": 8,
+    "province_name": "Albay",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 29,
+    "region_id": 8,
+    "province_name": "Camarines Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 30,
+    "region_id": 8,
+    "province_name": "Camarines Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 31,
+    "region_id": 8,
+    "province_name": "Catanduanes",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 32,
+    "region_id": 8,
+    "province_name": "Masbate",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 33,
+    "region_id": 8,
+    "province_name": "Sorsogon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 34,
+    "region_id": 9,
+    "province_name": "Aklan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 35,
+    "region_id": 9,
+    "province_name": "Antique",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 36,
+    "region_id": 9,
+    "province_name": "Capiz",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 37,
+    "region_id": 9,
+    "province_name": "Iloilo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 38,
+    "region_id": 9,
+    "province_name": "Negros Occidental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 39,
+    "region_id": 9,
+    "province_name": "Guimaras",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 40,
+    "region_id": 10,
+    "province_name": "Bohol",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 41,
+    "region_id": 10,
+    "province_name": "Cebu",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 42,
+    "region_id": 10,
+    "province_name": "Negros Oriental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 43,
+    "region_id": 10,
+    "province_name": "Siquijor",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 44,
+    "region_id": 11,
+    "province_name": "Eastern Samar",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 45,
+    "region_id": 11,
+    "province_name": "Leyte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 46,
+    "region_id": 11,
+    "province_name": "Northern Samar",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 47,
+    "region_id": 11,
+    "province_name": "Samar",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 48,
+    "region_id": 11,
+    "province_name": "Southern Leyte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 49,
+    "region_id": 11,
+    "province_name": "Biliran",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 50,
+    "region_id": 12,
+    "province_name": "Zamboanga del Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 51,
+    "region_id": 12,
+    "province_name": "Zamboanga del Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 52,
+    "region_id": 12,
+    "province_name": "Zamboanga Sibugay",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 53,
+    "region_id": 13,
+    "province_name": "Bukidnon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 54,
+    "region_id": 13,
+    "province_name": "Camiguin",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 55,
+    "region_id": 13,
+    "province_name": "Lanao del Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 56,
+    "region_id": 13,
+    "province_name": "Misamis Occidental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 57,
+    "region_id": 13,
+    "province_name": "Misamis Oriental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 58,
+    "region_id": 14,
+    "province_name": "Davao del Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 59,
+    "region_id": 14,
+    "province_name": "Davao del Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 60,
+    "region_id": 14,
+    "province_name": "Davao Oriental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 61,
+    "region_id": 14,
+    "province_name": "Davao de Oro",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 62,
+    "region_id": 14,
+    "province_name": "Davao Occidental",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 63,
+    "region_id": 15,
+    "province_name": "Cotabato",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 64,
+    "region_id": 15,
+    "province_name": "South Cotabato",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 65,
+    "region_id": 15,
+    "province_name": "Sultan Kudarat",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 66,
+    "region_id": 15,
+    "province_name": "Sarangani",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 67,
+    "region_id": 2,
+    "province_name": "Abra",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 68,
+    "region_id": 2,
+    "province_name": "Benguet",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 69,
+    "region_id": 2,
+    "province_name": "Ifugao",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 70,
+    "region_id": 2,
+    "province_name": "Kalinga",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 71,
+    "region_id": 2,
+    "province_name": "Mountain Province",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 72,
+    "region_id": 2,
+    "province_name": "Apayao",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 73,
+    "region_id": 17,
+    "province_name": "Basilan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 74,
+    "region_id": 17,
+    "province_name": "Lanao del Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 75,
+    "region_id": 17,
+    "province_name": "Maguindanao",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 76,
+    "region_id": 17,
+    "province_name": "Sulu",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 77,
+    "region_id": 17,
+    "province_name": "Tawi-Tawi",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 78,
+    "region_id": 16,
+    "province_name": "Agusan del Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 79,
+    "region_id": 16,
+    "province_name": "Agusan del Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 80,
+    "region_id": 16,
+    "province_name": "Surigao del Norte",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 81,
+    "region_id": 16,
+    "province_name": "Surigao del Sur",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "province_id": 82,
+    "region_id": 16,
+    "province_name": "Dinagat Islands",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null
+  }
+]
