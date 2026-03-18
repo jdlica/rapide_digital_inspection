@@ -1462,13 +1462,13 @@ function TopBar({ user, onLogout, onDashboard, onManage }) {
                 onClick={() => { onDashboard(); setMenuOpen(false); }}
                 style={drawerItemStyle}
               >
-                <span style={drawerIconStyle}>📋</span> Dashboard
+                Dashboard
               </button>
               <button
                 onClick={() => { onManage(); setMenuOpen(false); }}
                 style={drawerItemStyle}
               >
-                <span style={drawerIconStyle}>⚙️</span> Manage
+                Manage
               </button>
             </>
           )}
@@ -1480,7 +1480,7 @@ function TopBar({ user, onLogout, onDashboard, onManage }) {
             onClick={() => { onLogout(); setMenuOpen(false); }}
             style={{ ...drawerItemStyle, color: BRAND.red }}
           >
-            <span style={drawerIconStyle}>🚪</span> Logout
+            Logout
           </button>
         </div>
       </div>
@@ -1656,21 +1656,18 @@ function PackageSelectionScreen({ onSelect }) {
       id: 'quick',
       label: 'QUICK',
       desc: 'Basic fluid & visual check',
-      icon: '⚡',
       color: '#22C55E',
     },
     {
       id: 'express',
       label: 'EXPRESS',
       desc: 'Comprehensive multi-point inspection',
-      icon: '🔧',
       color: BRAND.yellow,
     },
     {
       id: 'plus',
       label: 'PREMIUM PLUS',
       desc: 'Full-system detailed inspection',
-      icon: '🏆',
       color: BRAND.red,
     },
   ];
@@ -1718,7 +1715,15 @@ function PackageSelectionScreen({ onSelect }) {
               e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
             }}
           >
-            <span style={{ fontSize: 40 }}>{p.icon}</span>
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: p.color,
+                flexShrink: 0,
+              }}
+            />
             <div style={{ textAlign: 'left' }}>
               <div
                 style={{
@@ -1962,8 +1967,9 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
             required
             error={!!errors.mobileNo}
             value={data.mobileNo || ''}
-            onChange={(v) => update('mobileNo', v)}
-            placeholder="+63 9XX XXX XXXX"
+            onChange={(v) => update('mobileNo', v.replace(/\D/g, ''))}
+            placeholder="09XXXXXXXXX"
+            type="tel"
           />
           <TextInput
             label="Email"
@@ -2531,6 +2537,13 @@ function InspectionScreen({
 }
 
 function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
+  const [attempted, setAttempted] = useState(false);
+
+  const handleFinish = () => {
+    if (!comment.trim()) { setAttempted(true); return; }
+    onFinish();
+  };
+
   return (
     <div className="form-screen">
       <h2
@@ -2551,18 +2564,18 @@ function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
           background: BRAND.white,
           borderRadius: 16,
           padding: 24,
-          border: `2px solid ${BRAND.grayBorder}`,
+          border: `2px solid ${attempted && !comment.trim() ? BRAND.red : BRAND.grayBorder}`,
         }}
       >
         <textarea
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => { setComment(e.target.value); setAttempted(false); }}
           placeholder="Type your comment or observations here..."
           style={{
             width: '100%',
             minHeight: 180,
             padding: '14px 16px',
-            border: `2px solid ${BRAND.grayBorder}`,
+            border: `2px solid ${attempted && !comment.trim() ? BRAND.red : BRAND.grayBorder}`,
             borderRadius: 12,
             fontSize: 16,
             outline: 'none',
@@ -2570,12 +2583,17 @@ function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
             fontFamily: 'inherit',
             boxSizing: 'border-box',
           }}
-          onFocus={(e) => (e.target.style.borderColor = BRAND.yellow)}
-          onBlur={(e) => (e.target.style.borderColor = BRAND.grayBorder)}
+          onFocus={(e) => (e.target.style.borderColor = attempted && !comment.trim() ? BRAND.red : BRAND.yellow)}
+          onBlur={(e) => (e.target.style.borderColor = attempted && !comment.trim() ? BRAND.red : BRAND.grayBorder)}
         />
-        <div style={{ marginTop: 12, fontSize: 12, color: BRAND.gray }}>
-          💡 Tip: Be specific about any findings or recommendations
-        </div>
+        {attempted && !comment.trim() && (
+          <p style={{ color: BRAND.red, fontSize: 13, fontWeight: 700, margin: '8px 0 0' }}>
+            Technician comment is required.
+          </p>
+        )}
+        <p style={{ marginTop: 12, fontSize: 12, color: BRAND.gray, margin: '12px 0 0' }}>
+          Be specific about any findings or recommendations.
+        </p>
       </div>
       <div
         style={{
@@ -2583,9 +2601,9 @@ function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
         }}
       >
         <PrimaryButton onClick={onBack} variant="secondary">
-          ← Back
+          Back
         </PrimaryButton>
-        <PrimaryButton onClick={onFinish}>
+        <PrimaryButton onClick={handleFinish}>
           Finish Vehicle Inspection
         </PrimaryButton>
       </div>
