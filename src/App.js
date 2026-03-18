@@ -1,4 +1,5 @@
 import React from 'react';
+import './style.css';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import makeModelData from './data/make_model.json';
 import municipalitiesData from './data/municipalities.json';
@@ -883,7 +884,7 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
               }`,
               background: value === o ? BRAND.yellow : BRAND.white,
               color: value === o ? BRAND.black : BRAND.gray,
-              fontWeight: value === o ? 800 : 500,
+              fontWeight: 700,
               fontSize: 15,
               cursor: 'pointer',
               transition: 'all 0.15s',
@@ -1460,7 +1461,7 @@ function PackageSelectionScreen({ onSelect }) {
     },
   ];
   return (
-    <div style={{ padding: '40px 20px', maxWidth: 800, margin: '0 auto' }}>
+    <div style={{ padding: '40px 0', width: '100%', boxSizing: 'border-box' }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <h1
           style={{
@@ -1565,7 +1566,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
   };
 
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
       <h2
         style={{
           fontSize: 22,
@@ -1626,7 +1627,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
         >
           <div
             style={{
-              border: errors.make ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.make ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1644,7 +1645,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.model ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.model ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1660,7 +1661,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.year ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.year ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1675,7 +1676,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.plateNo ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.plateNo ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1703,7 +1704,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           />
           <div
             style={{
-              border: errors.kmReading ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.kmReading ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1777,7 +1778,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           />
           <div
             style={{
-              border: errors.firstName ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.firstName ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1791,7 +1792,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.lastName ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.lastName ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1811,7 +1812,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           />
           <div
             style={{
-              border: errors.mobileNo ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.mobileNo ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1825,7 +1826,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.email ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.email ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1840,7 +1841,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.city ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.city ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1858,7 +1859,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </div>
           <div
             style={{
-              border: errors.barangay ? `2px solid ${BRAND.red}` : 'none',
+              border: `2px solid ${errors.barangay ? BRAND.red : 'transparent'}`,
               borderRadius: 12,
             }}
           >
@@ -1892,7 +1893,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
       )}
 
       <div
-        style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8 }}
+        style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}
       >
         <PrimaryButton onClick={handleNext}>Next →</PrimaryButton>
       </div>
@@ -1941,7 +1942,7 @@ function ServiceQuestionsScreen({
   };
 
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
       <h2
         style={{
           fontSize: 22,
@@ -1984,7 +1985,7 @@ function ServiceQuestionsScreen({
             <div
               style={{
                 flex: 1,
-                border: errors.lastPmsMonth ? `2px solid ${BRAND.red}` : 'none',
+                border: `2px solid ${errors.lastPmsMonth ? BRAND.red : 'transparent'}`,
                 borderRadius: 12,
               }}
             >
@@ -1998,7 +1999,7 @@ function ServiceQuestionsScreen({
             <div
               style={{
                 flex: 1,
-                border: errors.lastPmsYear ? `2px solid ${BRAND.red}` : 'none',
+                border: `2px solid ${errors.lastPmsYear ? BRAND.red : 'transparent'}`,
                 borderRadius: 12,
               }}
             >
@@ -2014,7 +2015,7 @@ function ServiceQuestionsScreen({
 
         <div
           style={{
-            border: errors.replacedParts ? `2px solid ${BRAND.red}` : 'none',
+            border: `2px solid ${errors.replacedParts ? BRAND.red : 'transparent'}`,
             borderRadius: 12,
           }}
         >
@@ -2062,7 +2063,7 @@ function ServiceQuestionsScreen({
 
         <div
           style={{
-            border: errors.technicianId ? `2px solid ${BRAND.red}` : 'none',
+            border: `2px solid ${errors.technicianId ? BRAND.red : 'transparent'}`,
             borderRadius: 12,
             padding: errors.technicianId ? 4 : 0,
           }}
@@ -2084,9 +2085,7 @@ function ServiceQuestionsScreen({
 
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingTop: 20,
+          display: 'flex', justifyContent: 'center', gap: 16, paddingTop: 20,
         }}
       >
         <PrimaryButton onClick={onBack} variant="secondary">
@@ -2142,7 +2141,7 @@ function InspectionScreen({
 
   return (
     <div
-      style={{ padding: '20px 20px 100px', maxWidth: 800, margin: '0 auto' }}
+      style={{ padding: '16px 0 100px', width: '100%', boxSizing: 'border-box' }}
     >
       {/* Progress */}
       <div style={{ marginBottom: 20 }}>
@@ -2418,7 +2417,7 @@ function InspectionScreen({
 
 function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
       <h2
         style={{
           fontSize: 22,
@@ -2465,9 +2464,7 @@ function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
       </div>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingTop: 20,
+          display: 'flex', justifyContent: 'center', gap: 16, paddingTop: 20,
         }}
       >
         <PrimaryButton onClick={onBack} variant="secondary">
@@ -2575,7 +2572,7 @@ function AdminDashboard({
   };
 
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
       <div
         style={{
           display: 'flex',
@@ -3226,7 +3223,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
       <div
         style={{
           display: 'flex',
