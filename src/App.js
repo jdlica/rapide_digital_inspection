@@ -914,20 +914,18 @@ function BigCheckboxGroup({ options, value, onChange, label, required, error }) 
           {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', justifyContent: 'center', border: `2px solid ${error ? BRAND.red : 'transparent'}`, borderRadius: 10, padding: 2 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', width: '100%', border: `2px solid ${error ? BRAND.red : 'transparent'}`, borderRadius: 10, padding: 2 }}>
         {options.map((o) => (
           <button
             key={o}
             type="button"
             onClick={() => onChange(o)}
             style={{
-              minWidth: 90,
+              flex: 1,
               minHeight: 48,
-              padding: '10px 16px',
-              borderRadius: 10,
-              border: `2px solid ${
-                value === o ? BRAND.yellow : BRAND.grayBorder
-              }`,
+              padding: '10px 8px',
+              borderRadius: 8,
+              border: `2px solid ${value === o ? BRAND.yellow : BRAND.grayBorder}`,
               background: value === o ? BRAND.yellow : BRAND.white,
               color: value === o ? BRAND.black : BRAND.gray,
               fontWeight: 700,
@@ -935,9 +933,13 @@ function BigCheckboxGroup({ options, value, onChange, label, required, error }) 
               cursor: 'pointer',
               transition: 'all 0.15s',
               whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
             }}
           >
-            <span style={{ visibility: value === o ? 'visible' : 'hidden', marginRight: 4 }}>✓</span>
+            <span style={{ visibility: value === o ? 'visible' : 'hidden' }}>✓</span>
             {o}
           </button>
         ))}
