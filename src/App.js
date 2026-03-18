@@ -2247,11 +2247,21 @@ function InspectionScreen({
   onFinish,
   onBack,
 }) {
+  const [attempted, setAttempted] = useState(false);
   const cat = categories[currentCategoryIdx];
   const isFirst = currentCategoryIdx === 0;
   const isLast = currentCategoryIdx === categories.length - 1;
 
   const getKey = (catName, itemName) => `${catName}::${itemName}`;
+
+  const allFilled = cat.items.every((item) => !!findings[getKey(cat.category, item.name)]);
+
+  const handleNext = () => {
+    if (!allFilled) { setAttempted(true); return; }
+    setAttempted(false);
+    if (isLast) onFinish();
+    else setCurrentCategoryIdx(currentCategoryIdx + 1);
+  };
 
   const selectCondition = (itemName, condIdx) => {
     const key = getKey(cat.category, itemName);
@@ -2266,6 +2276,7 @@ function InspectionScreen({
         color: cond.color,
       },
     }));
+    setAttempted(false);
   };
 
   const togglePosition = (itemName, pos) => {
@@ -2345,6 +2356,7 @@ function InspectionScreen({
           const posKey = key + '::positions';
           const positions = findings[posKey] || [];
 
+          const unanswered = attempted && !finding;
           return (
             <div
               key={item.name}
@@ -2352,7 +2364,7 @@ function InspectionScreen({
                 background: BRAND.white,
                 borderRadius: 14,
                 border: `2px solid ${
-                  finding ? colorMap[finding.color] : BRAND.grayBorder
+                  unanswered ? BRAND.red : finding ? colorMap[finding.color] : BRAND.grayBorder
                 }`,
                 overflow: 'hidden',
                 transition: 'border-color 0.2s',
@@ -2527,30 +2539,35 @@ function InspectionScreen({
           background: BRAND.white,
           borderTop: `2px solid ${BRAND.grayBorder}`,
           padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
           zIndex: 99,
         }}
       >
-        <PrimaryButton
-          onClick={
-            isFirst
-              ? onBack
-              : () => setCurrentCategoryIdx(currentCategoryIdx - 1)
-          }
-          variant="secondary"
-        >
-          ← Back
-        </PrimaryButton>
-        <PrimaryButton
-          onClick={
-            isLast
-              ? onFinish
-              : () => setCurrentCategoryIdx(currentCategoryIdx + 1)
-          }
-        >
-          {isLast ? 'Finish Inspection →' : 'Next Category →'}
-        </PrimaryButton>
+        {attempted && !allFilled && (
+          <p style={{
+            color: BRAND.red,
+            fontSize: 13,
+            fontWeight: 700,
+            textAlign: 'center',
+            margin: '0 0 8px',
+          }}>
+            Please complete all items before proceeding.
+          </p>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <PrimaryButton
+            onClick={
+              isFirst
+                ? onBack
+                : () => { setAttempted(false); setCurrentCategoryIdx(currentCategoryIdx - 1); }
+            }
+            variant="secondary"
+          >
+            ← Back
+          </PrimaryButton>
+          <PrimaryButton onClick={handleNext}>
+            {isLast ? 'Finish Inspection →' : 'Next Category →'}
+          </PrimaryButton>
+        </div>
       </div>
     </div>
   );
