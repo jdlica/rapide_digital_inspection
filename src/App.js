@@ -1218,7 +1218,7 @@ function SearchableDropdown({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 6,
+            marginBottom: 4,
             display: 'block',
           }}
         >
@@ -1343,7 +1343,7 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
           {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         {options.map((o) => (
           <button
             key={o}
@@ -1408,7 +1408,7 @@ function MultiSelectDropdown({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 6,
+            marginBottom: 4,
             display: 'block',
           }}
         >
@@ -1421,7 +1421,7 @@ function MultiSelectDropdown({
           minHeight: 48,
           border: `2px solid ${open ? BRAND.yellow : BRAND.grayBorder}`,
           borderRadius: 10,
-          padding: '10px 14px',
+          padding: '8px 14px',
           background: BRAND.white,
           cursor: 'pointer',
           display: 'flex',
@@ -1565,7 +1565,7 @@ function TextInput({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 6,
+            marginBottom: 4,
             display: 'block',
           }}
         >
@@ -1693,7 +1693,6 @@ function LoginScreen({ onLogin }) {
       }}
     >
       <div
-        className="rdi-login-card"
         style={{
           background: BRAND.white,
           borderRadius: 24,
@@ -1827,7 +1826,6 @@ function LoginScreen({ onLogin }) {
 function TopBar({ user, onLogout, onDashboard, showDashboard = true }) {
   return (
     <div
-      className="rdi-topbar"
       style={{
         background: BRAND.yellow,
         padding: '12px 20px',
@@ -1861,7 +1859,7 @@ function TopBar({ user, onLogout, onDashboard, showDashboard = true }) {
                 background: BRAND.black,
                 color: BRAND.white,
                 border: 'none',
-                padding: '8px 16px',
+                padding: '8px 18px',
                 borderRadius: 8,
                 fontWeight: 700,
                 fontSize: 13,
@@ -1872,12 +1870,11 @@ function TopBar({ user, onLogout, onDashboard, showDashboard = true }) {
             </button>
           )}
       </div>
-      <div className="rdi-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: BRAND.black }}>
           {user.name}
         </span>
         <span
-          className="rdi-role-badge"
           style={{
             fontSize: 11,
             padding: '4px 10px',
@@ -1935,7 +1932,7 @@ function PackageSelectionScreen({ onSelect }) {
     },
   ];
   return (
-    <div className="rdi-screen" style={{ paddingTop: 32, paddingBottom: 32, maxWidth: 800, margin: '0 auto' }}>
+    <div style={{ padding: '40px 20px', maxWidth: 800, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <h1
           style={{
@@ -1956,7 +1953,6 @@ function PackageSelectionScreen({ onSelect }) {
           <button
             key={p.id}
             onClick={() => onSelect(p.id)}
-            className="rdi-pkg-card"
             style={{
               minHeight: 100,
               padding: '24px 32px',
@@ -1979,10 +1975,9 @@ function PackageSelectionScreen({ onSelect }) {
               e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
             }}
           >
-            <span className="rdi-pkg-icon" style={{ fontSize: 40 }}>{p.icon}</span>
+            <span style={{ fontSize: 40 }}>{p.icon}</span>
             <div style={{ textAlign: 'left' }}>
               <div
-                className="rdi-pkg-name"
                 style={{
                   fontSize: 22,
                   fontWeight: 900,
@@ -2041,7 +2036,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
   };
 
   return (
-    <div className="rdi-screen" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: '24px 20px', maxWidth: 900, margin: '0 auto' }}>
       <h2
         style={{
           fontSize: 22,
@@ -2093,7 +2088,13 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </span>
           Vehicle Details
         </h3>
-        <div className="rdi-form-grid">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: 16,
+          }}
+        >
           <div
             style={{
               border: errors.make ? `2px solid ${BRAND.red}` : 'none',
@@ -2231,7 +2232,13 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           </span>
           Customer Details
         </h3>
-        <div className="rdi-form-grid">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: 16,
+          }}
+        >
           <BigCheckboxGroup
             label="Title"
             required
@@ -2394,7 +2401,7 @@ function ServiceQuestionsScreen({
   };
 
   return (
-    <div className="rdi-screen" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ padding: '24px 20px', maxWidth: 700, margin: '0 auto' }}>
       <h2
         style={{
           fontSize: 22,
@@ -2466,7 +2473,7 @@ function ServiceQuestionsScreen({
               fontWeight: 600,
               fontSize: 13,
               color: BRAND.black,
-              marginBottom: 6,
+              marginBottom: 4,
               display: 'block',
             }}
           >
@@ -2479,7 +2486,7 @@ function ServiceQuestionsScreen({
             style={{
               width: '100%',
               minHeight: 100,
-              padding: '10px 14px',
+              padding: '12px 14px',
               border: `2px solid ${BRAND.grayBorder}`,
               borderRadius: 10,
               fontSize: 15,
@@ -2573,7 +2580,7 @@ function InspectionScreen({
 
   return (
     <div
-      className="rdi-screen" style={{ paddingTop: 20, paddingBottom: 100, maxWidth: 800, margin: '0 auto' }}
+      style={{ padding: '20px 20px 100px', maxWidth: 800, margin: '0 auto' }}
     >
       {/* Progress */}
       <div style={{ marginBottom: 20 }}>
@@ -2651,7 +2658,7 @@ function InspectionScreen({
             >
               <div
                 style={{
-                  padding: '12px 16px',
+                  padding: '14px 18px',
                   borderBottom: `1px solid ${BRAND.grayBorder}`,
                 }}
               >
@@ -2666,7 +2673,7 @@ function InspectionScreen({
               {item.hasPosition && (
                 <div
                   style={{
-                    padding: '10px 16px',
+                    padding: '10px 18px',
                     borderBottom: `1px solid ${BRAND.grayBorder}`,
                     display: 'flex',
                     gap: 8,
@@ -2724,7 +2731,7 @@ function InspectionScreen({
                       key={ci}
                       onClick={() => selectCondition(item.name, ci)}
                       style={{
-                        padding: '12px 16px',
+                        padding: '14px 18px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -2810,7 +2817,6 @@ function InspectionScreen({
       </div>
 
       <div
-        className="rdi-bottom-bar"
         style={{
           position: 'fixed',
           bottom: 0,
@@ -2850,7 +2856,7 @@ function InspectionScreen({
 
 function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
   return (
-    <div className="rdi-screen" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ padding: '24px 20px', maxWidth: 700, margin: '0 auto' }}>
       <h2
         style={{
           fontSize: 22,
@@ -2879,7 +2885,7 @@ function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
           style={{
             width: '100%',
             minHeight: 180,
-            padding: '12px 16px',
+            padding: '14px 16px',
             border: `2px solid ${BRAND.grayBorder}`,
             borderRadius: 12,
             fontSize: 16,
@@ -3007,7 +3013,7 @@ function AdminDashboard({
   };
 
   return (
-    <div className="rdi-screen" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '24px 20px', maxWidth: 1200, margin: '0 auto' }}>
       <div
         style={{
           display: 'flex',
@@ -3035,7 +3041,7 @@ function AdminDashboard({
             {inspections.length} inspections completed
           </p>
         </div>
-        <div className="rdi-dash-actions">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <PrimaryButton
             onClick={() => setShowAddTech(true)}
             variant="secondary"
@@ -3067,7 +3073,9 @@ function AdminDashboard({
       </div>
 
       {/* Filters */}
-      <div className="rdi-filter-bar">
+      <div
+        style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}
+      >
         <input
           placeholder="Search RIF, customer, technician..."
           value={search}
@@ -3122,7 +3130,13 @@ function AdminDashboard({
       </div>
 
       {/* Table */}
-      <div className="rdi-table-wrap">
+      <div
+        style={{
+          overflowX: 'auto',
+          borderRadius: 14,
+          border: `2px solid ${BRAND.grayBorder}`,
+        }}
+      >
         <table
           style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}
         >
@@ -3650,7 +3664,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   return (
-    <div className="rdi-screen" style={{ paddingTop: 24, paddingBottom: 24, maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: '24px 20px', maxWidth: 900, margin: '0 auto' }}>
       <div
         style={{
           display: 'flex',
@@ -3681,7 +3695,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         <PrimaryButton
           onClick={printInspection}
           variant="dark"
-          style={{ fontSize: 13, padding: '10px 20px', minHeight: 44 }}
+          style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
         >
           🖨️ Print / Download
         </PrimaryButton>
@@ -3735,7 +3749,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </div>
 
       {/* Summary counts */}
-      <div className="rdi-summary-counts">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
         <div
           style={{
             background: BRAND.greenBg,
@@ -3940,8 +3961,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                           updateDecision(key, 'reason', e.target.value)
                         }
                         style={{
-                          minHeight: 40,
-                          padding: '6px 10px',
+                          minHeight: 38,
+                          padding: '4px 10px',
                           border: `1px solid ${BRAND.grayBorder}`,
                           borderRadius: 8,
                           fontSize: 13,
@@ -3965,8 +3986,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                           style={{
                             flex: 1,
                             minWidth: 150,
-                            minHeight: 40,
-                            padding: '6px 10px',
+                            minHeight: 38,
+                            padding: '4px 10px',
                             border: `1px solid ${BRAND.grayBorder}`,
                             borderRadius: 8,
                             fontSize: 13,
