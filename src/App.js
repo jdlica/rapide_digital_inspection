@@ -1959,8 +1959,8 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
               options={brands}
               value={data.make}
               onChange={(v) => {
-                update('make', v);
-                update('model', '');
+                setData({ ...data, make: v, model: '' });
+                setErrors({ ...errors, make: false, model: false });
               }}
               placeholder="Select brand..."
             />
