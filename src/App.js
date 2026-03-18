@@ -734,6 +734,7 @@ function SearchableDropdown({
   disabled,
   label,
   required,
+  error,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -759,7 +760,7 @@ function SearchableDropdown({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 4,
+            marginBottom: 6,
             display: 'block',
           }}
         >
@@ -772,7 +773,7 @@ function SearchableDropdown({
         style={{
           minHeight: 48,
           border: `2px solid ${
-            disabled ? BRAND.grayBorder : open ? BRAND.yellow : BRAND.grayBorder
+            disabled ? BRAND.grayBorder : error ? BRAND.red : open ? BRAND.yellow : BRAND.grayBorder
           }`,
           borderRadius: 10,
           padding: '10px 14px',
@@ -867,7 +868,7 @@ function SearchableDropdown({
   );
 }
 
-function BigCheckboxGroup({ options, value, onChange, label, required }) {
+function BigCheckboxGroup({ options, value, onChange, label, required, error }) {
   return (
     <div>
       {label && (
@@ -884,7 +885,7 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
           {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', justifyContent: 'center', border: `2px solid ${error ? BRAND.red : 'transparent'}`, borderRadius: 10, padding: 2 }}>
         {options.map((o) => (
           <button
             key={o}
@@ -923,6 +924,7 @@ function MultiSelectDropdown({
   label,
   placeholder,
   required,
+  error,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -952,7 +954,7 @@ function MultiSelectDropdown({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 4,
+            marginBottom: 6,
             display: 'block',
           }}
         >
@@ -964,7 +966,7 @@ function MultiSelectDropdown({
         onClick={() => setOpen(!open)}
         style={{
           minHeight: 48,
-          border: `2px solid ${open ? BRAND.yellow : BRAND.grayBorder}`,
+          border: `2px solid ${error ? BRAND.red : open ? BRAND.yellow : BRAND.grayBorder}`,
           borderRadius: 10,
           padding: '8px 14px',
           background: BRAND.white,
@@ -1101,6 +1103,7 @@ function TextInput({
   required,
   type = 'text',
   disabled,
+  error,
 }) {
   return (
     <div>
@@ -1110,7 +1113,7 @@ function TextInput({
             fontWeight: 600,
             fontSize: 13,
             color: BRAND.black,
-            marginBottom: 4,
+            marginBottom: 6,
             display: 'block',
           }}
         >
@@ -1128,7 +1131,7 @@ function TextInput({
           width: '100%',
           minHeight: 48,
           padding: '10px 14px',
-          border: `2px solid ${BRAND.grayBorder}`,
+          border: `2px solid ${error ? BRAND.red : BRAND.grayBorder}`,
           borderRadius: 10,
           fontSize: 15,
           outline: 'none',
@@ -1137,7 +1140,7 @@ function TextInput({
           transition: 'border-color 0.2s',
         }}
         onFocus={(e) => (e.target.style.borderColor = BRAND.yellow)}
-        onBlur={(e) => (e.target.style.borderColor = BRAND.grayBorder)}
+        onBlur={(e) => (e.target.style.borderColor = error ? BRAND.red : BRAND.grayBorder)}
       />
     </div>
   );
@@ -1477,7 +1480,7 @@ function PackageSelectionScreen({ onSelect }) {
     },
   ];
   return (
-    <div style={{ padding: '40px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen" style={{ paddingTop: 40, paddingBottom: 40 }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <h1
           style={{
@@ -1627,72 +1630,49 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           Vehicle Details
         </h3>
         <div className="form-grid">
-          <div
-            style={{
-              border: `2px solid ${errors.make ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
+          <SearchableDropdown
+            label="Make"
+            required
+            error={!!errors.make}
+            options={brands}
+            value={data.make}
+            onChange={(v) => {
+              setData({ ...data, make: v, model: '' });
+              setErrors({ ...errors, make: false, model: false });
             }}
-          >
-            <SearchableDropdown
-              label="Make"
-              required
-              options={brands}
-              value={data.make}
-              onChange={(v) => {
-                setData({ ...data, make: v, model: '' });
-                setErrors({ ...errors, make: false, model: false });
-              }}
-              placeholder="Select brand..."
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.model ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <SearchableDropdown
-              label="Model"
-              required
-              options={availableModels}
-              value={data.model}
-              onChange={(v) => update('model', v)}
-              placeholder="Select model..."
-              disabled={!data.make}
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.year ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <SearchableDropdown
-              label="Year"
-              required
-              options={YEARS}
-              value={data.year}
-              onChange={(v) => update('year', v)}
-              placeholder="Select year..."
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.plateNo ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <TextInput
-              label="Plate Number"
-              required
-              value={data.plateNo || ''}
-              onChange={(v) => update('plateNo', v.toUpperCase())}
-              placeholder="e.g. ABC 1234"
-            />
-          </div>
+            placeholder="Select brand..."
+          />
+          <SearchableDropdown
+            label="Model"
+            required
+            error={!!errors.model}
+            options={availableModels}
+            value={data.model}
+            onChange={(v) => update('model', v)}
+            placeholder="Select model..."
+            disabled={!data.make}
+          />
+          <SearchableDropdown
+            label="Year"
+            required
+            error={!!errors.year}
+            options={YEARS}
+            value={data.year}
+            onChange={(v) => update('year', v)}
+            placeholder="Select year..."
+          />
+          <TextInput
+            label="Plate Number"
+            required
+            error={!!errors.plateNo}
+            value={data.plateNo || ''}
+            onChange={(v) => update('plateNo', v.toUpperCase())}
+            placeholder="e.g. ABC 1234"
+          />
           <BigCheckboxGroup
             label="Transmission"
             required
+            error={!!errors.transmission}
             options={['Manual', 'A/T', 'CVT']}
             value={data.transmission}
             onChange={(v) => update('transmission', v)}
@@ -1700,25 +1680,20 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           <BigCheckboxGroup
             label="Fuel Type"
             required
+            error={!!errors.fuelType}
             options={['Gas', 'Diesel', 'EV/HEV']}
             value={data.fuelType}
             onChange={(v) => update('fuelType', v)}
           />
-          <div
-            style={{
-              border: `2px solid ${errors.kmReading ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <SearchableDropdown
-              label="KM Reading"
-              required
-              options={KM_READINGS}
-              value={data.kmReading}
-              onChange={(v) => update('kmReading', v)}
-              placeholder="Select KM..."
-            />
-          </div>
+          <SearchableDropdown
+            label="KM Reading"
+            required
+            error={!!errors.kmReading}
+            options={KM_READINGS}
+            value={data.kmReading}
+            onChange={(v) => update('kmReading', v)}
+            placeholder="Select KM..."
+          />
           <TextInput
             label="Date"
             value={data.date || new Date().toLocaleDateString('en-PH')}
@@ -1760,118 +1735,84 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           <BigCheckboxGroup
             label="Title"
             required
+            error={!!errors.title}
             options={['Mr', 'Ms']}
             value={data.title}
             onChange={(v) => update('title', v)}
           />
-          <div
-            style={{
-              border: `2px solid ${errors.firstName ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <TextInput
-              label="First Name"
-              required
-              value={data.firstName || ''}
-              onChange={(v) => update('firstName', v)}
-              placeholder="First name"
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.lastName ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <TextInput
-              label="Last Name"
-              required
-              value={data.lastName || ''}
-              onChange={(v) => update('lastName', v)}
-              placeholder="Last name"
-            />
-          </div>
+          <TextInput
+            label="First Name"
+            required
+            error={!!errors.firstName}
+            value={data.firstName || ''}
+            onChange={(v) => update('firstName', v)}
+            placeholder="First name"
+          />
+          <TextInput
+            label="Last Name"
+            required
+            error={!!errors.lastName}
+            value={data.lastName || ''}
+            onChange={(v) => update('lastName', v)}
+            placeholder="Last name"
+          />
           <TextInput
             label="Company"
             value={data.company || ''}
             onChange={(v) => update('company', v)}
             placeholder="Company (optional)"
           />
-          <div
-            style={{
-              border: `2px solid ${errors.mobileNo ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
+          <TextInput
+            label="Mobile Number"
+            required
+            error={!!errors.mobileNo}
+            value={data.mobileNo || ''}
+            onChange={(v) => update('mobileNo', v)}
+            placeholder="+63 9XX XXX XXXX"
+          />
+          <TextInput
+            label="Email"
+            required
+            error={!!errors.email}
+            value={data.email || ''}
+            onChange={(v) => update('email', v)}
+            placeholder="Enter email"
+            type="email"
+          />
+          <SearchableDropdown
+            label="City / Municipality"
+            required
+            error={!!errors.city}
+            options={MUNICIPALITY_LIST}
+            value={data.city}
+            onChange={(v) => {
+              setData({ ...data, city: v, barangay: '' });
+              setErrors({ ...errors, city: false, barangay: false });
             }}
-          >
-            <TextInput
-              label="Mobile Number"
-              required
-              value={data.mobileNo || ''}
-              onChange={(v) => update('mobileNo', v)}
-              placeholder="+63 9XX XXX XXXX"
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.email ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            <TextInput
-              label="Email"
-              required
-              value={data.email || ''}
-              onChange={(v) => update('email', v)}
-              placeholder="Enter email"
-              type="email"
-            />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.city ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
+            placeholder="Select city..."
+          />
+          {availableBarangays.length > 0 ? (
             <SearchableDropdown
-              label="City / Municipality"
+              label="Barangay"
               required
-              options={MUNICIPALITY_LIST}
-              value={data.city}
-              onChange={(v) => {
-                setData({ ...data, city: v, barangay: '' });
-                setErrors({ ...errors, city: false, barangay: false });
-              }}
-              placeholder="Select city..."
+              error={!!errors.barangay}
+              options={availableBarangays}
+              value={data.barangay}
+              onChange={(v) => update('barangay', v)}
+              placeholder="Select barangay..."
+              disabled={!data.city}
             />
-          </div>
-          <div
-            style={{
-              border: `2px solid ${errors.barangay ? BRAND.red : 'transparent'}`,
-              borderRadius: 12,
-            }}
-          >
-            {availableBarangays.length > 0 ? (
-              <SearchableDropdown
-                label="Barangay"
-                required
-                options={availableBarangays}
-                value={data.barangay}
-                onChange={(v) => update('barangay', v)}
-                placeholder="Select barangay..."
-                disabled={!data.city}
-              />
-            ) : (
-              <TextInput
-                label="Barangay"
-                required
-                value={data.barangay || ''}
-                onChange={(v) => update('barangay', v)}
-                placeholder={data.city ? 'Enter barangay...' : 'Select city first'}
-                disabled={!data.city}
-              />
-            )}
-          </div>
+          ) : (
+            <TextInput
+              label="Barangay"
+              required
+              error={!!errors.barangay}
+              value={data.barangay || ''}
+              onChange={(v) => update('barangay', v)}
+              placeholder={data.city ? 'Enter barangay...' : 'Select city first'}
+              disabled={!data.city}
+            />
+          )}
         </div>
       </div>
 
@@ -1892,7 +1833,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
       )}
 
       <div
-        style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}
+        style={{ display: 'flex', justifyContent: 'center', paddingTop: 20 }}
       >
         <PrimaryButton onClick={handleNext}>Next →</PrimaryButton>
       </div>
@@ -1978,28 +1919,18 @@ function ServiceQuestionsScreen({
             <span style={{ color: BRAND.red }}> *</span>
           </label>
           <div style={{ display: 'flex', gap: 12 }}>
-            <div
-              style={{
-                flex: 1,
-                border: `2px solid ${errors.lastPmsMonth ? BRAND.red : 'transparent'}`,
-                borderRadius: 12,
-              }}
-            >
+            <div style={{ flex: 1 }}>
               <SearchableDropdown
+                error={!!errors.lastPmsMonth}
                 options={months}
                 value={data.lastPmsMonth}
                 onChange={(v) => update('lastPmsMonth', v)}
                 placeholder="Month"
               />
             </div>
-            <div
-              style={{
-                flex: 1,
-                border: `2px solid ${errors.lastPmsYear ? BRAND.red : 'transparent'}`,
-                borderRadius: 12,
-              }}
-            >
+            <div style={{ flex: 1 }}>
               <SearchableDropdown
+                error={!!errors.lastPmsYear}
                 options={years}
                 value={data.lastPmsYear}
                 onChange={(v) => update('lastPmsYear', v)}
@@ -2009,21 +1940,15 @@ function ServiceQuestionsScreen({
           </div>
         </div>
 
-        <div
-          style={{
-            border: `2px solid ${errors.replacedParts ? BRAND.red : 'transparent'}`,
-            borderRadius: 12,
-          }}
-        >
-          <MultiSelectDropdown
-            label="What parts were replaced in your last service?"
-            required
-            options={REPLACED_PARTS}
-            value={data.replacedParts || []}
-            onChange={(v) => update('replacedParts', v)}
-            placeholder="Select parts..."
-          />
-        </div>
+        <MultiSelectDropdown
+          label="What parts were replaced in your last service?"
+          required
+          error={!!errors.replacedParts}
+          options={REPLACED_PARTS}
+          value={data.replacedParts || []}
+          onChange={(v) => update('replacedParts', v)}
+          placeholder="Select parts..."
+        />
 
         <div>
           <label
@@ -2031,7 +1956,7 @@ function ServiceQuestionsScreen({
               fontWeight: 600,
               fontSize: 13,
               color: BRAND.black,
-              marginBottom: 4,
+              marginBottom: 6,
               display: 'block',
             }}
           >
@@ -2057,26 +1982,19 @@ function ServiceQuestionsScreen({
           />
         </div>
 
-        <div
-          style={{
-            border: `2px solid ${errors.technicianId ? BRAND.red : 'transparent'}`,
-            borderRadius: 12,
-            padding: errors.technicianId ? 4 : 0,
+        <SearchableDropdown
+          label="Assign Technician"
+          required
+          error={!!errors.technicianId}
+          options={technicians.filter((t) => t.active).map((t) => t.name)}
+          value={data.technicianName}
+          onChange={(v) => {
+            const tech = technicians.find((t) => t.name === v);
+            setData({ ...data, technicianId: tech?.id, technicianName: v });
+            setErrors({ ...errors, technicianId: false });
           }}
-        >
-          <SearchableDropdown
-            label="Assign Technician"
-            required
-            options={technicians.filter((t) => t.active).map((t) => t.name)}
-            value={data.technicianName}
-            onChange={(v) => {
-              const tech = technicians.find((t) => t.name === v);
-              setData({ ...data, technicianId: tech?.id, technicianName: v });
-              setErrors({ ...errors, technicianId: false });
-            }}
-            placeholder="Select technician..."
-          />
-        </div>
+          placeholder="Select technician..."
+        />
       </div>
 
       <div
@@ -2137,7 +2055,7 @@ function InspectionScreen({
 
   return (
     <div
-      style={{ padding: '16px 0 100px', width: '100%', boxSizing: 'border-box' }}
+      className="form-screen" style={{ paddingBottom: 100 }}
     >
       {/* Progress */}
       <div style={{ marginBottom: 20 }}>
@@ -2413,7 +2331,7 @@ function InspectionScreen({
 
 function TechCommentScreen({ comment, setComment, onFinish, onBack }) {
   return (
-    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen">
       <h2
         style={{
           fontSize: 22,
@@ -2568,7 +2486,7 @@ function AdminDashboard({
   };
 
   return (
-    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen">
       <div
         style={{
           display: 'flex',
@@ -3219,7 +3137,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   return (
-    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen">
       <div
         style={{
           display: 'flex',
