@@ -1,5 +1,165 @@
+/* ============================================================
+   RAPIDE DIGITAL INSPECTION SYSTEM — GLOBAL STYLES
+   Spacing scale (4 px baseline): 4 | 8 | 12 | 16 | 20 | 24 | 32 | 40 | 48
+   ============================================================ */
+
+/* 1. Box-model reset — prevents form fields and containers from
+      overflowing their parent on narrow screens */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Base */
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+    sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
 h1,
+h2,
+h3,
+h4,
 p {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  font-family: inherit;
+}
+
+/* 3. Screen wrappers
+      Vertical padding stays as inline style (component-specific).
+      Horizontal padding is controlled here so media queries can
+      tighten it on small screens without !important on each element. */
+.rdi-screen {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 479px) {
+  .rdi-screen {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* 4. Login card — reduce padding on very small phones */
+@media (max-width: 479px) {
+  .rdi-login-card {
+    padding: 32px 20px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* 5. TopBar — wrap on very small screens so content does not clip */
+.rdi-topbar {
+  flex-wrap: wrap;
+}
+
+.rdi-topbar-right {
+  flex-wrap: wrap;
+}
+
+/* Hide role badge on tiny phones to prevent overflow */
+@media (max-width: 380px) {
+  .rdi-role-badge {
+    display: none !important;
+  }
+}
+
+/* 6. Form grids
+      CSS controls the responsive column behaviour so inline styles
+      on the grid containers can be removed (see App.js). */
+.rdi-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 479px) {
+  .rdi-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* 7. Package selection cards — reduce padding on mobile */
+@media (max-width: 479px) {
+  .rdi-pkg-card {
+    padding: 16px 20px !important;
+    gap: 12px !important;
+    min-height: auto !important;
+  }
+
+  .rdi-pkg-icon {
+    font-size: 28px !important;
+  }
+
+  .rdi-pkg-name {
+    font-size: 18px !important;
+  }
+}
+
+/* 8. Inspection fixed bottom navigation bar */
+@media (max-width: 479px) {
+  .rdi-bottom-bar {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    gap: 8px;
+  }
+}
+
+/* 9. Dashboard table — always horizontally scrollable so it
+      never causes page-level overflow on small screens */
+.rdi-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+  border: 2px solid #d1d5db;
+}
+
+/* 10. Summary counts — fixed 3-column grid, compact on mobile */
+.rdi-summary-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 360px) {
+  .rdi-summary-counts {
+    gap: 8px;
+  }
+}
+
+/* 11. Dashboard action buttons — wrap cleanly on small screens */
+.rdi-dash-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 12. Filter bar — wrap on mobile */
+.rdi-filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* 13. Service-decision actionable items list */
+.rdi-decision-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 14. Print — minimal reset so the generated report looks clean */
+@media print {
+  body {
+    margin: 0;
+    background: white;
+  }
 }
