@@ -735,6 +735,7 @@ function SearchableDropdown({
   label,
   required,
   error,
+  allowAdd,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -830,9 +831,37 @@ function SearchableDropdown({
             />
           </div>
           <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-            {filtered.length === 0 && (
+            {filtered.length === 0 && !allowAdd && (
               <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>
                 No results
+              </div>
+            )}
+            {filtered.length === 0 && allowAdd && search.trim() && (
+              <div
+                onClick={() => {
+                  onChange(search.trim());
+                  setOpen(false);
+                  setSearch('');
+                }}
+                style={{
+                  padding: '12px 14px',
+                  cursor: 'pointer',
+                  fontSize: 15,
+                  color: BRAND.black,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              >
+                <span style={{ fontWeight: 700, color: BRAND.yellow, fontSize: 18 }}>+</span>
+                Add "{search.trim()}"
+              </div>
+            )}
+            {filtered.length === 0 && allowAdd && !search.trim() && (
+              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>
+                Type to search or add a barangay
               </div>
             )}
             {filtered.map((o) => (
@@ -1791,28 +1820,17 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
             }}
             placeholder="Select city..."
           />
-          {availableBarangays.length > 0 ? (
-            <SearchableDropdown
-              label="Barangay"
-              required
-              error={!!errors.barangay}
-              options={availableBarangays}
-              value={data.barangay}
-              onChange={(v) => update('barangay', v)}
-              placeholder="Select barangay..."
-              disabled={!data.city}
-            />
-          ) : (
-            <TextInput
-              label="Barangay"
-              required
-              error={!!errors.barangay}
-              value={data.barangay || ''}
-              onChange={(v) => update('barangay', v)}
-              placeholder={data.city ? 'Enter barangay...' : 'Select city first'}
-              disabled={!data.city}
-            />
-          )}
+          <SearchableDropdown
+            label="Barangay"
+            required
+            error={!!errors.barangay}
+            options={availableBarangays}
+            value={data.barangay}
+            onChange={(v) => update('barangay', v)}
+            placeholder={data.city ? 'Select or type barangay...' : 'Select city first'}
+            disabled={!data.city}
+            allowAdd={availableBarangays.length === 0}
+          />
         </div>
       </div>
 
