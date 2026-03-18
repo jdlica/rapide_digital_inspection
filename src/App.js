@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import makeModelData from './data/make_model.json';
 import municipalitiesData from './data/municipalities.json';
 import barangaysData from './data/barangays.json';
+import provincesData from './data/provinces.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -85,24 +86,38 @@ const REPLACED_PARTS = [
   'REAR WHEEL BEARING',
 ].sort();
 
-// --- PHILIPPINES LOCATION DATA (derived from municipalities.json + barangays.json) ---
+// --- PHILIPPINES LOCATION DATA (provinces + municipalities + barangays) ---
 
-// Step 1: map municipality_id -> barangay names
+// Step 1: province_id -> province_name
+const _provinceMap = {};
+for (const p of provincesData) _provinceMap[p.province_id] = p.province_name;
+
+// Step 2: count how many municipalities share the same name (for disambiguation)
+const _nameCount = {};
+for (const m of municipalitiesData) {
+  _nameCount[m.municipality_name] = (_nameCount[m.municipality_name] || 0) + 1;
+}
+
+// Step 3: municipality_id -> barangay names
 const _barangaysByMunId = {};
 for (const b of barangaysData) {
   if (!_barangaysByMunId[b.municipality_id]) _barangaysByMunId[b.municipality_id] = [];
   _barangaysByMunId[b.municipality_id].push(b.barangay_name);
 }
 
-// Step 2: map municipality_name -> combined barangays (handles duplicate names across provinces)
+// Step 4: build display name -> sorted barangays
+// Duplicate names get ", Province" appended (e.g. "San Miguel, Bulacan")
 const _barangaysByMunicipality = {};
 for (const m of municipalitiesData) {
+  const displayName =
+    _nameCount[m.municipality_name] > 1
+      ? `${m.municipality_name}, ${_provinceMap[m.province_id] || ''}`
+      : m.municipality_name;
   const barangays = _barangaysByMunId[m.municipality_id] || [];
-  if (barangays.length === 0) continue;
-  if (!_barangaysByMunicipality[m.municipality_name]) {
-    _barangaysByMunicipality[m.municipality_name] = new Set();
+  if (!_barangaysByMunicipality[displayName]) {
+    _barangaysByMunicipality[displayName] = new Set();
   }
-  for (const b of barangays) _barangaysByMunicipality[m.municipality_name].add(b);
+  for (const b of barangays) _barangaysByMunicipality[displayName].add(b);
 }
 
 // Convert sets to sorted arrays
@@ -110,6 +125,7 @@ for (const name of Object.keys(_barangaysByMunicipality)) {
   _barangaysByMunicipality[name] = [..._barangaysByMunicipality[name]].sort();
 }
 
+// All locations sorted — includes every municipality/city regardless of barangay availability
 const MUNICIPALITY_LIST = Object.keys(_barangaysByMunicipality).sort();
 
 
@@ -868,16 +884,16 @@ function BigCheckboxGroup({ options, value, onChange, label, required }) {
           {required && <span style={{ color: BRAND.red }}> *</span>}
         </label>
       )}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap' }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', justifyContent: 'center' }}>
         {options.map((o) => (
           <button
             key={o}
             type="button"
             onClick={() => onChange(o)}
             style={{
-              flex: 1,
+              minWidth: 90,
               minHeight: 48,
-              padding: '10px 8px',
+              padding: '10px 16px',
               borderRadius: 10,
               border: `2px solid ${
                 value === o ? BRAND.yellow : BRAND.grayBorder
@@ -1566,7 +1582,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
   };
 
   return (
-    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen">
       <h2
         style={{
           fontSize: 22,
@@ -1577,26 +1593,18 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
       >
         Customer & Vehicle Details
       </h2>
-      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 24 }}>
+      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
         Fill in vehicle and customer information
       </p>
 
       {/* Vehicle Section */}
-      <div
-        style={{
-          background: BRAND.white,
-          borderRadius: 16,
-          padding: 24,
-          marginBottom: 20,
-          border: `2px solid ${BRAND.grayBorder}`,
-        }}
-      >
+      <div className="form-card">
         <h3
           style={{
             fontSize: 16,
             fontWeight: 800,
             color: BRAND.black,
-            marginBottom: 16,
+            marginBottom: 14,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -1605,26 +1613,20 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           <span
             style={{
               background: BRAND.yellow,
-              width: 32,
-              height: 32,
-              borderRadius: 8,
+              width: 28,
+              height: 28,
+              borderRadius: 6,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             🚗
           </span>
           Vehicle Details
         </h3>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: 16,
-          }}
-        >
+        <div className="form-grid">
           <div
             style={{
               border: `2px solid ${errors.make ? BRAND.red : 'transparent'}`,
@@ -1726,21 +1728,13 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
       </div>
 
       {/* Customer Section */}
-      <div
-        style={{
-          background: BRAND.white,
-          borderRadius: 16,
-          padding: 24,
-          marginBottom: 20,
-          border: `2px solid ${BRAND.grayBorder}`,
-        }}
-      >
+      <div className="form-card">
         <h3
           style={{
             fontSize: 16,
             fontWeight: 800,
             color: BRAND.black,
-            marginBottom: 16,
+            marginBottom: 14,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -1749,26 +1743,20 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
           <span
             style={{
               background: BRAND.yellow,
-              width: 32,
-              height: 32,
-              borderRadius: 8,
+              width: 28,
+              height: 28,
+              borderRadius: 6,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             👤
           </span>
           Customer Details
         </h3>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: 16,
-          }}
-        >
+        <div className="form-grid">
           <BigCheckboxGroup
             label="Title"
             required
@@ -1863,15 +1851,26 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
               borderRadius: 12,
             }}
           >
-            <SearchableDropdown
-              label="Barangay"
-              required
-              options={availableBarangays}
-              value={data.barangay}
-              onChange={(v) => update('barangay', v)}
-              placeholder="Select barangay..."
-              disabled={!data.city}
-            />
+            {availableBarangays.length > 0 ? (
+              <SearchableDropdown
+                label="Barangay"
+                required
+                options={availableBarangays}
+                value={data.barangay}
+                onChange={(v) => update('barangay', v)}
+                placeholder="Select barangay..."
+                disabled={!data.city}
+              />
+            ) : (
+              <TextInput
+                label="Barangay"
+                required
+                value={data.barangay || ''}
+                onChange={(v) => update('barangay', v)}
+                placeholder={data.city ? 'Enter barangay...' : 'Select city first'}
+                disabled={!data.city}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -1942,7 +1941,7 @@ function ServiceQuestionsScreen({
   };
 
   return (
-    <div style={{ padding: '16px 0', width: '100%', boxSizing: 'border-box' }}>
+    <div className="form-screen">
       <h2
         style={{
           fontSize: 22,
@@ -1953,19 +1952,16 @@ function ServiceQuestionsScreen({
       >
         Service Questions
       </h2>
-      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 24 }}>
+      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
         Capture context and assign technician
       </p>
 
       <div
+        className="form-card"
         style={{
-          background: BRAND.white,
-          borderRadius: 16,
-          padding: 24,
-          border: `2px solid ${BRAND.grayBorder}`,
           display: 'flex',
           flexDirection: 'column',
-          gap: 20,
+          gap: 16,
         }}
       >
         <div>
