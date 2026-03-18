@@ -2038,8 +2038,8 @@ function ServiceQuestionsScreen({
             value={data.technicianName}
             onChange={(v) => {
               const tech = technicians.find((t) => t.name === v);
-              update('technicianId', tech?.id);
-              update('technicianName', v);
+              setData({ ...data, technicianId: tech?.id, technicianName: v });
+              setErrors({ ...errors, technicianId: false });
             }}
             placeholder="Select technician..."
           />
