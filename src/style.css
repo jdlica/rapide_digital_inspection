@@ -70,10 +70,12 @@ button {
   }
 }
 
-/* Desktop: wider padding */
+/* Desktop: wider padding with max width */
 @media (min-width: 1024px) {
   .form-screen {
-    padding: 24px 32px;
+    padding: 24px 48px;
+    max-width: 960px;
+    margin: 0 auto;
   }
 
   .form-card {
