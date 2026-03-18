@@ -5,6 +5,7 @@ import makeModelData from './data/make_model.json';
 import municipalitiesData from './data/municipalities.json';
 import barangaysData from './data/barangays.json';
 import provincesData from './data/provinces.json';
+import partsData from './data/parts.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -40,51 +41,7 @@ const CAR_MODELS = Object.fromEntries(
   Object.entries(_modelsMap).map(([make, set]) => [make, [...set].sort()])
 );
 
-const REPLACED_PARTS = [
-  'DRIVE BELT',
-  'TIE ROD',
-  'RACK END',
-  'SHOCK ABSORBER',
-  'VALVE COVER GASKET',
-  'LOWER ARM ASSY',
-  'STABILIZER LINK',
-  'WIPER BLADE',
-  'AIR FILTER',
-  'RADIATOR ASSY',
-  'BRAKE PAD',
-  'FAN BELT',
-  'COMPRESSOR',
-  'WHEEL CYLINDER',
-  'FUEL FILTER',
-  'IGNITION COIL',
-  'OIL FILTER',
-  'OIL SEAL',
-  'RELEASE BEARING',
-  'ENGINE SUPPORT',
-  'CABIN FILTER',
-  'AXLE GREASE',
-  'BRAKE SHOE',
-  'CLUTCH DISC',
-  'RADIATOR CAP',
-  'ALTERNATOR ASSY',
-  'TIMING BELT',
-  'CALIPER KIT',
-  'WATER PUMP',
-  'SPARK PLUG',
-  'LOWER BALL JOINT',
-  'THERMOSTAT VALVE',
-  'STARTER ASSY',
-  'ROTOR DISC',
-  'STEERING BOOT',
-  'EXPANSION VALVE',
-  'AUTO TENSIONER',
-  'FRONT SHOCK MOUNTING',
-  'STABILIZER BAR BUSHING',
-  'POWER STEERING BELT',
-  'TRANSMISSION FILTER',
-  'FRONT WHEEL BEARING',
-  'REAR WHEEL BEARING',
-].sort();
+const REPLACED_PARTS = [...new Set(partsData)].sort();
 
 // --- PHILIPPINES LOCATION DATA (provinces + municipalities + barangays) ---
 
