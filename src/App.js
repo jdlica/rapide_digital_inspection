@@ -2505,17 +2505,26 @@ function InspectionScreen({
   onBack,
 }) {
   const [attempted, setAttempted] = useState(false);
+  const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
   const cat = categories[currentCategoryIdx];
   const isFirst = currentCategoryIdx === 0;
   const isLast = currentCategoryIdx === categories.length - 1;
 
   const getKey = (catName, itemName) => `${catName}::${itemName}`;
 
-  const allFilled = cat.items.every((item) => !!findings[getKey(cat.category, item.name)]);
+  const allFilled = cat.items.every((item) => {
+    const key = getKey(cat.category, item.name);
+    const finding = findings[key];
+    if (item.hasPosition) {
+      return finding?.positions && item.positions.every((p) => finding.positions[p]);
+    }
+    return !!finding;
+  });
 
   const handleNext = () => {
     if (!allFilled) { setAttempted(true); return; }
     setAttempted(false);
+    setActivePosition(null);
     if (isLast) onFinish();
     else setCurrentCategoryIdx(currentCategoryIdx + 1);
   };
@@ -2526,24 +2535,29 @@ function InspectionScreen({
     const cond = item.conditions[condIdx];
     setFindings((prev) => ({
       ...prev,
-      [key]: {
-        conditionIdx: condIdx,
-        condition: cond.label,
-        action: cond.action,
-        color: cond.color,
-      },
+      [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
     }));
     setAttempted(false);
   };
 
-  const togglePosition = (itemName, pos) => {
-    const key = getKey(cat.category, itemName) + '::positions';
+  const selectPositionCondition = (itemName, pos, condIdx) => {
+    const key = getKey(cat.category, itemName);
+    const item = cat.items.find((i) => i.name === itemName);
+    const cond = item.conditions[condIdx];
     setFindings((prev) => {
-      const current = prev[key] || [];
-      if (current.includes(pos))
-        return { ...prev, [key]: current.filter((p) => p !== pos) };
-      return { ...prev, [key]: [...current, pos] };
+      const existing = prev[key] || { positions: {} };
+      const updatedPositions = {
+        ...existing.positions,
+        [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
+      };
+      return { ...prev, [key]: { positions: updatedPositions } };
     });
+    setAttempted(false);
+    // Auto-advance to next unfilled position
+    const currentPositions = findings[key]?.positions || {};
+    const nextPos = item.positions.find((p) => p !== pos && !currentPositions[p]);
+    if (nextPos) setActivePosition({ itemName, pos: nextPos });
+    else setActivePosition(null);
   };
 
   const progress = ((currentCategoryIdx + 1) / categories.length) * 100;
@@ -2610,178 +2624,175 @@ function InspectionScreen({
         {cat.items.map((item) => {
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
-          const posKey = key + '::positions';
-          const positions = findings[posKey] || [];
 
-          const unanswered = attempted && !finding;
+          const unanswered = attempted && (
+            item.hasPosition
+              ? !finding?.positions || !item.positions.every((p) => finding.positions[p])
+              : !finding
+          );
+
+          // Card border: worst color among filled positions, or single finding color
+          let cardBorder = BRAND.grayBorder;
+          if (unanswered) cardBorder = BRAND.red;
+          else if (item.hasPosition && finding?.positions) {
+            const cols = item.positions.map((p) => finding.positions[p]?.color).filter(Boolean);
+            if (cols.includes('red')) cardBorder = colorMap.red;
+            else if (cols.includes('yellow')) cardBorder = colorMap.yellow;
+            else if (cols.length > 0) cardBorder = colorMap.green;
+          } else if (!item.hasPosition && finding) {
+            cardBorder = colorMap[finding.color];
+          }
+
           return (
             <div
               key={item.name}
               style={{
                 background: BRAND.white,
                 borderRadius: 14,
-                border: `2px solid ${
-                  unanswered ? BRAND.red : finding ? colorMap[finding.color] : BRAND.grayBorder
-                }`,
+                border: `2px solid ${cardBorder}`,
                 overflow: 'hidden',
                 transition: 'border-color 0.2s',
               }}
             >
-              <div
-                style={{
-                  padding: '14px 18px',
-                  borderBottom: `1px solid ${BRAND.grayBorder}`,
-                }}
-              >
-                <div
-                  style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}
-                >
-                  {item.name}
-                </div>
+              {/* Item name header */}
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{item.name}</div>
               </div>
 
-              {/* Position buttons */}
-              {item.hasPosition && (
-                <div
-                  style={{
-                    padding: '10px 18px',
-                    borderBottom: `1px solid ${BRAND.grayBorder}`,
-                    display: 'flex',
-                    gap: 8,
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: BRAND.gray,
-                      marginRight: 4,
-                      alignSelf: 'center',
-                    }}
-                  >
-                    Position:
-                  </span>
-                  {item.positions.map((pos) => (
-                    <button
-                      key={pos}
-                      onClick={() => togglePosition(item.name, pos)}
-                      style={{
-                        minWidth: 52,
-                        minHeight: 44,
-                        borderRadius: 8,
-                        fontWeight: 800,
-                        fontSize: 14,
-                        border: `2px solid ${
-                          positions.includes(pos)
-                            ? BRAND.yellow
-                            : BRAND.grayBorder
-                        }`,
-                        background: positions.includes(pos)
-                          ? BRAND.yellow
-                          : BRAND.white,
-                        color: positions.includes(pos)
-                          ? BRAND.black
-                          : BRAND.gray,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {pos}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Conditions */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {item.conditions.map((cond, ci) => {
-                  const selected = finding?.conditionIdx === ci;
-                  return (
-                    <div
-                      key={ci}
-                      onClick={() => selectCondition(item.name, ci)}
-                      style={{
-                        padding: '14px 18px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderBottom:
-                          ci < item.conditions.length - 1
-                            ? `1px solid ${BRAND.grayBorder}`
-                            : 'none',
-                        background: selected
-                          ? bgColorMap[cond.color]
-                          : 'transparent',
-                        transition: 'background 0.15s',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                          flex: 1,
-                        }}
-                      >
-                        <div
+              {item.hasPosition ? (
+                <div>
+                  {/* Position cards — each with its own color */}
+                  <div style={{ padding: '12px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', gap: 10 }}>
+                    {item.positions.map((pos) => {
+                      const pf = finding?.positions?.[pos];
+                      const isActive = activePosition?.itemName === item.name && activePosition?.pos === pos;
+                      return (
+                        <button
+                          key={pos}
+                          onClick={() => setActivePosition(isActive ? null : { itemName: item.name, pos })}
                           style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: 8,
-                            flexShrink: 0,
-                            border: `2px solid ${
-                              selected ? colorMap[cond.color] : BRAND.grayBorder
-                            }`,
-                            background: selected
-                              ? colorMap[cond.color]
-                              : BRAND.white,
+                            flex: 1,
+                            borderRadius: 10,
+                            padding: '10px 6px',
+                            border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
+                            background: pf ? bgColorMap[pf.color] : BRAND.grayLight,
+                            cursor: 'pointer',
                             display: 'flex',
+                            flexDirection: 'column',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            color: BRAND.white,
-                            fontSize: 14,
-                            fontWeight: 700,
+                            gap: 4,
+                            transition: 'all 0.15s',
+                            boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
                           }}
                         >
-                          {selected && '✓'}
-                        </div>
-                        <span
-                          style={{
-                            fontSize: 15,
-                            fontWeight: selected ? 700 : 400,
-                            color: BRAND.black,
-                          }}
-                        >
-                          {cond.label}
+                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.gray }}>{pos}</span>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.gray, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
+                            {pf ? pf.action : 'Tap'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Condition selector — only shown for active position */}
+                  {activePosition?.itemName === item.name && (
+                    <div>
+                      <div style={{ padding: '8px 18px', background: BRAND.yellowPale, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: BRAND.black }}>
+                          Set condition for <strong>{activePosition.pos}</strong>:
                         </span>
                       </div>
-
-                      {/* Action highlight */}
+                      {item.conditions.map((cond, ci) => {
+                        const posSelected = finding?.positions?.[activePosition.pos]?.conditionIdx === ci;
+                        return (
+                          <div
+                            key={ci}
+                            onClick={() => selectPositionCondition(item.name, activePosition.pos, ci)}
+                            style={{
+                              padding: '14px 18px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
+                              background: posSelected ? bgColorMap[cond.color] : 'transparent',
+                              transition: 'background 0.15s',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                              <div style={{
+                                width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                                border: `2px solid ${posSelected ? colorMap[cond.color] : BRAND.grayBorder}`,
+                                background: posSelected ? colorMap[cond.color] : BRAND.white,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: BRAND.white, fontSize: 14, fontWeight: 700,
+                              }}>
+                                {posSelected && '✓'}
+                              </div>
+                              <span style={{ fontSize: 15, fontWeight: posSelected ? 700 : 400, color: BRAND.black }}>
+                                {cond.label}
+                              </span>
+                            </div>
+                            <div style={{
+                              padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
+                              background: posSelected ? colorMap[cond.color] : BRAND.grayLight,
+                              color: posSelected ? BRAND.white : BRAND.gray,
+                              minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
+                              textTransform: 'uppercase', letterSpacing: 0.5,
+                            }}>
+                              {cond.action}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Standard condition list for non-position items */
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {item.conditions.map((cond, ci) => {
+                    const selected = finding?.conditionIdx === ci;
+                    return (
                       <div
+                        key={ci}
+                        onClick={() => selectCondition(item.name, ci)}
                         style={{
-                          padding: '8px 16px',
-                          borderRadius: 8,
-                          fontWeight: 800,
-                          fontSize: 13,
-                          background: selected
-                            ? colorMap[cond.color]
-                            : BRAND.grayLight,
-                          color: selected ? BRAND.white : BRAND.gray,
-                          minWidth: 80,
-                          textAlign: 'center',
-                          transition: 'all 0.15s',
-                          textTransform: 'uppercase',
-                          letterSpacing: 0.5,
+                          padding: '14px 18px', cursor: 'pointer', display: 'flex',
+                          alignItems: 'center', justifyContent: 'space-between',
+                          borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
+                          background: selected ? bgColorMap[cond.color] : 'transparent',
+                          transition: 'background 0.15s',
                         }}
                       >
-                        {cond.action}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                            border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
+                            background: selected ? colorMap[cond.color] : BRAND.white,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: BRAND.white, fontSize: 14, fontWeight: 700,
+                          }}>
+                            {selected && '✓'}
+                          </div>
+                          <span style={{ fontSize: 15, fontWeight: selected ? 700 : 400, color: BRAND.black }}>
+                            {cond.label}
+                          </span>
+                        </div>
+                        <div style={{
+                          padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
+                          background: selected ? colorMap[cond.color] : BRAND.grayLight,
+                          color: selected ? BRAND.white : BRAND.gray,
+                          minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
+                          textTransform: 'uppercase', letterSpacing: 0.5,
+                        }}>
+                          {cond.action}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
@@ -3206,7 +3217,7 @@ function AdminDashboard({
 function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   const [decisions, setDecisions] = useState({});
 
-  // Get yellow and red findings
+  // Get yellow and red findings — handle both normal and per-position findings
   const actionable = [];
   if (inspection.findings) {
     const categories = INSPECTION_DATA[inspection.packageType] || [];
@@ -3214,23 +3225,28 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       cat.items.forEach((item) => {
         const key = `${cat.category}::${item.name}`;
         const finding = inspection.findings[key];
-        if (
-          finding &&
-          (finding.color === 'yellow' || finding.color === 'red')
-        ) {
-          actionable.push({
-            category: cat.category,
-            item: item.name,
-            ...finding,
+        if (!finding) return;
+        if (item.hasPosition && finding.positions) {
+          item.positions.forEach((pos) => {
+            const pf = finding.positions[pos];
+            if (pf && (pf.color === 'yellow' || pf.color === 'red')) {
+              actionable.push({ category: cat.category, item: `${item.name} (${pos})`, ...pf });
+            }
           });
+        } else if (finding.color === 'yellow' || finding.color === 'red') {
+          actionable.push({ category: cat.category, item: item.name, ...finding });
         }
       });
     });
   }
 
-  const greenCount = Object.values(inspection.findings || {}).filter(
-    (f) => f.color === 'green'
-  ).length;
+  // Count all individual findings including per-position
+  const allFindingValues = [];
+  Object.values(inspection.findings || {}).forEach((f) => {
+    if (f.positions) Object.values(f.positions).forEach((pf) => allFindingValues.push(pf));
+    else allFindingValues.push(f);
+  });
+  const greenCount = allFindingValues.filter((f) => f.color === 'green').length;
   const yellowCount = actionable.filter((f) => f.color === 'yellow').length;
   const redCount = actionable.filter((f) => f.color === 'red').length;
 
@@ -3278,31 +3294,25 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       cat.items.forEach((item) => {
         const key = `${cat.category}::${item.name}`;
         const f = findings[key];
-        const posKey = key + '::positions';
-        const positions = findings[posKey];
-        const posStr =
-          positions && positions.length > 0 ? ` (${positions.join(', ')})` : '';
-        rows += `<tr>
-          <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${
-            item.name
-          }${posStr}</td>
-          <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${
-            f ? f.condition : '—'
-          }</td>
-          <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;text-align:center;">
-            ${
-              f
-                ? `<span style="display:inline-block;padding:3px 12px;border-radius:4px;color:#fff;font-weight:700;font-size:11px;background:${
-                    f.color === 'green'
-                      ? '#22C55E'
-                      : f.color === 'yellow'
-                      ? '#F59E0B'
-                      : '#E31E24'
-                  }">${f.action}</span>`
-                : '—'
-            }
-          </td>
-        </tr>`;
+        const badge = (pf) => pf
+          ? `<span style="display:inline-block;padding:3px 12px;border-radius:4px;color:#fff;font-weight:700;font-size:11px;background:${pf.color === 'green' ? '#22C55E' : pf.color === 'yellow' ? '#F59E0B' : '#E31E24'}">${pf.action}</span>`
+          : '—';
+        if (item.hasPosition && f?.positions) {
+          item.positions.forEach((pos) => {
+            const pf = f.positions[pos];
+            rows += `<tr>
+              <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${item.name} <strong>(${pos})</strong></td>
+              <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${pf ? pf.condition : '—'}</td>
+              <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;text-align:center;">${badge(pf)}</td>
+            </tr>`;
+          });
+        } else {
+          rows += `<tr>
+            <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${item.name}</td>
+            <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;">${f ? f.condition : '—'}</td>
+            <td style="padding:6px 10px;border:1px solid #ccc;font-size:12px;text-align:center;">${badge(f)}</td>
+          </tr>`;
+        }
       });
       findingsHTML += `
         <div style="margin-top:12px;">
