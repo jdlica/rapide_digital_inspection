@@ -1007,8 +1007,13 @@ function MultiSelectDropdown({
     o.toLowerCase().includes(search.toLowerCase())
   );
   const toggle = (item) => {
-    if (value.includes(item)) onChange(value.filter((v) => v !== item));
-    else onChange([...value, item]);
+    if (item === 'None') {
+      onChange(value.includes('None') ? [] : ['None']);
+    } else {
+      const without = value.filter((v) => v !== 'None');
+      if (without.includes(item)) onChange(without.filter((v) => v !== item));
+      else onChange([...without, item]);
+    }
   };
 
   return (
@@ -1114,6 +1119,42 @@ function MultiSelectDropdown({
             />
           </div>
           <div style={{ maxHeight: 230, overflowY: 'auto' }}>
+            {/* None — pinned at top, exclusive option */}
+            <div
+              onClick={() => toggle('None')}
+              style={{
+                padding: '12px 14px',
+                cursor: 'pointer',
+                fontSize: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                background: value.includes('None') ? BRAND.yellowPale : 'transparent',
+                borderBottom: `1px solid ${BRAND.grayBorder}`,
+              }}
+              onMouseEnter={(e) => { if (!value.includes('None')) e.currentTarget.style.background = BRAND.yellowPale; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = value.includes('None') ? BRAND.yellowPale : 'transparent'; }}
+            >
+              <span
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 5,
+                  border: `2px solid ${value.includes('None') ? BRAND.yellow : BRAND.grayBorder}`,
+                  background: value.includes('None') ? BRAND.yellow : BRAND.white,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: BRAND.black,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  flexShrink: 0,
+                }}
+              >
+                {value.includes('None') && '✓'}
+              </span>
+              <span style={{ fontWeight: 600 }}>None</span>
+            </div>
             {filtered.map((o) => (
               <div
                 key={o}
