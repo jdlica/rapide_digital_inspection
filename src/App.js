@@ -709,10 +709,25 @@ function SearchableDropdown({
   required,
   error,
   allowAdd,
+  allowCustom,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [customMode, setCustomMode] = useState(false);
+  const [customText, setCustomText] = useState('');
   const ref = useRef(null);
+  const customInputRef = useRef(null);
+
+  // Sync into custom mode if value was set externally and isn't in options
+  useEffect(() => {
+    if (allowCustom && value && !options.includes(value) && value !== 'Others') {
+      setCustomMode(true);
+      setCustomText(value);
+    } else if (!value) {
+      setCustomMode(false);
+      setCustomText('');
+    }
+  }, [value, allowCustom, options]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -726,22 +741,93 @@ function SearchableDropdown({
     o.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleSelect = (o) => {
+    if (o === 'Others' && allowCustom) {
+      setCustomMode(true);
+      setCustomText('');
+      setOpen(false);
+      setSearch('');
+      setTimeout(() => customInputRef.current?.focus(), 30);
+    } else {
+      onChange(o);
+      setOpen(false);
+      setSearch('');
+    }
+  };
+
+  const handleCustomConfirm = () => {
+    if (customText.trim()) onChange(customText.trim());
+    else handleCustomBack();
+  };
+
+  const handleCustomBack = () => {
+    setCustomMode(false);
+    setCustomText('');
+    onChange('');
+  };
+
+  const labelEl = label && (
+    <label style={{ fontWeight: 600, fontSize: 13, color: BRAND.black, marginBottom: 6, display: 'block' }}>
+      {label}{required && <span style={{ color: BRAND.red }}> *</span>}
+    </label>
+  );
+
+  // Custom text input mode — renders in-place of the dropdown
+  if (customMode) {
+    return (
+      <div style={{ width: '100%' }}>
+        {labelEl}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <input
+            ref={customInputRef}
+            autoFocus
+            value={customText}
+            onChange={(e) => setCustomText(e.target.value)}
+            onBlur={handleCustomConfirm}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.preventDefault(); handleCustomConfirm(); }
+              if (e.key === 'Escape') handleCustomBack();
+            }}
+            placeholder="Type here..."
+            style={{
+              width: '100%',
+              minHeight: 48,
+              border: `2px solid ${error ? BRAND.red : BRAND.yellow}`,
+              borderRadius: 10,
+              padding: '10px 44px 10px 14px',
+              fontSize: 15,
+              outline: 'none',
+              boxSizing: 'border-box',
+              color: BRAND.black,
+            }}
+          />
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); handleCustomBack(); }}
+            title="Clear and go back"
+            style={{
+              position: 'absolute',
+              right: 12,
+              background: 'none',
+              border: 'none',
+              fontSize: 16,
+              color: BRAND.gray,
+              cursor: 'pointer',
+              padding: 4,
+              lineHeight: 1,
+            }}
+          >✕</button>
+        </div>
+        <div style={{ fontSize: 11, color: BRAND.gray, marginTop: 4, paddingLeft: 2 }}>
+          Press Enter to confirm or Esc to cancel
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%' }}>
-      {label && (
-        <label
-          style={{
-            fontWeight: 600,
-            fontSize: 13,
-            color: BRAND.black,
-            marginBottom: 6,
-            display: 'block',
-          }}
-        >
-          {label}
-          {required && <span style={{ color: BRAND.red }}> *</span>}
-        </label>
-      )}
+      {labelEl}
       <div
         onClick={() => !disabled && setOpen(!open)}
         style={{
@@ -781,12 +867,7 @@ function SearchableDropdown({
             overflow: 'hidden',
           }}
         >
-          <div
-            style={{
-              padding: 8,
-              borderBottom: `1px solid ${BRAND.grayBorder}`,
-            }}
-          >
+          <div style={{ padding: 8, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
             <input
               autoFocus
               placeholder="Search..."
@@ -805,26 +886,12 @@ function SearchableDropdown({
           </div>
           <div style={{ maxHeight: 200, overflowY: 'auto' }}>
             {filtered.length === 0 && !allowAdd && (
-              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>
-                No results
-              </div>
+              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>No results</div>
             )}
             {filtered.length === 0 && allowAdd && search.trim() && (
               <div
-                onClick={() => {
-                  onChange(search.trim());
-                  setOpen(false);
-                  setSearch('');
-                }}
-                style={{
-                  padding: '12px 14px',
-                  cursor: 'pointer',
-                  fontSize: 15,
-                  color: BRAND.black,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
+                onClick={() => { onChange(search.trim()); setOpen(false); setSearch(''); }}
+                style={{ padding: '12px 14px', cursor: 'pointer', fontSize: 15, color: BRAND.black, display: 'flex', alignItems: 'center', gap: 8 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
@@ -833,33 +900,28 @@ function SearchableDropdown({
               </div>
             )}
             {filtered.length === 0 && allowAdd && !search.trim() && (
-              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>
-                Type to search or add a barangay
-              </div>
+              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>Type to search or add a barangay</div>
             )}
             {filtered.map((o) => (
               <div
                 key={o}
-                onClick={() => {
-                  onChange(o);
-                  setOpen(false);
-                  setSearch('');
-                }}
+                onClick={() => handleSelect(o)}
                 style={{
                   padding: '12px 14px',
                   cursor: 'pointer',
                   fontSize: 15,
                   background: o === value ? BRAND.yellowPale : 'transparent',
-                  fontWeight: o === value ? 700 : 400,
+                  fontWeight: o === 'Others' ? 700 : o === value ? 700 : 400,
+                  color: o === 'Others' ? BRAND.gray : BRAND.black,
+                  borderTop: o === 'Others' ? `1px solid ${BRAND.grayBorder}` : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
                 }}
-                onMouseEnter={(e) =>
-                  (e.target.style.background = BRAND.yellowPale)
-                }
-                onMouseLeave={(e) =>
-                  (e.target.style.background =
-                    o === value ? BRAND.yellowPale : 'transparent')
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = o === value ? BRAND.yellowPale : 'transparent')}
               >
+                {o === 'Others' && <span style={{ fontSize: 13 }}>✏️</span>}
                 {o}
               </div>
             ))}
@@ -1848,23 +1910,13 @@ function PackageSelectionScreen({ onSelect }) {
 
 function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipalities, barangays }) {
   const [errors, setErrors] = useState({});
-  const availableModels = data.make
-    ? data.make === 'Others'
-      ? ['Others']
-      : [...(models[data.make] || []), 'Others']
-    : [];
-  const availableBarangays = data.city
-    ? data.city === 'Others'
-      ? ['Others']
-      : [...(barangays[data.city] || []), 'Others']
-    : [];
+  const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
+  const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
 
   const validate = () => {
     const e = {};
     if (!data.make) e.make = true;
-    if (data.make === 'Others' && !data.makeOther?.trim()) e.makeOther = true;
     if (!data.model) e.model = true;
-    if (data.model === 'Others' && !data.modelOther?.trim()) e.modelOther = true;
     if (!data.year) e.year = true;
     if (!data.plateNo) e.plateNo = true;
     if (!data.transmission) e.transmission = true;
@@ -1876,9 +1928,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
     if (!data.mobileNo) e.mobileNo = true;
     if (!data.email) e.email = true;
     if (!data.city) e.city = true;
-    if (data.city === 'Others' && !data.cityOther?.trim()) e.cityOther = true;
     if (!data.barangay) e.barangay = true;
-    if (data.barangay === 'Others' && !data.barangayOther?.trim()) e.barangayOther = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1944,44 +1994,23 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             options={brands}
             value={data.make}
             onChange={(v) => {
-              setData({ ...data, make: v, model: '', makeOther: '', modelOther: '' });
-              setErrors({ ...errors, make: false, model: false, makeOther: false, modelOther: false });
+              setData({ ...data, make: v, model: '' });
+              setErrors({ ...errors, make: false, model: false });
             }}
             placeholder="Select brand..."
+            allowCustom
           />
-          {data.make === 'Others' && (
-            <TextInput
-              label="Specify Make"
-              required
-              error={!!errors.makeOther}
-              value={data.makeOther || ''}
-              onChange={(v) => update('makeOther', v)}
-              placeholder="Others: e.g. Rivian"
-            />
-          )}
           <SearchableDropdown
             label="Model"
             required
             error={!!errors.model}
             options={availableModels}
             value={data.model}
-            onChange={(v) => {
-              setData({ ...data, model: v, modelOther: '' });
-              setErrors({ ...errors, model: false, modelOther: false });
-            }}
+            onChange={(v) => update('model', v)}
             placeholder="Select model..."
             disabled={!data.make}
+            allowCustom
           />
-          {data.model === 'Others' && (
-            <TextInput
-              label="Specify Model"
-              required
-              error={!!errors.modelOther}
-              value={data.modelOther || ''}
-              onChange={(v) => update('modelOther', v)}
-              placeholder="Others: e.g. Cybertruck"
-            />
-          )}
           <SearchableDropdown
             label="Year"
             required
@@ -2117,45 +2146,24 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             options={municipalities}
             value={data.city}
             onChange={(v) => {
-              setData({ ...data, city: v, barangay: '', cityOther: '', barangayOther: '' });
-              setErrors({ ...errors, city: false, barangay: false, cityOther: false, barangayOther: false });
+              setData({ ...data, city: v, barangay: '' });
+              setErrors({ ...errors, city: false, barangay: false });
             }}
             placeholder="Select city..."
+            allowCustom
           />
-          {data.city === 'Others' && (
-            <TextInput
-              label="Specify City / Municipality"
-              required
-              error={!!errors.cityOther}
-              value={data.cityOther || ''}
-              onChange={(v) => update('cityOther', v)}
-              placeholder="Others: e.g. Batangas City"
-            />
-          )}
           <SearchableDropdown
             label="Barangay"
             required
             error={!!errors.barangay}
             options={availableBarangays}
             value={data.barangay}
-            onChange={(v) => {
-              setData({ ...data, barangay: v, barangayOther: '' });
-              setErrors({ ...errors, barangay: false, barangayOther: false });
-            }}
+            onChange={(v) => update('barangay', v)}
             placeholder={data.city ? 'Select or type barangay...' : 'Select city first'}
             disabled={!data.city}
             allowAdd={availableBarangays.length === 0}
+            allowCustom
           />
-          {data.barangay === 'Others' && (
-            <TextInput
-              label="Specify Barangay"
-              required
-              error={!!errors.barangayOther}
-              value={data.barangayOther || ''}
-              onChange={(v) => update('barangayOther', v)}
-              placeholder="Others: e.g. Barangay San Jose"
-            />
-          )}
         </div>
       </div>
 
