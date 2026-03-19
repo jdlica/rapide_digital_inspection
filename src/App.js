@@ -713,26 +713,34 @@ function SearchableDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [customMode, setCustomMode] = useState(false);
-  const [customText, setCustomText] = useState('');
+  const [inlineCustom, setInlineCustom] = useState(false);
+  const [inlineText, setInlineText] = useState('');
   const ref = useRef(null);
-  const customInputRef = useRef(null);
+  const inlineInputRef = useRef(null);
 
-  // Sync into custom mode when value is cleared externally
   useEffect(() => {
     if (!value) {
-      setCustomMode(false);
-      setCustomText('');
+      setInlineCustom(false);
+      setInlineText('');
     }
   }, [value]);
 
   useEffect(() => {
     function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+        setInlineCustom(false);
+        setInlineText('');
+        setSearch('');
+      }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    if (inlineCustom) setTimeout(() => inlineInputRef.current?.focus(), 30);
+  }, [inlineCustom]);
 
   const filtered = options.filter((o) =>
     o.toLowerCase().includes(search.toLowerCase())
@@ -740,27 +748,30 @@ function SearchableDropdown({
 
   const handleSelect = (o) => {
     if (o === 'Others' && allowCustom) {
-      setCustomMode(true);
-      setCustomText('');
-      setOpen(false);
+      setInlineCustom(true);
+      setInlineText('');
       setSearch('');
-      setTimeout(() => customInputRef.current?.focus(), 30);
     } else {
       onChange(o);
       setOpen(false);
       setSearch('');
+      setInlineCustom(false);
     }
   };
 
-  const handleCustomConfirm = () => {
-    if (customText.trim()) onChange(customText.trim());
-    else handleCustomBack();
+  const handleInlineConfirm = () => {
+    if (inlineText.trim()) {
+      onChange(inlineText.trim());
+      setOpen(false);
+      setInlineCustom(false);
+      setInlineText('');
+      setSearch('');
+    }
   };
 
-  const handleCustomBack = () => {
-    setCustomMode(false);
-    setCustomText('');
-    onChange('');
+  const handleInlineCancel = () => {
+    setInlineCustom(false);
+    setInlineText('');
   };
 
   const labelEl = label && (
@@ -768,59 +779,6 @@ function SearchableDropdown({
       {label}{required && <span style={{ color: BRAND.red }}> *</span>}
     </label>
   );
-
-  // Custom text input mode — renders in-place of the dropdown
-  if (customMode) {
-    return (
-      <div style={{ width: '100%' }}>
-        {labelEl}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <input
-            ref={customInputRef}
-            autoFocus
-            value={customText}
-            onChange={(e) => setCustomText(e.target.value)}
-            onBlur={handleCustomConfirm}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') { e.preventDefault(); handleCustomConfirm(); }
-              if (e.key === 'Escape') handleCustomBack();
-            }}
-            placeholder="Type here..."
-            style={{
-              width: '100%',
-              minHeight: 48,
-              border: `2px solid ${error ? BRAND.red : BRAND.yellow}`,
-              borderRadius: 10,
-              padding: '10px 44px 10px 14px',
-              fontSize: 15,
-              outline: 'none',
-              boxSizing: 'border-box',
-              color: BRAND.black,
-            }}
-          />
-          <button
-            type="button"
-            onMouseDown={(e) => { e.preventDefault(); handleCustomBack(); }}
-            title="Clear and go back"
-            style={{
-              position: 'absolute',
-              right: 12,
-              background: 'none',
-              border: 'none',
-              fontSize: 16,
-              color: BRAND.gray,
-              cursor: 'pointer',
-              padding: 4,
-              lineHeight: 1,
-            }}
-          >✕</button>
-        </div>
-        <div style={{ fontSize: 11, color: BRAND.gray, marginTop: 4, paddingLeft: 2 }}>
-          Press Enter to confirm or Esc to cancel
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%' }}>
@@ -860,69 +818,104 @@ function SearchableDropdown({
             border: `2px solid ${BRAND.yellow}`,
             borderRadius: 10,
             boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-            maxHeight: 260,
+            maxHeight: 320,
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: 8, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
-            <input
-              autoFocus
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: `1px solid ${BRAND.grayBorder}`,
-                borderRadius: 8,
-                fontSize: 15,
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-            {filtered.length === 0 && !allowAdd && (
-              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>No results</div>
-            )}
-            {filtered.length === 0 && allowAdd && search.trim() && (
-              <div
-                onClick={() => { onChange(search.trim()); setOpen(false); setSearch(''); }}
-                style={{ padding: '12px 14px', cursor: 'pointer', fontSize: 15, color: BRAND.black, display: 'flex', alignItems: 'center', gap: 8 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <span style={{ fontWeight: 700, color: BRAND.yellow, fontSize: 18 }}>+</span>
-                Add "{search.trim()}"
-              </div>
-            )}
-            {filtered.length === 0 && allowAdd && !search.trim() && (
-              <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>Type to search or add a barangay</div>
-            )}
-            {filtered.map((o) => (
-              <div
-                key={o}
-                onClick={() => handleSelect(o)}
+          {/* Search bar — hidden when inline custom input is active */}
+          {!inlineCustom && (
+            <div style={{ padding: 8, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+              <input
+                autoFocus
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 style={{
-                  padding: '12px 14px',
-                  cursor: 'pointer',
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: `1px solid ${BRAND.grayBorder}`,
+                  borderRadius: 8,
                   fontSize: 15,
-                  background: o === value ? BRAND.yellowPale : 'transparent',
-                  fontWeight: o === 'Others' ? 700 : o === value ? 700 : 400,
-                  color: o === 'Others' ? BRAND.gray : BRAND.black,
-                  borderTop: o === 'Others' ? `1px solid ${BRAND.grayBorder}` : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
+                  outline: 'none',
+                  boxSizing: 'border-box',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = o === value ? BRAND.yellowPale : 'transparent')}
-              >
-                {o === 'Others' && <span style={{ fontSize: 13 }}>✏️</span>}
-                {o}
+              />
+            </div>
+          )}
+
+          {/* Inline custom entry — shown when Others is selected */}
+          {inlineCustom && (
+            <div style={{ padding: '10px 12px', borderBottom: `1px solid ${BRAND.grayBorder}`, background: BRAND.yellowPale }}>
+              <div style={{ fontSize: 12, color: BRAND.gray, fontWeight: 600, marginBottom: 6 }}>
+                ✏️ Type your custom entry:
               </div>
-            ))}
-          </div>
+              <input
+                ref={inlineInputRef}
+                value={inlineText}
+                onChange={(e) => setInlineText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') { e.preventDefault(); handleInlineConfirm(); }
+                  if (e.key === 'Escape') handleInlineCancel();
+                }}
+                placeholder="Enter name and press Enter..."
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: `2px solid ${BRAND.yellow}`,
+                  borderRadius: 8,
+                  fontSize: 15,
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          )}
+
+          {/* Options list — hidden while typing custom entry */}
+          {!inlineCustom && (
+            <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+              {filtered.length === 0 && !allowAdd && (
+                <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>No results</div>
+              )}
+              {filtered.length === 0 && allowAdd && search.trim() && (
+                <div
+                  onClick={() => { onChange(search.trim()); setOpen(false); setSearch(''); }}
+                  style={{ padding: '12px 14px', cursor: 'pointer', fontSize: 15, color: BRAND.black, display: 'flex', alignItems: 'center', gap: 8 }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span style={{ fontWeight: 700, color: BRAND.yellow, fontSize: 18 }}>+</span>
+                  Add "{search.trim()}"
+                </div>
+              )}
+              {filtered.length === 0 && allowAdd && !search.trim() && (
+                <div style={{ padding: 14, color: BRAND.gray, fontSize: 14 }}>Type to search or add a barangay</div>
+              )}
+              {filtered.map((o) => (
+                <div
+                  key={o}
+                  onClick={() => handleSelect(o)}
+                  style={{
+                    padding: '12px 14px',
+                    cursor: 'pointer',
+                    fontSize: 15,
+                    background: o === value ? BRAND.yellowPale : 'transparent',
+                    fontWeight: o === 'Others' ? 700 : o === value ? 700 : 400,
+                    color: o === 'Others' ? BRAND.gray : BRAND.black,
+                    borderTop: o === 'Others' ? `1px solid ${BRAND.grayBorder}` : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = BRAND.yellowPale)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = o === value ? BRAND.yellowPale : 'transparent')}
+                >
+                  {o === 'Others' && <span style={{ fontSize: 13 }}>✏️</span>}
+                  {o}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
