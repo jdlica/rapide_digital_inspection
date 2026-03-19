@@ -3453,6 +3453,87 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     printWindow.print();
   };
 
+  const printInspectionForm = () => {
+    const printWindow = window.open('', '_blank');
+    const categories = INSPECTION_DATA[inspection.packageType] || [];
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+
+    let checklistHTML = '';
+    categories.forEach((cat) => {
+      let rows = '';
+      cat.items.forEach((item) => {
+        if (item.hasPosition && item.positions) {
+          item.positions.forEach((pos) => {
+            rows += `<tr>
+              <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">${item.name} <strong>(${pos})</strong></td>
+              <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">&nbsp;</td>
+              <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">&nbsp;</td>
+            </tr>`;
+          });
+        } else {
+          rows += `<tr>
+            <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">${item.name}</td>
+            <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">&nbsp;</td>
+            <td style="padding:7px 10px;border:1px solid #ccc;font-size:12px;">&nbsp;</td>
+          </tr>`;
+        }
+      });
+      checklistHTML += `
+        <div style="margin-top:12px;">
+          <div style="background:#1A1A1A;color:#FFD100;padding:8px 14px;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;border-radius:4px 4px 0 0;">${cat.category}</div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f5f5f5;">
+              <th style="padding:6px 10px;border:1px solid #ccc;text-align:left;font-size:11px;font-weight:700;">ITEM</th>
+              <th style="padding:6px 10px;border:1px solid #ccc;text-align:left;font-size:11px;font-weight:700;">CONDITION</th>
+              <th style="padding:6px 10px;border:1px solid #ccc;text-align:left;font-size:11px;font-weight:700;">ACTION</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    });
+
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Rapide Inspection Form - ${inspection.rif}</title>
+      <style>@media print { body { margin: 0; } } body { font-family: Arial, sans-serif; margin: 20px; color: #1A1A1A; }</style>
+    </head><body>
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="background:#FFD100;padding:16px;border-radius:8px;display:inline-block;">
+          <div style="font-family:'Arial Black',sans-serif;font-size:32px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapide</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:3px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-bottom:16px;"><strong style="font-size:16px;">VEHICLE INSPECTION FORM</strong></div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+        <tr>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>RIF #:</strong> ${inspection.rif}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Date:</strong> ${inspection.date}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Package:</strong> ${pkgLabel[inspection.packageType]}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Technician:</strong> ${inspection.technicianName}</td>
+        </tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:1px solid #ccc;">
+        <tr style="background:#f5f5f5;"><td colspan="4" style="padding:8px 10px;font-weight:800;font-size:13px;">VEHICLE INFORMATION</td></tr>
+        <tr>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Make:</strong> ${inspection.customerData?.make || ''}</td>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Model:</strong> ${inspection.customerData?.model || ''}</td>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Year:</strong> ${inspection.customerData?.year || ''}</td>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Plate:</strong> ${inspection.customerData?.plateNo || ''}</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Trans:</strong> ${inspection.customerData?.transmission || ''}</td>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;"><strong>Fuel:</strong> ${inspection.customerData?.fuelType || ''}</td>
+          <td style="padding:5px 10px;font-size:12px;border:1px solid #eee;" colspan="2"><strong>KM:</strong> ${inspection.customerData?.kmReading || ''}</td>
+        </tr>
+      </table>
+      ${checklistHTML}
+      <div style="margin-top:40px;display:flex;justify-content:space-between;">
+        <div style="text-align:center;width:40%;"><div style="border-top:1px solid #1A1A1A;padding-top:4px;font-size:11px;">Customer Signature</div></div>
+        <div style="text-align:center;width:40%;"><div style="border-top:1px solid #1A1A1A;padding-top:4px;font-size:11px;">Authorized by</div></div>
+      </div>
+    </body></html>`);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <div className="form-screen">
       <div
@@ -3482,13 +3563,22 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             {inspection.rif}
           </p>
         </div>
-        <PrimaryButton
-          onClick={printInspection}
-          variant="dark"
-          style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
-        >
-          🖨️ Print / Download
-        </PrimaryButton>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <PrimaryButton
+            onClick={printInspectionForm}
+            variant="outline"
+            style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
+          >
+            Print Inspection
+          </PrimaryButton>
+          <PrimaryButton
+            onClick={printInspection}
+            variant="dark"
+            style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
+          >
+            Print Summary
+          </PrimaryButton>
+        </div>
       </div>
 
       {/* Header Info */}
