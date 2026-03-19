@@ -1854,7 +1854,9 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
   const validate = () => {
     const e = {};
     if (!data.make) e.make = true;
+    if (data.make === 'Others' && !data.makeOther?.trim()) e.makeOther = true;
     if (!data.model) e.model = true;
+    if (data.model === 'Others' && !data.modelOther?.trim()) e.modelOther = true;
     if (!data.year) e.year = true;
     if (!data.plateNo) e.plateNo = true;
     if (!data.transmission) e.transmission = true;
@@ -1866,7 +1868,9 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
     if (!data.mobileNo) e.mobileNo = true;
     if (!data.email) e.email = true;
     if (!data.city) e.city = true;
+    if (data.city === 'Others' && !data.cityOther?.trim()) e.cityOther = true;
     if (!data.barangay) e.barangay = true;
+    if (data.barangay === 'Others' && !data.barangayOther?.trim()) e.barangayOther = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1932,21 +1936,44 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             options={brands}
             value={data.make}
             onChange={(v) => {
-              setData({ ...data, make: v, model: '' });
-              setErrors({ ...errors, make: false, model: false });
+              setData({ ...data, make: v, model: '', makeOther: '', modelOther: '' });
+              setErrors({ ...errors, make: false, model: false, makeOther: false, modelOther: false });
             }}
             placeholder="Select brand..."
           />
+          {data.make === 'Others' && (
+            <TextInput
+              label="Specify Make"
+              required
+              error={!!errors.makeOther}
+              value={data.makeOther || ''}
+              onChange={(v) => update('makeOther', v)}
+              placeholder="Others: e.g. Rivian"
+            />
+          )}
           <SearchableDropdown
             label="Model"
             required
             error={!!errors.model}
             options={availableModels}
             value={data.model}
-            onChange={(v) => update('model', v)}
+            onChange={(v) => {
+              setData({ ...data, model: v, modelOther: '' });
+              setErrors({ ...errors, model: false, modelOther: false });
+            }}
             placeholder="Select model..."
             disabled={!data.make}
           />
+          {data.model === 'Others' && (
+            <TextInput
+              label="Specify Model"
+              required
+              error={!!errors.modelOther}
+              value={data.modelOther || ''}
+              onChange={(v) => update('modelOther', v)}
+              placeholder="Others: e.g. Cybertruck"
+            />
+          )}
           <SearchableDropdown
             label="Year"
             required
@@ -2082,22 +2109,45 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             options={municipalities}
             value={data.city}
             onChange={(v) => {
-              setData({ ...data, city: v, barangay: '' });
-              setErrors({ ...errors, city: false, barangay: false });
+              setData({ ...data, city: v, barangay: '', cityOther: '', barangayOther: '' });
+              setErrors({ ...errors, city: false, barangay: false, cityOther: false, barangayOther: false });
             }}
             placeholder="Select city..."
           />
+          {data.city === 'Others' && (
+            <TextInput
+              label="Specify City / Municipality"
+              required
+              error={!!errors.cityOther}
+              value={data.cityOther || ''}
+              onChange={(v) => update('cityOther', v)}
+              placeholder="Others: e.g. Batangas City"
+            />
+          )}
           <SearchableDropdown
             label="Barangay"
             required
             error={!!errors.barangay}
             options={availableBarangays}
             value={data.barangay}
-            onChange={(v) => update('barangay', v)}
+            onChange={(v) => {
+              setData({ ...data, barangay: v, barangayOther: '' });
+              setErrors({ ...errors, barangay: false, barangayOther: false });
+            }}
             placeholder={data.city ? 'Select or type barangay...' : 'Select city first'}
             disabled={!data.city}
             allowAdd={availableBarangays.length === 0}
           />
+          {data.barangay === 'Others' && (
+            <TextInput
+              label="Specify Barangay"
+              required
+              error={!!errors.barangayOther}
+              value={data.barangayOther || ''}
+              onChange={(v) => update('barangayOther', v)}
+              placeholder="Others: e.g. Barangay San Jose"
+            />
+          )}
         </div>
       </div>
 
