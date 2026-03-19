@@ -5,6 +5,7 @@ import carMakeData from './data/car_make.json';
 import carModelData from './data/car_model.json';
 import municipalitiesData from './data/municipalities_calabarzon.json';
 import barangaysData from './data/barangays_calabarzon.json';
+import ncrData from './data/ncr_cities_barangays.json';
 import partsData from './data/parts.json';
 
 // ============================================================
@@ -90,18 +91,15 @@ for (const name of Object.keys(_barangaysByMunicipality)) {
   _barangaysByMunicipality[name] = [..._barangaysByMunicipality[name]].sort();
 }
 
-// Metro Manila (NCR) cities and municipalities
-const NCR_MUNICIPALITIES = [
-  'Caloocan', 'Las Piñas', 'Makati', 'Malabon', 'Mandaluyong',
-  'Manila', 'Marikina', 'Muntinlupa', 'Navotas', 'Parañaque',
-  'Pasay', 'Pasig', 'Pateros', 'Quezon City', 'San Juan',
-  'Taguig', 'Valenzuela',
-];
+// Merge NCR cities and barangays (no duplication — skip if name already exists)
+for (const city of ncrData.cities) {
+  if (!_barangaysByMunicipality[city.name]) {
+    _barangaysByMunicipality[city.name] = [...city.barangays].sort();
+  }
+}
 
-// All locations sorted — CALABARZON + Metro Manila, with Others at the end
-const MUNICIPALITY_LIST = [
-  ...new Set([...Object.keys(_barangaysByMunicipality), ...NCR_MUNICIPALITIES])
-].sort().concat('Others');
+// All locations sorted — CALABARZON + NCR, with Others at the end
+const MUNICIPALITY_LIST = [...Object.keys(_barangaysByMunicipality).sort(), 'Others'];
 
 
 const DECLINE_REASONS = [
