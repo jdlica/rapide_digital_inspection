@@ -1618,13 +1618,15 @@ const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
 // ============================================================
 // MANAGE SCREEN
 // ============================================================
-function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, onAddTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
+function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, onAddTechnician, onEditTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
   const [showAddTech, setShowAddTech] = useState(false);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
   const [showAddMunicipality, setShowAddMunicipality] = useState(false);
   const [showAddBarangay, setShowAddBarangay] = useState(false);
   const [showAddFleet, setShowAddFleet] = useState(false);
+  const [editingTech, setEditingTech] = useState(null); // { id, name }
+  const [editTechName, setEditTechName] = useState('');
   const [newTechName, setNewTechName] = useState('');
   const [newBrandName, setNewBrandName] = useState('');
   const [newModelName, setNewModelName] = useState('');
@@ -1682,10 +1684,18 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
         </div>
         <div>
           {technicians.map((t) => (
-            <span key={t.id} style={chipStyle}>{t.name}</span>
+            <span key={t.id} style={{ ...chipStyle, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {t.name}
+              <button
+                type="button"
+                onClick={() => { setEditingTech(t); setEditTechName(t.name); }}
+                title="Edit name"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 13, color: BRAND.gray, lineHeight: 1 }}
+              >✏️</button>
+            </span>
           ))}
           {technicians.length === 0 && (
-            <p style={{ color: BRAND.gray, fontSize: 14, margin: 0 }}>No technicians yet.</p>
+            <p style={{ color: BRAND.gray, fontSize: 14, margin: 0 }}>No technicians yet. Click + Add to get started.</p>
           )}
         </div>
       </div>
@@ -1737,6 +1747,26 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
             <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
               <PrimaryButton onClick={() => { setShowAddTech(false); setNewTechName(''); }} variant="secondary">Cancel</PrimaryButton>
               <PrimaryButton onClick={() => { if (newTechName.trim()) { onAddTechnician(newTechName.trim()); setNewTechName(''); setShowAddTech(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Technician Modal */}
+      {editingTech && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Edit Technician</h3>
+            <TextInput label="Full Name" required value={editTechName} onChange={setEditTechName} placeholder="Technician name" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setEditingTech(null); setEditTechName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => {
+                if (editTechName.trim()) {
+                  onEditTechnician(editingTech.id, editTechName.trim());
+                  setEditingTech(null);
+                  setEditTechName('');
+                }
+              }}>Save</PrimaryButton>
             </div>
           </div>
         </div>
@@ -3802,12 +3832,7 @@ function AppInner() {
   const [models, setModels] = useState({ ...CAR_MODELS });
   const [municipalities, setMunicipalities] = useState([...MUNICIPALITY_LIST]);
   const [barangays, setBarangays] = useState({ ..._barangaysByMunicipality });
-  const [technicians, setTechnicians] = useState([
-    { id: 1, name: 'Pedro Garcia', active: true },
-    { id: 2, name: 'Marco Reyes', active: true },
-    { id: 3, name: 'Carlos Mendoza', active: true },
-    { id: 4, name: 'Miguel Torres', active: true },
-  ]);
+  const [technicians, setTechnicians] = useState([]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
 
   const handleLogin = (u) => {
@@ -3854,6 +3879,9 @@ function AppInner() {
 
   const handleAddTechnician = (name) => {
     setTechnicians((prev) => [...prev, { id: Date.now(), name, active: true }]);
+  };
+  const handleEditTechnician = (id, newName) => {
+    setTechnicians((prev) => prev.map((t) => t.id === id ? { ...t, name: newName } : t));
   };
   const handleAddBrand = (name) => {
     if (!brands.includes(name)) setBrands((prev) => [...prev, name].sort());
@@ -3975,6 +4003,7 @@ function AppInner() {
           barangays={barangays}
           fleets={fleets}
           onAddTechnician={handleAddTechnician}
+          onEditTechnician={handleEditTechnician}
           onAddBrand={handleAddBrand}
           onAddModel={handleAddModel}
           onAddMunicipality={handleAddMunicipality}
