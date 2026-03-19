@@ -7,6 +7,7 @@ import municipalitiesData from './data/municipalities_calabarzon.json';
 import barangaysData from './data/barangays_calabarzon.json';
 import ncrData from './data/ncr_cities_barangays.json';
 import partsData from './data/parts.json';
+import fleetData from './data/Fleet.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -1617,12 +1618,13 @@ const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
 // ============================================================
 // MANAGE SCREEN
 // ============================================================
-function ManageScreen({ technicians, brands, models, municipalities, barangays, onAddTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay }) {
+function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, onAddTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
   const [showAddTech, setShowAddTech] = useState(false);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
   const [showAddMunicipality, setShowAddMunicipality] = useState(false);
   const [showAddBarangay, setShowAddBarangay] = useState(false);
+  const [showAddFleet, setShowAddFleet] = useState(false);
   const [newTechName, setNewTechName] = useState('');
   const [newBrandName, setNewBrandName] = useState('');
   const [newModelName, setNewModelName] = useState('');
@@ -1630,6 +1632,7 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
   const [newMunicipalityName, setNewMunicipalityName] = useState('');
   const [newBarangayName, setNewBarangayName] = useState('');
   const [newBarangayMunicipality, setNewBarangayMunicipality] = useState('');
+  const [newFleetName, setNewFleetName] = useState('');
 
   const sectionStyle = {
     background: BRAND.white,
@@ -1662,7 +1665,7 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 24, fontWeight: 900, color: BRAND.black, margin: 0 }}>Manage</h2>
         <p style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}>
-          Technicians, Brands, Models & Locations
+          Technicians, Brands, Models, Locations & Fleet Customers
         </p>
       </div>
 
@@ -1843,6 +1846,41 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
           </div>
         </div>
       )}
+
+      {/* Fleet Customers */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Fleet Customers</h3>
+          <PrimaryButton
+            onClick={() => setShowAddFleet(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+          {fleets.map((f) => (
+            <span key={f} style={chipStyle}>{f}</span>
+          ))}
+          {fleets.length === 0 && (
+            <p style={{ color: BRAND.gray, fontSize: 14, margin: 0 }}>No fleet customers yet.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Add Fleet Modal */}
+      {showAddFleet && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Fleet Customer</h3>
+            <TextInput label="Company Name" required value={newFleetName} onChange={setNewFleetName} placeholder="e.g. Toyota Mobility Solutions" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddFleet(false); setNewFleetName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newFleetName.trim()) { onAddFleet(newFleetName.trim()); setNewFleetName(''); setShowAddFleet(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1948,7 +1986,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipalities, barangays }) {
+function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipalities, barangays, fleets }) {
   const [errors, setErrors] = useState({});
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
   const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
@@ -1967,6 +2005,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
     if (!data.lastName) e.lastName = true;
     if (!data.mobileNo) e.mobileNo = true;
     if (!data.email) e.email = true;
+    if (data.fleetType === 'Fleet' && !data.company) e.company = true;
     if (!data.city) e.city = true;
     if (!data.barangay) e.barangay = true;
     setErrors(e);
@@ -2155,12 +2194,34 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             onChange={(v) => update('lastName', v)}
             placeholder="Last name"
           />
-          <TextInput
-            label="Company"
-            value={data.company || ''}
-            onChange={(v) => update('company', v)}
-            placeholder="Company (optional)"
-          />
+          <div>
+            <BigCheckboxGroup
+              label="Fleet / Non-Fleet"
+              options={['Fleet', 'Non-Fleet']}
+              value={data.fleetType}
+              onChange={(v) => {
+                setData({ ...data, fleetType: v, company: v === 'Non-Fleet' ? '' : data.company });
+                setErrors({ ...errors, fleetType: false });
+              }}
+            />
+            {data.fleetType === 'Fleet' && (
+              <div style={{ marginTop: 8 }}>
+                <SearchableDropdown
+                  label="Fleet Account"
+                  required
+                  error={!!errors.company}
+                  options={fleets}
+                  value={data.company}
+                  onChange={(v) => {
+                    setData({ ...data, company: v });
+                    setErrors({ ...errors, company: false });
+                  }}
+                  placeholder="Select fleet..."
+                  allowCustom
+                />
+              </div>
+            )}
+          </div>
           <TextInput
             label="Mobile Number"
             required
@@ -3747,6 +3808,7 @@ function AppInner() {
     { id: 3, name: 'Carlos Mendoza', active: true },
     { id: 4, name: 'Miguel Torres', active: true },
   ]);
+  const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
 
   const handleLogin = (u) => {
     setUser(u);
@@ -3811,6 +3873,9 @@ function AppInner() {
       setBarangays((prev) => ({ ...prev, [name]: [] }));
     }
   };
+  const handleAddFleet = (name) => {
+    if (name.trim()) setFleets((prev) => [...new Set([...prev, name.trim()])].sort());
+  };
   const handleAddBarangay = (municipality, barangayName) => {
     setBarangays((prev) => ({
       ...prev,
@@ -3853,6 +3918,7 @@ function AppInner() {
           models={models}
           municipalities={municipalities}
           barangays={barangays}
+          fleets={fleets}
         />
       )}
 
@@ -3907,11 +3973,13 @@ function AppInner() {
           models={models}
           municipalities={municipalities}
           barangays={barangays}
+          fleets={fleets}
           onAddTechnician={handleAddTechnician}
           onAddBrand={handleAddBrand}
           onAddModel={handleAddModel}
           onAddMunicipality={handleAddMunicipality}
           onAddBarangay={handleAddBarangay}
+          onAddFleet={handleAddFleet}
         />
       )}
 
