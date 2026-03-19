@@ -90,8 +90,18 @@ for (const name of Object.keys(_barangaysByMunicipality)) {
   _barangaysByMunicipality[name] = [..._barangaysByMunicipality[name]].sort();
 }
 
-// All locations sorted — includes every municipality/city regardless of barangay availability
-const MUNICIPALITY_LIST = [...Object.keys(_barangaysByMunicipality).sort(), 'Others'];
+// Metro Manila (NCR) cities and municipalities
+const NCR_MUNICIPALITIES = [
+  'Caloocan', 'Las Piñas', 'Makati', 'Malabon', 'Mandaluyong',
+  'Manila', 'Marikina', 'Muntinlupa', 'Navotas', 'Parañaque',
+  'Pasay', 'Pasig', 'Pateros', 'Quezon City', 'San Juan',
+  'Taguig', 'Valenzuela',
+];
+
+// All locations sorted — CALABARZON + Metro Manila, with Others at the end
+const MUNICIPALITY_LIST = [
+  ...new Set([...Object.keys(_barangaysByMunicipality), ...NCR_MUNICIPALITIES])
+].sort().concat('Others');
 
 
 const DECLINE_REASONS = [
