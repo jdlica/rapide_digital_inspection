@@ -718,16 +718,13 @@ function SearchableDropdown({
   const ref = useRef(null);
   const customInputRef = useRef(null);
 
-  // Sync into custom mode if value was set externally and isn't in options
+  // Sync into custom mode when value is cleared externally
   useEffect(() => {
-    if (allowCustom && value && !options.includes(value) && value !== 'Others') {
-      setCustomMode(true);
-      setCustomText(value);
-    } else if (!value) {
+    if (!value) {
       setCustomMode(false);
       setCustomText('');
     }
-  }, [value, allowCustom, options]);
+  }, [value]);
 
   useEffect(() => {
     function handleClick(e) {
