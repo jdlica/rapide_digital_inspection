@@ -3657,9 +3657,30 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 }
 
 // ============================================================
+// ERROR BOUNDARY
+// ============================================================
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'sans-serif' }}>
+          <h2 style={{ color: '#E31E24' }}>Something went wrong</h2>
+          <pre style={{ background: '#f3f4f6', padding: 16, borderRadius: 8, fontSize: 13, whiteSpace: 'pre-wrap' }}>
+            {this.state.error.toString()}
+          </pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ============================================================
 // MAIN APP
 // ============================================================
-export default function App() {
+function AppInner() {
   const [screen, setScreen] = useState('login');
   const [user, setUser] = useState(null);
   const [packageType, setPackageType] = useState(null);
@@ -3878,5 +3899,13 @@ export default function App() {
         />
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AppInner />
+    </ErrorBoundary>
   );
 }
