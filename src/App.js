@@ -2224,18 +2224,20 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
             onChange={(v) => update('lastName', v)}
             placeholder="Last name"
           />
-          <div>
-            <BigCheckboxGroup
-              label="Fleet / Non-Fleet"
-              options={['Fleet', 'Non-Fleet']}
-              value={data.fleetType}
-              onChange={(v) => {
-                setData({ ...data, fleetType: v, company: v === 'Non-Fleet' ? '' : data.company });
-                setErrors({ ...errors, fleetType: false });
-              }}
-            />
+          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+            <div style={{ flex: '0 0 auto' }}>
+              <BigCheckboxGroup
+                label="Fleet / Non-Fleet"
+                options={['Fleet', 'Non-Fleet']}
+                value={data.fleetType}
+                onChange={(v) => {
+                  setData({ ...data, fleetType: v, company: v === 'Non-Fleet' ? '' : data.company });
+                  setErrors({ ...errors, fleetType: false });
+                }}
+              />
+            </div>
             {data.fleetType === 'Fleet' && (
-              <div style={{ marginTop: 8 }}>
+              <div style={{ flex: 1 }}>
                 <SearchableDropdown
                   label="Fleet Account"
                   required
