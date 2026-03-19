@@ -92,9 +92,18 @@ for (const name of Object.keys(_barangaysByMunicipality)) {
 }
 
 // Merge NCR cities and barangays (no duplication — skip if name already exists)
+// Some cities (e.g. Manila) use a `districts` array instead of a flat `barangays` array.
 for (const city of ncrData.cities) {
   if (!_barangaysByMunicipality[city.name]) {
-    _barangaysByMunicipality[city.name] = [...city.barangays].sort();
+    let barangays = [];
+    if (Array.isArray(city.barangays)) {
+      barangays = city.barangays;
+    } else if (Array.isArray(city.districts)) {
+      for (const district of city.districts) {
+        if (Array.isArray(district.barangays)) barangays.push(...district.barangays);
+      }
+    }
+    _barangaysByMunicipality[city.name] = [...barangays].sort();
   }
 }
 
