@@ -8,7 +8,7 @@ import barangaysData from './data/barangays_calabarzon.json';
 import ncrData from './data/ncr_cities_barangays.json';
 import partsData from './data/parts.json';
 import fleetData from './data/Fleet.json';
-import complaintsData from './data/complaints.json';
+import serviceComplaintsData from './data/service_complaints.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -2490,7 +2490,7 @@ function ServiceQuestionsScreen({
           label="Any problems with your vehicle at the moment?"
           required
           error={!!errors.currentProblems}
-          options={complaintsData}
+          options={serviceComplaintsData.complaints}
           value={data.currentProblems || []}
           onChange={(v) => update('currentProblems', v)}
           placeholder="Select complaints..."
