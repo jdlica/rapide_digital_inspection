@@ -3325,9 +3325,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       cat.items.forEach((item) => {
         const key = `${cat.category}::${item.name}`;
         const f = findings[key];
-        const badge = (pf) => pf
-          ? `<span style="display:inline-block;padding:3px 12px;border-radius:4px;color:#fff;font-weight:700;font-size:11px;background:${pf.color === 'green' ? '#22C55E' : pf.color === 'yellow' ? '#F59E0B' : '#E31E24'}">${pf.action}</span>`
-          : '—';
+        const badge = (pf) => {
+          if (!pf) return '—';
+          const color = pf.color === 'green' ? '#16A34A' : pf.color === 'yellow' ? '#D97706' : '#DC2626';
+          const bg = pf.color === 'green' ? '#DCFCE7' : pf.color === 'yellow' ? '#FEF3C7' : '#FEE2E2';
+          return `<span style="display:inline-block;padding:4px 14px;border-radius:4px;color:${color};font-weight:800;font-size:12px;background:${bg};letter-spacing:0.3px;">${pf.action}</span>`;
+        };
         if (item.hasPosition && f?.positions) {
           item.positions.forEach((pos) => {
             const pf = f.positions[pos];
