@@ -1,10 +1,10 @@
 import React from 'react';
 import './style.css';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import makeModelData from './data/make_model.json';
-import municipalitiesData from './data/municipalities.json';
-import barangaysData from './data/barangays.json';
-import provincesData from './data/provinces.json';
+import carMakeData from './data/car_make.json';
+import carModelData from './data/car_model.json';
+import municipalitiesData from './data/municipalities_calabarzon.json';
+import barangaysData from './data/barangays_calabarzon.json';
 import partsData from './data/parts.json';
 
 // ============================================================
@@ -29,14 +29,17 @@ const BRAND = {
   white: '#FFFFFF',
 };
 
-// --- MASTER DATA (derived from make_model.json) ---
+// --- MASTER DATA (derived from car_make.json + car_model.json) ---
+const _makeIdToName = {};
+for (const m of carMakeData) _makeIdToName[m.id] = m.name;
+
 const _modelsMap = {};
-for (const entry of makeModelData) {
-  if (!entry.make || entry.deleted_at != null) continue;
-  if (!_modelsMap[entry.make]) _modelsMap[entry.make] = new Set();
-  if (entry.model) _modelsMap[entry.make].add(entry.model);
+for (const m of carMakeData) _modelsMap[m.name] = new Set();
+for (const m of carModelData) {
+  const makeName = _makeIdToName[m.make_id];
+  if (makeName) _modelsMap[makeName].add(m.name);
 }
-const CAR_BRANDS = Object.keys(_modelsMap).sort();
+const CAR_BRANDS = [...Object.keys(_modelsMap).sort(), 'Others'];
 const CAR_MODELS = Object.fromEntries(
   Object.entries(_modelsMap).map(([make, set]) => [make, [...set].sort()])
 );
@@ -45,9 +48,14 @@ const REPLACED_PARTS = [...new Set(partsData)].sort();
 
 // --- PHILIPPINES LOCATION DATA (provinces + municipalities + barangays) ---
 
-// Step 1: province_id -> province_name
-const _provinceMap = {};
-for (const p of provincesData) _provinceMap[p.province_id] = p.province_name;
+// Step 1: province_id -> province_name (CALABARZON region)
+const _provinceMap = {
+  18: 'Batangas',
+  19: 'Cavite',
+  20: 'Laguna',
+  21: 'Quezon',
+  22: 'Rizal',
+};
 
 // Step 2: count how many municipalities share the same name (for disambiguation)
 const _nameCount = {};
@@ -83,7 +91,7 @@ for (const name of Object.keys(_barangaysByMunicipality)) {
 }
 
 // All locations sorted — includes every municipality/city regardless of barangay availability
-const MUNICIPALITY_LIST = Object.keys(_barangaysByMunicipality).sort();
+const MUNICIPALITY_LIST = [...Object.keys(_barangaysByMunicipality).sort(), 'Others'];
 
 
 const DECLINE_REASONS = [
@@ -1499,14 +1507,19 @@ const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
 // ============================================================
 // MANAGE SCREEN
 // ============================================================
-function ManageScreen({ technicians, brands, models, onAddTechnician, onAddBrand, onAddModel }) {
+function ManageScreen({ technicians, brands, models, municipalities, barangays, onAddTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay }) {
   const [showAddTech, setShowAddTech] = useState(false);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
+  const [showAddMunicipality, setShowAddMunicipality] = useState(false);
+  const [showAddBarangay, setShowAddBarangay] = useState(false);
   const [newTechName, setNewTechName] = useState('');
   const [newBrandName, setNewBrandName] = useState('');
   const [newModelName, setNewModelName] = useState('');
   const [newModelBrand, setNewModelBrand] = useState('');
+  const [newMunicipalityName, setNewMunicipalityName] = useState('');
+  const [newBarangayName, setNewBarangayName] = useState('');
+  const [newBarangayMunicipality, setNewBarangayMunicipality] = useState('');
 
   const sectionStyle = {
     background: BRAND.white,
@@ -1539,7 +1552,7 @@ function ManageScreen({ technicians, brands, models, onAddTechnician, onAddBrand
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 24, fontWeight: 900, color: BRAND.black, margin: 0 }}>Manage</h2>
         <p style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}>
-          Technicians, Brands & Models
+          Technicians, Brands, Models & Locations
         </p>
       </div>
 
@@ -1642,6 +1655,80 @@ function ManageScreen({ technicians, brands, models, onAddTechnician, onAddBrand
             <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
               <PrimaryButton onClick={() => { setShowAddModel(false); setNewModelName(''); setNewModelBrand(''); }} variant="secondary">Cancel</PrimaryButton>
               <PrimaryButton onClick={() => { if (newModelName.trim() && newModelBrand) { onAddModel(newModelBrand, newModelName.trim()); setNewModelName(''); setNewModelBrand(''); setShowAddModel(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cities / Municipalities */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Cities / Municipalities</h3>
+          <PrimaryButton
+            onClick={() => setShowAddMunicipality(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+          {municipalities.filter(m => m !== 'Others').map((m) => (
+            <span key={m} style={chipStyle}>{m}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Barangays */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Barangays</h3>
+          <PrimaryButton
+            onClick={() => setShowAddBarangay(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+          {Object.entries(barangays).slice(0, 5).map(([mun, brgys]) =>
+            brgys.slice(0, 3).map((b) => (
+              <span key={`${mun}-${b}`} style={chipStyle}>{mun} – {b}</span>
+            ))
+          )}
+          {Object.keys(barangays).length > 5 && (
+            <p style={{ color: BRAND.gray, fontSize: 12, margin: '6px 0 0' }}>
+              ...and more ({Object.values(barangays).reduce((s, a) => s + a.length, 0)} total barangays)
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Add Municipality Modal */}
+      {showAddMunicipality && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add City / Municipality</h3>
+            <TextInput label="Name" required value={newMunicipalityName} onChange={setNewMunicipalityName} placeholder="e.g. Calamba" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddMunicipality(false); setNewMunicipalityName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newMunicipalityName.trim()) { onAddMunicipality(newMunicipalityName.trim()); setNewMunicipalityName(''); setShowAddMunicipality(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Barangay Modal */}
+      {showAddBarangay && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Barangay</h3>
+            <div style={{ marginBottom: 16 }}>
+              <SearchableDropdown label="City / Municipality" required options={municipalities} value={newBarangayMunicipality} onChange={setNewBarangayMunicipality} placeholder="Select city..." />
+            </div>
+            <TextInput label="Barangay Name" required value={newBarangayName} onChange={setNewBarangayName} placeholder="e.g. Bagong Nayon" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddBarangay(false); setNewBarangayName(''); setNewBarangayMunicipality(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newBarangayName.trim() && newBarangayMunicipality) { onAddBarangay(newBarangayMunicipality, newBarangayName.trim()); setNewBarangayName(''); setNewBarangayMunicipality(''); setShowAddBarangay(false); } }}>Add</PrimaryButton>
             </div>
           </div>
         </div>
@@ -1751,10 +1838,18 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
+function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipalities, barangays }) {
   const [errors, setErrors] = useState({});
-  const availableModels = data.make ? models[data.make] || ['Other'] : [];
-  const availableBarangays = data.city ? _barangaysByMunicipality[data.city] || [] : [];
+  const availableModels = data.make
+    ? data.make === 'Others'
+      ? ['Others']
+      : [...(models[data.make] || []), 'Others']
+    : [];
+  const availableBarangays = data.city
+    ? data.city === 'Others'
+      ? ['Others']
+      : [...(barangays[data.city] || []), 'Others']
+    : [];
 
   const validate = () => {
     const e = {};
@@ -1984,7 +2079,7 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models }) {
             label="City / Municipality"
             required
             error={!!errors.city}
-            options={MUNICIPALITY_LIST}
+            options={municipalities}
             value={data.city}
             onChange={(v) => {
               setData({ ...data, city: v, barangay: '' });
@@ -3517,6 +3612,8 @@ export default function App() {
   const [viewingInspection, setViewingInspection] = useState(null);
   const [brands, setBrands] = useState([...CAR_BRANDS]);
   const [models, setModels] = useState({ ...CAR_MODELS });
+  const [municipalities, setMunicipalities] = useState([...MUNICIPALITY_LIST]);
+  const [barangays, setBarangays] = useState({ ..._barangaysByMunicipality });
   const [technicians, setTechnicians] = useState([
     { id: 1, name: 'Pedro Garcia', active: true },
     { id: 2, name: 'Marco Reyes', active: true },
@@ -3578,6 +3675,21 @@ export default function App() {
       [brand]: [...(prev[brand] || []), modelName],
     }));
   };
+  const handleAddMunicipality = (name) => {
+    if (!municipalities.includes(name)) {
+      setMunicipalities((prev) => {
+        const filtered = prev.filter(m => m !== 'Others');
+        return [...filtered.concat(name).sort(), 'Others'];
+      });
+      setBarangays((prev) => ({ ...prev, [name]: [] }));
+    }
+  };
+  const handleAddBarangay = (municipality, barangayName) => {
+    setBarangays((prev) => ({
+      ...prev,
+      [municipality]: [...(prev[municipality] || []), barangayName].sort(),
+    }));
+  };
 
   return (
     <div
@@ -3612,6 +3724,8 @@ export default function App() {
           onNext={() => setScreen('serviceQuestions')}
           brands={brands}
           models={models}
+          municipalities={municipalities}
+          barangays={barangays}
         />
       )}
 
@@ -3664,9 +3778,13 @@ export default function App() {
           technicians={technicians}
           brands={brands}
           models={models}
+          municipalities={municipalities}
+          barangays={barangays}
           onAddTechnician={handleAddTechnician}
           onAddBrand={handleAddBrand}
           onAddModel={handleAddModel}
+          onAddMunicipality={handleAddMunicipality}
+          onAddBarangay={handleAddBarangay}
         />
       )}
 

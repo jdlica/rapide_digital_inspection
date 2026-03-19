@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "BMW"
+  },
+  {
+    "id": 2,
+    "name": "Changan"
+  },
+  {
+    "id": 3,
+    "name": "Chery"
+  },
+  {
+    "id": 4,
+    "name": "Chevrolet"
+  },
+  {
+    "id": 5,
+    "name": "Ford"
+  },
+  {
+    "id": 6,
+    "name": "Foton"
+  },
+  {
+    "id": 7,
+    "name": "GAC"
+  },
+  {
+    "id": 8,
+    "name": "Geely"
+  },
+  {
+    "id": 9,
+    "name": "Honda"
+  },
+  {
+    "id": 10,
+    "name": "Hyundai"
+  },
+  {
+    "id": 11,
+    "name": "Isuzu"
+  },
+  {
+    "id": 12,
+    "name": "JAC"
+  },
+  {
+    "id": 13,
+    "name": "Kia"
+  },
+  {
+    "id": 14,
+    "name": "Lexus"
+  },
+  {
+    "id": 15,
+    "name": "MG"
+  },
+  {
+    "id": 16,
+    "name": "Mazda"
+  },
+  {
+    "id": 17,
+    "name": "Mitsubishi"
+  },
+  {
+    "id": 18,
+    "name": "Nissan"
+  },
+  {
+    "id": 19,
+    "name": "Peugeot"
+  },
+  {
+    "id": 20,
+    "name": "Subaru"
+  },
+  {
+    "id": 21,
+    "name": "Suzuki"
+  },
+  {
+    "id": 22,
+    "name": "Toyota"
+  },
+  {
+    "id": 23,
+    "name": "Volkswagen"
+  },
+  {
+    "id": 24,
+    "name": "Volvo"
+  }
+]

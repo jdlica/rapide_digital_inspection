@@ -1,0 +1,1289 @@
+[
+  {
+    "municipality_id": 349,
+    "province_id": 18,
+    "municipality_name": "Agoncillo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 350,
+    "province_id": 18,
+    "municipality_name": "Alitagtag",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 351,
+    "province_id": 18,
+    "municipality_name": "Balayan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 352,
+    "province_id": 18,
+    "municipality_name": "Balete",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:31",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 353,
+    "province_id": 18,
+    "municipality_name": "Batangas City (Capital)",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 354,
+    "province_id": 18,
+    "municipality_name": "Bauan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 355,
+    "province_id": 18,
+    "municipality_name": "Calaca",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 356,
+    "province_id": 18,
+    "municipality_name": "Calatagan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 357,
+    "province_id": 18,
+    "municipality_name": "Cuenca",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 358,
+    "province_id": 18,
+    "municipality_name": "Ibaan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 359,
+    "province_id": 18,
+    "municipality_name": "Laurel",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 360,
+    "province_id": 18,
+    "municipality_name": "Lemery",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 361,
+    "province_id": 18,
+    "municipality_name": "Lian",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 362,
+    "province_id": 18,
+    "municipality_name": "City of Lipa",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:31",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 363,
+    "province_id": 18,
+    "municipality_name": "Lobo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 364,
+    "province_id": 18,
+    "municipality_name": "Mabini",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 365,
+    "province_id": 18,
+    "municipality_name": "Malvar",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:32",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 366,
+    "province_id": 18,
+    "municipality_name": "Mataasnakahoy",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 367,
+    "province_id": 18,
+    "municipality_name": "Nasugbu",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 368,
+    "province_id": 18,
+    "municipality_name": "Padre Garcia",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 369,
+    "province_id": 18,
+    "municipality_name": "Rosario",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 370,
+    "province_id": 18,
+    "municipality_name": "San Jose",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 371,
+    "province_id": 18,
+    "municipality_name": "San Juan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 372,
+    "province_id": 18,
+    "municipality_name": "San Luis",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 373,
+    "province_id": 18,
+    "municipality_name": "San Nicolas",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 374,
+    "province_id": 18,
+    "municipality_name": "San Pascual",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 375,
+    "province_id": 18,
+    "municipality_name": "Santa Teresita",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 376,
+    "province_id": 18,
+    "municipality_name": "City of Sto. Tomas",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:32",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 377,
+    "province_id": 18,
+    "municipality_name": "Taal",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 378,
+    "province_id": 18,
+    "municipality_name": "Talisay",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:33",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 379,
+    "province_id": 18,
+    "municipality_name": "City of Tanauan",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:34",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 380,
+    "province_id": 18,
+    "municipality_name": "Taysan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 381,
+    "province_id": 18,
+    "municipality_name": "Tingloy",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 382,
+    "province_id": 18,
+    "municipality_name": "Tuy",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 383,
+    "province_id": 19,
+    "municipality_name": "Alfonso",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 384,
+    "province_id": 19,
+    "municipality_name": "Amadeo",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 385,
+    "province_id": 19,
+    "municipality_name": "City of Bacoor",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 386,
+    "province_id": 19,
+    "municipality_name": "Carmona",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 387,
+    "province_id": 19,
+    "municipality_name": "City of Cavite",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:29",
+    "nearest_hub_id": 2
+  },
+  {
+    "municipality_id": 388,
+    "province_id": 19,
+    "municipality_name": "City of Dasmariñas",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 389,
+    "province_id": 19,
+    "municipality_name": "General Emilio Aguinaldo",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 390,
+    "province_id": 19,
+    "municipality_name": "City of General Trias",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 391,
+    "province_id": 19,
+    "municipality_name": "City of Imus",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 392,
+    "province_id": 19,
+    "municipality_name": "Indang",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 393,
+    "province_id": 19,
+    "municipality_name": "Kawit",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 2
+  },
+  {
+    "municipality_id": 394,
+    "province_id": 19,
+    "municipality_name": "Magallanes",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 395,
+    "province_id": 19,
+    "municipality_name": "Maragondon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 396,
+    "province_id": 19,
+    "municipality_name": "Mendez",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 397,
+    "province_id": 19,
+    "municipality_name": "Naic",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 398,
+    "province_id": 19,
+    "municipality_name": "Noveleta",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 2
+  },
+  {
+    "municipality_id": 399,
+    "province_id": 19,
+    "municipality_name": "Rosario",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 2
+  },
+  {
+    "municipality_id": 400,
+    "province_id": 19,
+    "municipality_name": "Silang",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 401,
+    "province_id": 19,
+    "municipality_name": "City of Tagaytay",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 402,
+    "province_id": 19,
+    "municipality_name": "Tanza",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 403,
+    "province_id": 19,
+    "municipality_name": "Ternate",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 404,
+    "province_id": 19,
+    "municipality_name": "City of Trece Martires (Capital)",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 12
+  },
+  {
+    "municipality_id": 405,
+    "province_id": 19,
+    "municipality_name": "Gen. Mariano Alvarez",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:19",
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 406,
+    "province_id": 20,
+    "municipality_name": "Alaminos",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 407,
+    "province_id": 20,
+    "municipality_name": "Bay",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 408,
+    "province_id": 20,
+    "municipality_name": "City of Biñan",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 409,
+    "province_id": 20,
+    "municipality_name": "City of Cabuyao",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 410,
+    "province_id": 20,
+    "municipality_name": "City of Calamba",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 411,
+    "province_id": 20,
+    "municipality_name": "Calauan",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 412,
+    "province_id": 20,
+    "municipality_name": "Cavinti",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 413,
+    "province_id": 20,
+    "municipality_name": "Famy",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 414,
+    "province_id": 20,
+    "municipality_name": "Kalayaan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 415,
+    "province_id": 20,
+    "municipality_name": "Liliw",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 416,
+    "province_id": 20,
+    "municipality_name": "Los Baños",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 417,
+    "province_id": 20,
+    "municipality_name": "Luisiana",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 418,
+    "province_id": 20,
+    "municipality_name": "Lumban",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 419,
+    "province_id": 20,
+    "municipality_name": "Mabitac",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 420,
+    "province_id": 20,
+    "municipality_name": "Magdalena",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 421,
+    "province_id": 20,
+    "municipality_name": "Majayjay",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 422,
+    "province_id": 20,
+    "municipality_name": "Nagcarlan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 423,
+    "province_id": 20,
+    "municipality_name": "Paete",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 424,
+    "province_id": 20,
+    "municipality_name": "Pagsanjan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 425,
+    "province_id": 20,
+    "municipality_name": "Pakil",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 426,
+    "province_id": 20,
+    "municipality_name": "Pangil",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 427,
+    "province_id": 20,
+    "municipality_name": "Pila",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 428,
+    "province_id": 20,
+    "municipality_name": "Rizal",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 429,
+    "province_id": 20,
+    "municipality_name": "City of San Pablo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 430,
+    "province_id": 20,
+    "municipality_name": "City of San Pedro",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 431,
+    "province_id": 20,
+    "municipality_name": "Santa Cruz (Capital)",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 432,
+    "province_id": 20,
+    "municipality_name": "Santa Maria",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 433,
+    "province_id": 20,
+    "municipality_name": "City of Santa Rosa",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 3
+  },
+  {
+    "municipality_id": 434,
+    "province_id": 20,
+    "municipality_name": "Siniloan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 435,
+    "province_id": 20,
+    "municipality_name": "Victoria",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 436,
+    "province_id": 21,
+    "municipality_name": "Agdangan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 437,
+    "province_id": 21,
+    "municipality_name": "Alabat",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 438,
+    "province_id": 21,
+    "municipality_name": "Atimonan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 439,
+    "province_id": 21,
+    "municipality_name": "Buenavista",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 440,
+    "province_id": 21,
+    "municipality_name": "Burdeos",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 441,
+    "province_id": 21,
+    "municipality_name": "Calauag",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 442,
+    "province_id": 21,
+    "municipality_name": "Candelaria",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 443,
+    "province_id": 21,
+    "municipality_name": "Catanauan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 444,
+    "province_id": 21,
+    "municipality_name": "Dolores",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 445,
+    "province_id": 21,
+    "municipality_name": "General Luna",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 446,
+    "province_id": 21,
+    "municipality_name": "General Nakar",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 447,
+    "province_id": 21,
+    "municipality_name": "Guinayangan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 448,
+    "province_id": 21,
+    "municipality_name": "Gumaca",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 449,
+    "province_id": 21,
+    "municipality_name": "Infanta",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 450,
+    "province_id": 21,
+    "municipality_name": "Jomalig",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 451,
+    "province_id": 21,
+    "municipality_name": "Lopez",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 452,
+    "province_id": 21,
+    "municipality_name": "Lucban",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 453,
+    "province_id": 21,
+    "municipality_name": "City of Lucena (Capital)",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 454,
+    "province_id": 21,
+    "municipality_name": "Macalelon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 455,
+    "province_id": 21,
+    "municipality_name": "Mauban",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 456,
+    "province_id": 21,
+    "municipality_name": "Mulanay",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 457,
+    "province_id": 21,
+    "municipality_name": "Padre Burgos",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 458,
+    "province_id": 21,
+    "municipality_name": "Pagbilao",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 459,
+    "province_id": 21,
+    "municipality_name": "Panukulan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 460,
+    "province_id": 21,
+    "municipality_name": "Patnanungan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 461,
+    "province_id": 21,
+    "municipality_name": "Perez",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 462,
+    "province_id": 21,
+    "municipality_name": "Pitogo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 463,
+    "province_id": 21,
+    "municipality_name": "Plaridel",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 464,
+    "province_id": 21,
+    "municipality_name": "Polillo",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 465,
+    "province_id": 21,
+    "municipality_name": "Quezon",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 466,
+    "province_id": 21,
+    "municipality_name": "Real",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 467,
+    "province_id": 21,
+    "municipality_name": "Sampaloc",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 468,
+    "province_id": 21,
+    "municipality_name": "San Andres",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 469,
+    "province_id": 21,
+    "municipality_name": "San Antonio",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 470,
+    "province_id": 21,
+    "municipality_name": "San Francisco",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 471,
+    "province_id": 21,
+    "municipality_name": "San Narciso",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 472,
+    "province_id": 21,
+    "municipality_name": "Sariaya",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 473,
+    "province_id": 21,
+    "municipality_name": "Tagkawayan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 474,
+    "province_id": 21,
+    "municipality_name": "City of Tayabas",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 475,
+    "province_id": 21,
+    "municipality_name": "Tiaong",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 476,
+    "province_id": 21,
+    "municipality_name": "Unisan",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 477,
+    "province_id": 22,
+    "municipality_name": "Angono",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 478,
+    "province_id": 22,
+    "municipality_name": "City of Antipolo (Capital)",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 479,
+    "province_id": 22,
+    "municipality_name": "Baras",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 480,
+    "province_id": 22,
+    "municipality_name": "Binangonan",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 481,
+    "province_id": 22,
+    "municipality_name": "Cainta",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 482,
+    "province_id": 22,
+    "municipality_name": "Cardona",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 483,
+    "province_id": 22,
+    "municipality_name": "Jala-Jala",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 484,
+    "province_id": 22,
+    "municipality_name": "Rodriguez",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 485,
+    "province_id": 22,
+    "municipality_name": "Morong",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 486,
+    "province_id": 22,
+    "municipality_name": "Pililla",
+    "is_serviceable": 0,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": null
+  },
+  {
+    "municipality_id": 487,
+    "province_id": 22,
+    "municipality_name": "San Mateo",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 488,
+    "province_id": 22,
+    "municipality_name": "Tanay",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 489,
+    "province_id": 22,
+    "municipality_name": "Taytay",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": "2023-06-29 07:30:11",
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 490,
+    "province_id": 22,
+    "municipality_name": "Teresa",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 7
+  },
+  {
+    "municipality_id": 632,
+    "province_id": 22,
+    "municipality_name": "Baras",
+    "is_serviceable": 1,
+    "created_at": null,
+    "updated_at": null,
+    "nearest_hub_id": 1
+  }
+]
