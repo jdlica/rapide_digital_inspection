@@ -3964,6 +3964,7 @@ function AppInner() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [inspections, setInspections] = useState([]);
   const [viewingInspection, setViewingInspection] = useState(null);
+  const [successToast, setSuccessToast] = useState(null);
   const [brands, setBrands] = useState([...CAR_BRANDS]);
   const [models, setModels] = useState({ ...CAR_MODELS });
   const [municipalities, setMunicipalities] = useState([...MUNICIPALITY_LIST]);
@@ -4009,6 +4010,8 @@ function AppInner() {
     setInspections((prev) => [newInspection, ...prev]);
     setShowSubmitModal(false);
     setScreen('packageSelect');
+    setSuccessToast(rif);
+    setTimeout(() => setSuccessToast(null), 4000);
   };
 
   const categories = INSPECTION_DATA[packageType] || [];
@@ -4055,6 +4058,39 @@ function AppInner() {
         fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
+      {successToast && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: '#16A34A',
+            color: '#fff',
+            padding: '14px 28px',
+            borderRadius: 10,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            fontWeight: 700,
+            fontSize: 14,
+            minWidth: 280,
+            maxWidth: 420,
+          }}
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="11" fill="#fff" fillOpacity="0.2"/>
+            <path d="M6 11.5L9.5 15L16 8" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div>
+            <div>Inspection saved to dashboard!</div>
+            <div style={{ fontWeight: 400, fontSize: 12, opacity: 0.85, marginTop: 2 }}>RIF: {successToast}</div>
+          </div>
+        </div>
+      )}
+
       {screen === 'login' && <LoginScreen onLogin={handleLogin} />}
 
       {screen !== 'login' && user && (
