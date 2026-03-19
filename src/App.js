@@ -8,6 +8,7 @@ import barangaysData from './data/barangays_calabarzon.json';
 import ncrData from './data/ncr_cities_barangays.json';
 import partsData from './data/parts.json';
 import fleetData from './data/Fleet.json';
+import complaintsData from './data/complaints.json';
 
 // ============================================================
 // RAPIDE DIGITAL INSPECTION SYSTEM
@@ -991,18 +992,30 @@ function MultiSelectDropdown({
   placeholder,
   required,
   error,
+  allowOthers,
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [othersMode, setOthersMode] = useState(false);
+  const [othersText, setOthersText] = useState('');
+  const othersInputRef = useRef(null);
   const ref = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+        setOthersMode(false);
+        setOthersText('');
+      }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    if (othersMode) setTimeout(() => othersInputRef.current?.focus(), 30);
+  }, [othersMode]);
 
   const filtered = options.filter((o) =>
     o.toLowerCase().includes(search.toLowerCase())
@@ -1014,6 +1027,14 @@ function MultiSelectDropdown({
       const without = value.filter((v) => v !== 'None');
       if (without.includes(item)) onChange(without.filter((v) => v !== item));
       else onChange([...without, item]);
+    }
+  };
+  const confirmOthers = () => {
+    if (othersText.trim()) {
+      const without = value.filter((v) => v !== 'None');
+      onChange([...without, othersText.trim()]);
+      setOthersText('');
+      setOthersMode(false);
     }
   };
 
@@ -1105,7 +1126,7 @@ function MultiSelectDropdown({
           >
             <input
               autoFocus
-              placeholder="Search parts..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -1167,34 +1188,65 @@ function MultiSelectDropdown({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 10,
-                  background: value.includes(o)
-                    ? BRAND.yellowPale
-                    : 'transparent',
+                  background: value.includes(o) ? BRAND.yellowPale : 'transparent',
                 }}
+                onMouseEnter={(e) => { if (!value.includes(o)) e.currentTarget.style.background = BRAND.yellowPale; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = value.includes(o) ? BRAND.yellowPale : 'transparent'; }}
               >
-                <span
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 5,
-                    border: `2px solid ${
-                      value.includes(o) ? BRAND.yellow : BRAND.grayBorder
-                    }`,
-                    background: value.includes(o) ? BRAND.yellow : BRAND.white,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: BRAND.black,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    flexShrink: 0,
-                  }}
-                >
+                <span style={{
+                  width: 22, height: 22, borderRadius: 5, flexShrink: 0,
+                  border: `2px solid ${value.includes(o) ? BRAND.yellow : BRAND.grayBorder}`,
+                  background: value.includes(o) ? BRAND.yellow : BRAND.white,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: BRAND.black, fontSize: 14, fontWeight: 700,
+                }}>
                   {value.includes(o) && '✓'}
                 </span>
                 {o}
               </div>
             ))}
+
+            {/* Others — pinned at bottom */}
+            {allowOthers && (
+              <div style={{ borderTop: `1px solid ${BRAND.grayBorder}` }}>
+                <div
+                  onClick={() => { setOthersMode(!othersMode); setOthersText(''); }}
+                  style={{
+                    padding: '12px 14px', cursor: 'pointer', fontSize: 14,
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    background: othersMode ? BRAND.yellowPale : 'transparent',
+                    fontWeight: 600, color: BRAND.gray,
+                  }}
+                  onMouseEnter={(e) => { if (!othersMode) e.currentTarget.style.background = BRAND.yellowPale; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = othersMode ? BRAND.yellowPale : 'transparent'; }}
+                >
+                  <span style={{ fontSize: 14 }}>✏️</span>
+                  Others (type your own)
+                </div>
+                {othersMode && (
+                  <div style={{ padding: '8px 14px 12px', background: BRAND.yellowPale }}>
+                    <input
+                      ref={othersInputRef}
+                      value={othersText}
+                      onChange={(e) => setOthersText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); confirmOthers(); }
+                        if (e.key === 'Escape') { setOthersMode(false); setOthersText(''); }
+                      }}
+                      placeholder="Describe the problem and press Enter..."
+                      style={{
+                        width: '100%', padding: '9px 12px',
+                        border: `2px solid ${BRAND.yellow}`, borderRadius: 8,
+                        fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                    <div style={{ fontSize: 11, color: BRAND.gray, marginTop: 4 }}>
+                      Press Enter to add · Esc to cancel
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -2359,7 +2411,7 @@ function ServiceQuestionsScreen({
     if (!data.lastPmsMonth) e.lastPmsMonth = true;
     if (!data.lastPmsYear) e.lastPmsYear = true;
     if (!data.replacedParts || data.replacedParts.length === 0) e.replacedParts = true;
-    if (!data.currentProblems || !data.currentProblems.trim()) e.currentProblems = true;
+    if (!data.currentProblems || data.currentProblems.length === 0) e.currentProblems = true;
     if (!data.technicianId) e.technicianId = true;
     setErrors(e);
     if (Object.keys(e).length === 0) onNext();
@@ -2434,37 +2486,16 @@ function ServiceQuestionsScreen({
           placeholder="Select parts..."
         />
 
-        <div>
-          <label
-            style={{
-              fontWeight: 600,
-              fontSize: 13,
-              color: BRAND.black,
-              marginBottom: 6,
-              display: 'block',
-            }}
-          >
-            Any problems with your vehicle at the moment?
-            <span style={{ color: BRAND.red }}> *</span>
-          </label>
-          <textarea
-            value={data.currentProblems || ''}
-            onChange={(e) => update('currentProblems', e.target.value)}
-            placeholder="Describe any issues..."
-            style={{
-              width: '100%',
-              minHeight: 100,
-              padding: '12px 14px',
-              border: `2px solid ${errors.currentProblems ? BRAND.red : BRAND.grayBorder}`,
-              borderRadius: 10,
-              fontSize: 15,
-              outline: 'none',
-              resize: 'vertical',
-              fontFamily: 'inherit',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
+        <MultiSelectDropdown
+          label="Any problems with your vehicle at the moment?"
+          required
+          error={!!errors.currentProblems}
+          options={complaintsData}
+          value={data.currentProblems || []}
+          onChange={(v) => update('currentProblems', v)}
+          placeholder="Select complaints..."
+          allowOthers
+        />
 
         <SearchableDropdown
           label="Assign Technician"
