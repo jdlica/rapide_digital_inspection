@@ -1,6 +1,8 @@
 import React from 'react';
 import './style.css';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import carMakeData from './data/car_make.json';
 import carModelData from './data/car_model.json';
 import municipalitiesData from './data/municipalities_calabarzon.json';
@@ -2802,10 +2804,12 @@ function InspectionScreen({
                         justifyContent: 'center',
                         cursor: 'pointer',
                         flexShrink: 0,
-                        fontSize: 18,
                       }}
                     >
-                      📷
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                      </svg>
                     </button>
                     <input
                       ref={(el) => { fileInputRefs.current[key] = el; }}
@@ -3671,15 +3675,60 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     printWindow.print();
   };
 
-  const downloadSummary = () => {
+  const downloadSummary = async () => {
     const html = buildSummaryHTML();
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Rapide-Inspection-${inspection.rif}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
+
+    // Render HTML into a hidden off-screen container
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:white;padding:20px;font-family:Arial,sans-serif;color:#1A1A1A;box-sizing:border-box;';
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    container.innerHTML = bodyMatch ? bodyMatch[1] : '';
+    // Strip any <script> tags from the injected HTML
+    container.querySelectorAll('script').forEach((s) => s.remove());
+    document.body.appendChild(container);
+
+    try {
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        width: 800,
+      });
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentW = pageW - margin * 2;
+      const imgHeightMm = (canvas.height * contentW) / canvas.width;
+
+      let srcY = 0;
+      let remaining = imgHeightMm;
+      let isFirstPage = true;
+
+      while (remaining > 0) {
+        if (!isFirstPage) pdf.addPage();
+        isFirstPage = false;
+
+        const sliceMm = Math.min(remaining, pageH - margin * 2);
+        const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
+
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = slicePx;
+        sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
+
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
+
+        srcY += slicePx;
+        remaining -= sliceMm;
+      }
+
+      pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
+    } finally {
+      document.body.removeChild(container);
+    }
   };
 
   const printInspectionForm = () => {
