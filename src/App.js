@@ -1532,7 +1532,7 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-function TopBar({ user, onLogout, onDashboard, onManage, packageType }) {
+function TopBar({ user, onLogout, onDashboard, onManage, onReport, packageType }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = user.role === 'admin' || user.role === 'service_manager';
 
@@ -1664,6 +1664,12 @@ function TopBar({ user, onLogout, onDashboard, onManage, packageType }) {
                 style={drawerItemStyle}
               >
                 Manage
+              </button>
+              <button
+                onClick={() => { onReport(); setMenuOpen(false); }}
+                style={drawerItemStyle}
+              >
+                Report Generation
               </button>
             </>
           )}
@@ -3131,6 +3137,261 @@ function SubmitModal({ onCancel, onConfirm }) {
   );
 }
 
+// ============================================================
+// REPORT GENERATION SCREEN
+// ============================================================
+const REPORT_COLUMNS = [
+  { key: 'rif',          label: 'RIF #',          get: (ins) => ins.rif },
+  { key: 'date',         label: 'Date',            get: (ins) => ins.date },
+  { key: 'customerName', label: 'Customer Name',   get: (ins) => ins.customerName },
+  { key: 'mobile',       label: 'Mobile No',       get: (ins) => ins.customerData?.mobileNo || '' },
+  { key: 'email',        label: 'Email',           get: (ins) => ins.customerData?.email || '' },
+  { key: 'company',      label: 'Company / Fleet', get: (ins) => ins.customerData?.company || '' },
+  { key: 'make',         label: 'Make',            get: (ins) => ins.customerData?.make || '' },
+  { key: 'model',        label: 'Model',           get: (ins) => ins.customerData?.model || '' },
+  { key: 'year',         label: 'Year',            get: (ins) => ins.customerData?.year || '' },
+  { key: 'plate',        label: 'Plate No',        get: (ins) => ins.customerData?.plateNo || '' },
+  { key: 'transmission', label: 'Transmission',    get: (ins) => ins.customerData?.transmission || '' },
+  { key: 'fuel',         label: 'Fuel Type',       get: (ins) => ins.customerData?.fuelType || '' },
+  { key: 'km',           label: 'KM Reading',      get: (ins) => ins.customerData?.kmReading || '' },
+  { key: 'location',     label: 'Location',        get: (ins) => [ins.customerData?.barangay, ins.customerData?.city].filter(Boolean).join(', ') },
+  { key: 'package',      label: 'Package',         get: (ins) => ({ quick: 'Quick', express: 'Express', plus: 'Premium Plus' }[ins.packageType] || ins.packageType || '') },
+  { key: 'technician',   label: 'Technician',      get: (ins) => ins.technicianName || '' },
+  { key: 'status',       label: 'Status',          get: (ins) => ({ draft: 'Draft', in_progress: 'In Progress', finished: 'Finished', submitted: 'Finished', reviewed: 'Finished' }[ins.status] || ins.status || '') },
+  { key: 'good',         label: 'Good Count',      get: (ins) => { const v = []; Object.values(ins.findings || {}).forEach((f) => { if (f.positions) Object.values(f.positions).forEach((p) => v.push(p)); else v.push(f); }); return v.filter((f) => f.color === 'green').length; } },
+  { key: 'warning',      label: 'Warning Count',   get: (ins) => { const v = []; Object.values(ins.findings || {}).forEach((f) => { if (f.positions) Object.values(f.positions).forEach((p) => v.push(p)); else v.push(f); }); return v.filter((f) => f.color === 'yellow').length; } },
+  { key: 'critical',     label: 'Critical Count',  get: (ins) => { const v = []; Object.values(ins.findings || {}).forEach((f) => { if (f.positions) Object.values(f.positions).forEach((p) => v.push(p)); else v.push(f); }); return v.filter((f) => f.color === 'red').length; } },
+  { key: 'techComment',  label: 'Tech Comment',    get: (ins) => ins.techComment || '' },
+];
+
+const DEFAULT_COLS = ['rif', 'date', 'customerName', 'plate', 'package', 'technician', 'status', 'good', 'warning', 'critical'];
+
+function ReportScreen({ inspections, technicians, onBack }) {
+  const [selectedCols, setSelectedCols] = useState(DEFAULT_COLS);
+  const [filterPkg, setFilterPkg] = useState('');
+  const [filterTech, setFilterTech] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [downloading, setDownloading] = useState(false);
+
+  const toggleCol = (key) => {
+    setSelectedCols((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const activeCols = REPORT_COLUMNS.filter((c) => selectedCols.includes(c.key));
+
+  const filteredData = inspections.filter((ins) => {
+    if (filterPkg && ins.packageType !== filterPkg) return false;
+    if (filterTech && ins.technicianName !== filterTech) return false;
+    if (filterStatus && ins.status !== filterStatus) return false;
+    return true;
+  });
+
+  const buildReportHTML = () => {
+    const headerCells = activeCols.map((c) => `<th style="padding:7px 10px;background:#1A1A1A;color:#FFD100;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;">${c.label}</th>`).join('');
+    const rows = filteredData.map((ins, i) => {
+      const cells = activeCols.map((c) => `<td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-size:12px;color:#1A1A1A;">${c.get(ins)}</td>`).join('');
+      return `<tr style="background:${i % 2 === 0 ? '#fff' : '#F9FAFB'};">${cells}</tr>`;
+    }).join('');
+    return `<!DOCTYPE html><html><head><title>Rapide Report</title>
+      <style>@media print{body{margin:0}@page{size:A4 landscape;margin:10mm}}body{font-family:Arial,sans-serif;margin:20px;color:#1A1A1A;}</style>
+    </head><body>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div style="background:#FFD100;padding:10px 18px;border-radius:8px;">
+          <div style="font-family:'Arial Black',sans-serif;font-size:24px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">Inspection Report</div>
+          <div style="font-size:12px;color:#6B7280;margin-top:2px;">Generated ${new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' })} &bull; ${filteredData.length} record${filteredData.length !== 1 ? 's' : ''}</div>
+        </div>
+      </div>
+      <div style="overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;">
+          <thead><tr>${headerCells}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${filteredData.length === 0 ? '<p style="text-align:center;color:#9CA3AF;padding:40px;">No records match the selected filters.</p>' : ''}
+    </body></html>`;
+  };
+
+  const handlePrint = () => {
+    const w = window.open('', '_blank');
+    w.document.write(buildReportHTML());
+    w.document.close();
+    w.print();
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    const html = buildReportHTML();
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:1100px;background:white;padding:20px;font-family:Arial,sans-serif;box-sizing:border-box;';
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    container.innerHTML = bodyMatch ? bodyMatch[1] : '';
+    container.querySelectorAll('script').forEach((s) => s.remove());
+    document.body.appendChild(container);
+    try {
+      const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false, width: 1100 });
+      const pdf = new jsPDF('l', 'mm', 'a4'); // landscape
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentW = pageW - margin * 2;
+      const imgHeightMm = (canvas.height * contentW) / canvas.width;
+      let srcY = 0, remaining = imgHeightMm, first = true;
+      while (remaining > 0) {
+        if (!first) pdf.addPage();
+        first = false;
+        const sliceMm = Math.min(remaining, pageH - margin * 2);
+        const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
+        const sc = document.createElement('canvas');
+        sc.width = canvas.width; sc.height = slicePx;
+        sc.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
+        pdf.addImage(sc.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
+        srcY += slicePx; remaining -= sliceMm;
+      }
+      pdf.save(`Rapide-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } finally {
+      document.body.removeChild(container);
+      setDownloading(false);
+    }
+  };
+
+  const filterSelectStyle = {
+    minHeight: 40, padding: '8px 12px', border: `2px solid ${BRAND.grayBorder}`,
+    borderRadius: 10, fontSize: 13, background: BRAND.white, flex: 1,
+  };
+
+  return (
+    <div className="form-screen" style={{ paddingBottom: 40 }}>
+      <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>Report Generation</h2>
+      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 24 }}>
+        Choose columns and filters, then download or print your custom report.
+      </p>
+
+      {/* Column selector */}
+      <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, padding: '20px', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800 }}>Columns</h3>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => setSelectedCols(REPORT_COLUMNS.map((c) => c.key))} style={{ fontSize: 12, fontWeight: 700, color: BRAND.gray, background: 'none', border: 'none', cursor: 'pointer' }}>Select All</button>
+            <span style={{ color: BRAND.grayBorder }}>|</span>
+            <button onClick={() => setSelectedCols([])} style={{ fontSize: 12, fontWeight: 700, color: BRAND.gray, background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+          {REPORT_COLUMNS.map((col) => {
+            const checked = selectedCols.includes(col.key);
+            return (
+              <label
+                key={col.key}
+                onClick={() => toggleCol(col.key)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+                  borderRadius: 8, cursor: 'pointer',
+                  border: `2px solid ${checked ? BRAND.yellow : BRAND.grayBorder}`,
+                  background: checked ? BRAND.yellowPale : BRAND.white,
+                  transition: 'all 0.15s',
+                }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+                  border: `2px solid ${checked ? BRAND.black : BRAND.grayBorder}`,
+                  background: checked ? BRAND.black : BRAND.white,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {checked && <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#FFD100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <span style={{ fontSize: 13, fontWeight: checked ? 700 : 500, color: BRAND.black }}>{col.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, padding: '20px', marginBottom: 16 }}>
+        <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 800 }}>Filters</h3>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <select value={filterPkg} onChange={(e) => setFilterPkg(e.target.value)} style={filterSelectStyle}>
+            <option value="">All Packages</option>
+            <option value="quick">Quick</option>
+            <option value="express">Express</option>
+            <option value="plus">Premium Plus</option>
+          </select>
+          <select value={filterTech} onChange={(e) => setFilterTech(e.target.value)} style={filterSelectStyle}>
+            <option value="">All Technicians</option>
+            {technicians.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
+          </select>
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={filterSelectStyle}>
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="in_progress">In Progress</option>
+            <option value="finished">Finished</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Preview */}
+      <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, padding: '20px', marginBottom: 20 }}>
+        <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 800 }}>
+          Preview{' '}
+          <span style={{ fontSize: 13, fontWeight: 600, color: BRAND.gray }}>({filteredData.length} record{filteredData.length !== 1 ? 's' : ''})</span>
+        </h3>
+        {activeCols.length === 0 ? (
+          <p style={{ color: BRAND.gray, fontSize: 14, textAlign: 'center', padding: '20px 0' }}>Select at least one column to preview.</p>
+        ) : (
+          <div style={{ overflowX: 'auto', borderRadius: 8, border: `1px solid ${BRAND.grayBorder}` }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: BRAND.black }}>
+                  {activeCols.map((c) => (
+                    <th key={c.key} style={{ padding: '10px 12px', textAlign: 'left', color: BRAND.yellow, fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.8, whiteSpace: 'nowrap' }}>
+                      {c.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.length === 0 && (
+                  <tr><td colSpan={activeCols.length} style={{ padding: 32, textAlign: 'center', color: BRAND.gray }}>No records match the selected filters.</td></tr>
+                )}
+                {filteredData.slice(0, 10).map((ins, i) => (
+                  <tr key={ins.rif} style={{ background: i % 2 === 0 ? BRAND.white : BRAND.grayLight }}>
+                    {activeCols.map((c) => (
+                      <td key={c.key} style={{ padding: '9px 12px', borderBottom: `1px solid ${BRAND.grayBorder}`, fontSize: 12, whiteSpace: 'nowrap', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {String(c.get(ins))}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {filteredData.length > 10 && (
+                  <tr><td colSpan={activeCols.length} style={{ padding: '10px 12px', textAlign: 'center', color: BRAND.gray, fontSize: 12, fontStyle: 'italic' }}>
+                    Showing 10 of {filteredData.length} records. All records will be included in the export.
+                  </td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <PrimaryButton onClick={onBack} variant="secondary">← Back</PrimaryButton>
+        <PrimaryButton onClick={handlePrint} variant="outline" disabled={activeCols.length === 0 || filteredData.length === 0}>
+          Print Report
+        </PrimaryButton>
+        <PrimaryButton onClick={handleDownload} variant="dark" disabled={activeCols.length === 0 || filteredData.length === 0 || downloading}>
+          {downloading ? 'Generating...' : 'Download PDF'}
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
 function AdminDashboard({
   inspections,
   onView,
@@ -4453,6 +4714,7 @@ function AppInner() {
             setScreen('dashboard');
           }}
           onManage={() => setScreen('manage')}
+          onReport={() => setScreen('report')}
         />
       )}
 
@@ -4538,6 +4800,14 @@ function AppInner() {
           onAddMunicipality={handleAddMunicipality}
           onAddBarangay={handleAddBarangay}
           onAddFleet={handleAddFleet}
+        />
+      )}
+
+      {screen === 'report' && (
+        <ReportScreen
+          inspections={inspections}
+          technicians={technicians}
+          onBack={() => setScreen('dashboard')}
         />
       )}
 
