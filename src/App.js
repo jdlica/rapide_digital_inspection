@@ -2090,7 +2090,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, onBack, brands, models, municipalities, barangays, fleets }) {
+function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onChangePackage, brands, models, municipalities, barangays, fleets }) {
   const [errors, setErrors] = useState({});
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
   const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
@@ -2139,6 +2139,49 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, brands, models, 
       <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
         Fill in vehicle and customer information
       </p>
+
+      {/* Package switcher */}
+      {(() => {
+        const packages = [
+          { key: 'quick', label: 'Quick', color: BRAND.green, bg: BRAND.greenBg },
+          { key: 'express', label: 'Express', color: '#B45309', bg: BRAND.yellowStatusBg },
+          { key: 'plus', label: 'Premium Plus', color: BRAND.red, bg: BRAND.redBg },
+        ];
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: BRAND.gray, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Package
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {packages.map((pkg) => {
+                const selected = packageType === pkg.key;
+                return (
+                  <button
+                    key={pkg.key}
+                    onClick={() => onChangePackage(pkg.key)}
+                    style={{
+                      flex: 1,
+                      padding: '10px 6px',
+                      borderRadius: 10,
+                      border: `2px solid ${selected ? pkg.color : BRAND.grayBorder}`,
+                      background: selected ? pkg.bg : BRAND.white,
+                      color: selected ? pkg.color : BRAND.gray,
+                      fontWeight: 800,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.4,
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {pkg.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Vehicle Section */}
       <div className="form-card">
@@ -3460,14 +3503,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     onSave(decisions);
   };
 
-  const printInspection = () => {
-    const printWindow = window.open('', '_blank');
+  const buildSummaryHTML = () => {
     const findings = inspection.findings || {};
     const categories = INSPECTION_DATA[inspection.packageType] || [];
-    const pkgLabel = {
-      quick: 'QUICK',
-      express: 'EXPRESS',
-      plus: 'PREMIUM PLUS',
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+
+    const badge = (pf) => {
+      if (!pf) return '—';
+      const color = pf.color === 'green' ? '#16A34A' : pf.color === 'yellow' ? '#D97706' : '#DC2626';
+      const bg = pf.color === 'green' ? '#DCFCE7' : pf.color === 'yellow' ? '#FEF3C7' : '#FEE2E2';
+      return `<span style="display:inline-block;padding:4px 14px;border-radius:4px;color:${color};font-weight:800;font-size:12px;background:${bg};letter-spacing:0.3px;">${pf.action}</span>`;
     };
 
     let findingsHTML = '';
@@ -3476,12 +3521,6 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       cat.items.forEach((item) => {
         const key = `${cat.category}::${item.name}`;
         const f = findings[key];
-        const badge = (pf) => {
-          if (!pf) return '—';
-          const color = pf.color === 'green' ? '#16A34A' : pf.color === 'yellow' ? '#D97706' : '#DC2626';
-          const bg = pf.color === 'green' ? '#DCFCE7' : pf.color === 'yellow' ? '#FEF3C7' : '#FEE2E2';
-          return `<span style="display:inline-block;padding:4px 14px;border-radius:4px;color:${color};font-weight:800;font-size:12px;background:${bg};letter-spacing:0.3px;">${pf.action}</span>`;
-        };
         if (item.hasPosition && f?.positions) {
           item.positions.forEach((pos) => {
             const pf = f.positions[pos];
@@ -3513,76 +3552,101 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         </div>`;
     });
 
-    printWindow.document
-      .write(`<!DOCTYPE html><html><head><title>Rapide Inspection - ${
-      inspection.rif
-    }</title>
-      <style>@media print { body { margin: 0; } } body { font-family: Arial, sans-serif; margin: 20px; color: #1A1A1A; }</style>
-    </head><body>
+    // Collect photos from all findings
+    const photos = [];
+    categories.forEach((cat) => {
+      cat.items.forEach((item) => {
+        const key = `${cat.category}::${item.name}`;
+        const f = findings[key];
+        if (f?.photo) {
+          photos.push({ category: cat.category, name: item.name, photo: f.photo, color: f.color, action: f.action });
+        }
+      });
+    });
+
+    let photosPageHTML = '';
+    if (photos.length > 0) {
+      const photoCards = photos.map((p) => {
+        const borderColor = p.color === 'red' ? '#E31E24' : '#F59E0B';
+        const bgColor = p.color === 'red' ? '#FEE2E2' : '#FEF3C7';
+        const textColor = p.color === 'red' ? '#DC2626' : '#D97706';
+        return `
+          <div style="border:2px solid ${borderColor};border-radius:8px;overflow:hidden;break-inside:avoid;">
+            <img src="${p.photo}" style="width:100%;height:200px;object-fit:cover;display:block;" />
+            <div style="padding:10px 12px;background:${bgColor};">
+              <div style="font-size:13px;font-weight:800;color:#1A1A1A;">${p.name}</div>
+              <div style="font-size:11px;color:#6B7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.4px;">${p.category}</div>
+              <span style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:4px;background:${borderColor};color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;">${p.action}</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      photosPageHTML = `
+        <div style="page-break-before:always;padding-top:8px;">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="background:#FFD100;padding:12px 24px;border-radius:8px;display:inline-block;margin-bottom:12px;">
+              <div style="font-family:'Arial Black',sans-serif;font-size:28px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:3px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+            </div>
+            <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#1A1A1A;">Inspection Photo Documentation</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:4px;">Visual documentation of flagged inspection items &mdash; ${inspection.rif}</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${inspection.customerData?.make || ''} ${inspection.customerData?.model || ''} ${inspection.customerData?.year || ''} &bull; ${inspection.customerData?.plateNo || ''} &bull; ${inspection.date}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            ${photoCards}
+          </div>
+        </div>`;
+    }
+
+    const logoBlock = `
       <div style="text-align:center;margin-bottom:16px;">
         <div style="background:#FFD100;padding:16px;border-radius:8px;display:inline-block;">
-          <div style="font-family:'Arial Black',sans-serif;font-size:32px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
+          <div style="font-family:'Arial Black',sans-serif;font-size:32px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
           <div style="font-size:10px;font-weight:700;letter-spacing:3px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
         </div>
-      </div>
+      </div>`;
+
+    return `<!DOCTYPE html><html><head><title>Rapide Inspection - ${inspection.rif}</title>
+      <style>
+        @media print { body { margin: 0; } @page { size: A4 portrait; margin: 12mm; } }
+        body { font-family: Arial, sans-serif; margin: 20px; color: #1A1A1A; }
+      </style>
+    </head><body>
+      ${logoBlock}
       <div style="text-align:center;margin-bottom:16px;"><strong style="font-size:16px;">VEHICLE INSPECTION REPORT</strong></div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-        <tr><td style="padding:4px 8px;font-size:12px;width:25%;"><strong>RIF #:</strong> ${
-          inspection.rif
-        }</td>
-            <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Date:</strong> ${
-              inspection.date
-            }</td>
-            <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Package:</strong> ${
-              pkgLabel[inspection.packageType]
-            }</td>
-            <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Technician:</strong> ${
-              inspection.technicianName
-            }</td></tr>
+        <tr>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>RIF #:</strong> ${inspection.rif}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Date:</strong> ${inspection.date}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Package:</strong> ${pkgLabel[inspection.packageType]}</td>
+          <td style="padding:4px 8px;font-size:12px;width:25%;"><strong>Technician:</strong> ${inspection.technicianName}</td>
+        </tr>
       </table>
       <table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:1px solid #ccc;">
         <tr style="background:#f5f5f5;"><td colspan="4" style="padding:8px 10px;font-weight:800;font-size:13px;">VEHICLE INFORMATION</td></tr>
-        <tr><td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Make:</strong> ${
-          inspection.customerData?.make || ''
-        }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Model:</strong> ${
-              inspection.customerData?.model || ''
-            }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Year:</strong> ${
-              inspection.customerData?.year || ''
-            }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Plate:</strong> ${
-              inspection.customerData?.plateNo || ''
-            }</td></tr>
-        <tr><td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Trans:</strong> ${
-          inspection.customerData?.transmission || ''
-        }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Fuel:</strong> ${
-              inspection.customerData?.fuelType || ''
-            }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="2"><strong>KM:</strong> ${
-              inspection.customerData?.kmReading || ''
-            }</td></tr>
+        <tr>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Make:</strong> ${inspection.customerData?.make || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Model:</strong> ${inspection.customerData?.model || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Year:</strong> ${inspection.customerData?.year || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Plate:</strong> ${inspection.customerData?.plateNo || ''}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Trans:</strong> ${inspection.customerData?.transmission || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Fuel:</strong> ${inspection.customerData?.fuelType || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="2"><strong>KM:</strong> ${inspection.customerData?.kmReading || ''}</td>
+        </tr>
       </table>
       <table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:1px solid #ccc;">
         <tr style="background:#f5f5f5;"><td colspan="4" style="padding:8px 10px;font-weight:800;font-size:13px;">CUSTOMER INFORMATION</td></tr>
-        <tr><td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Name:</strong> ${
-          inspection.customerData?.title || ''
-        } ${inspection.customerData?.firstName || ''} ${
-      inspection.customerData?.lastName || ''
-    }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Mobile:</strong> ${
-              inspection.customerData?.mobileNo || ''
-            }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="2"><strong>Email:</strong> ${
-              inspection.customerData?.email || ''
-            }</td></tr>
-        <tr><td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Company:</strong> ${
-          inspection.customerData?.company || ''
-        }</td>
-            <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="3"><strong>Location:</strong> ${
-              inspection.customerData?.barangay || ''
-            }, ${inspection.customerData?.city || ''}</td></tr>
+        <tr>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Name:</strong> ${inspection.customerData?.title || ''} ${inspection.customerData?.firstName || ''} ${inspection.customerData?.lastName || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Mobile:</strong> ${inspection.customerData?.mobileNo || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="2"><strong>Email:</strong> ${inspection.customerData?.email || ''}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;"><strong>Company:</strong> ${inspection.customerData?.company || ''}</td>
+          <td style="padding:4px 10px;font-size:12px;border:1px solid #eee;" colspan="3"><strong>Location:</strong> ${inspection.customerData?.barangay || ''}, ${inspection.customerData?.city || ''}</td>
+        </tr>
       </table>
       <div style="display:flex;gap:12px;margin-bottom:12px;">
         <div style="flex:1;text-align:center;padding:10px;background:#DCFCE7;border-radius:6px;"><div style="font-size:24px;font-weight:900;color:#22C55E;">${greenCount}</div><div style="font-size:11px;font-weight:700;color:#22C55E;">GOOD</div></div>
@@ -3590,18 +3654,32 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         <div style="flex:1;text-align:center;padding:10px;background:#FEE2E2;border-radius:6px;"><div style="font-size:24px;font-weight:900;color:#E31E24;">${redCount}</div><div style="font-size:11px;font-weight:700;color:#E31E24;">CRITICAL</div></div>
       </div>
       ${findingsHTML}
-      ${
-        inspection.techComment
-          ? `<div style="margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:6px;"><strong style="font-size:12px;">Technician Comment:</strong><div style="font-size:12px;margin-top:4px;">${inspection.techComment}</div></div>`
-          : ''
-      }
+      ${inspection.techComment ? `<div style="margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:6px;"><strong style="font-size:12px;">Technician Comment:</strong><div style="font-size:12px;margin-top:4px;">${inspection.techComment}</div></div>` : ''}
       <div style="margin-top:40px;display:flex;justify-content:space-between;">
         <div style="text-align:center;width:40%;"><div style="border-top:1px solid #1A1A1A;padding-top:4px;font-size:11px;">Customer Signature</div></div>
         <div style="text-align:center;width:40%;"><div style="border-top:1px solid #1A1A1A;padding-top:4px;font-size:11px;">Authorized by</div></div>
       </div>
-    </body></html>`);
+      ${photosPageHTML}
+    </body></html>`;
+  };
+
+  const printInspection = () => {
+    const html = buildSummaryHTML();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
     printWindow.document.close();
     printWindow.print();
+  };
+
+  const downloadSummary = () => {
+    const html = buildSummaryHTML();
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rapide-Inspection-${inspection.rif}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const printInspectionForm = () => {
@@ -3728,6 +3806,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
           >
             Print Summary
+          </PrimaryButton>
+          <PrimaryButton
+            onClick={downloadSummary}
+            variant="secondary"
+            style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
+          >
+            Download PDF
           </PrimaryButton>
         </div>
       </div>
@@ -4180,6 +4265,10 @@ function AppInner() {
     setScreen('login');
   };
 
+  const handleChangePackage = (pkg) => {
+    setPackageType(pkg); // only changes package, preserves all form data
+  };
+
   const handlePackageSelect = (pkg) => {
     draftRifRef.current = null; // new inspection = new draft RIF
     setPackageType(pkg);
@@ -4328,6 +4417,8 @@ function AppInner() {
           setData={setCustomerData}
           onNext={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
           onBack={() => setScreen('packageSelect')}
+          packageType={packageType}
+          onChangePackage={handleChangePackage}
           brands={brands}
           models={models}
           municipalities={municipalities}
