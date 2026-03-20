@@ -1530,7 +1530,7 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-function TopBar({ user, onLogout, onDashboard, onManage }) {
+function TopBar({ user, onLogout, onDashboard, onManage, packageType }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = user.role === 'admin' || user.role === 'service_manager';
 
@@ -1549,17 +1549,39 @@ function TopBar({ user, onLogout, onDashboard, onManage }) {
           zIndex: 200,
         }}
       >
-        <div
-          style={{
-            fontFamily: "'Arial Black', sans-serif",
-            fontSize: 24,
-            fontWeight: 900,
-            fontStyle: 'italic',
-            color: BRAND.black,
-            letterSpacing: -1,
-          }}
-        >
-          Rapidé
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div
+            style={{
+              fontFamily: "'Arial Black', sans-serif",
+              fontSize: 24,
+              fontWeight: 900,
+              fontStyle: 'italic',
+              color: BRAND.black,
+              letterSpacing: -1,
+            }}
+          >
+            Rapidé
+          </div>
+          {packageType && (() => {
+            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+            const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.red };
+            const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: '#FEE2E2' };
+            return (
+              <span style={{
+                padding: '3px 10px',
+                borderRadius: 6,
+                fontSize: 11,
+                fontWeight: 800,
+                background: pkgBg[packageType],
+                color: pkgColor[packageType],
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                border: `1px solid ${pkgColor[packageType]}40`,
+              }}>
+                {pkgLabel[packageType]}
+              </span>
+            );
+          })()}
         </div>
         <button
           onClick={() => setMenuOpen(true)}
@@ -2068,7 +2090,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipalities, barangays, fleets }) {
+function CustomerVehicleScreen({ data, setData, onNext, onBack, brands, models, municipalities, barangays, fleets }) {
   const [errors, setErrors] = useState({});
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
   const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
@@ -2369,8 +2391,9 @@ function CustomerVehicleScreen({ data, setData, onNext, brands, models, municipa
       )}
 
       <div
-        style={{ display: 'flex', justifyContent: 'center', paddingTop: 20 }}
+        style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 20 }}
       >
+        <PrimaryButton onClick={onBack} variant="secondary">← Back</PrimaryButton>
         <PrimaryButton onClick={handleNext}>Next →</PrimaryButton>
       </div>
     </div>
@@ -2537,6 +2560,21 @@ function InspectionScreen({
 }) {
   const [attempted, setAttempted] = useState(false);
   const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
+  const fileInputRefs = useRef({});
+
+  const handlePhotoCapture = (key, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFindings((prev) => ({
+        ...prev,
+        [key]: { ...(prev[key] || {}), photo: ev.target.result },
+      }));
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
   const cat = categories[currentCategoryIdx];
   const isFirst = currentCategoryIdx === 0;
   const isLast = currentCategoryIdx === categories.length - 1;
@@ -2556,6 +2594,7 @@ function InspectionScreen({
     if (!allFilled) { setAttempted(true); return; }
     setAttempted(false);
     setActivePosition(null);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     if (isLast) onFinish();
     else setCurrentCategoryIdx(currentCategoryIdx + 1);
   };
@@ -2577,18 +2616,20 @@ function InspectionScreen({
     const cond = item.conditions[condIdx];
     setFindings((prev) => {
       const existing = prev[key] || { positions: {} };
+      const currentPosData = existing.positions?.[pos];
+      // Toggle: clicking the already-selected condition unchecks it
+      if (currentPosData?.conditionIdx === condIdx) {
+        const updatedPositions = { ...existing.positions };
+        delete updatedPositions[pos];
+        return { ...prev, [key]: { ...existing, positions: updatedPositions } };
+      }
       const updatedPositions = {
         ...existing.positions,
         [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
       };
-      return { ...prev, [key]: { positions: updatedPositions } };
+      return { ...prev, [key]: { ...existing, positions: updatedPositions } };
     });
     setAttempted(false);
-    // Auto-advance to next unfilled position
-    const currentPositions = findings[key]?.positions || {};
-    const nextPos = item.positions.find((p) => p !== pos && !currentPositions[p]);
-    if (nextPos) setActivePosition({ itemName, pos: nextPos });
-    else setActivePosition(null);
   };
 
   const progress = ((currentCategoryIdx + 1) / categories.length) * 100;
@@ -2674,6 +2715,13 @@ function InspectionScreen({
             cardBorder = colorMap[finding.color];
           }
 
+          const showCamera = (
+            (!item.hasPosition && finding && (finding.color === 'yellow' || finding.color === 'red')) ||
+            (item.hasPosition && finding?.positions && item.positions.some(
+              (p) => finding.positions[p]?.color === 'yellow' || finding.positions[p]?.color === 'red'
+            ))
+          );
+
           return (
             <div
               key={item.name}
@@ -2686,8 +2734,46 @@ function InspectionScreen({
               }}
             >
               {/* Item name header */}
-              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{item.name}</div>
+                {showCamera && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 12 }}>
+                    {finding?.photo && (
+                      <img
+                        src={finding.photo}
+                        alt=""
+                        style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', border: `2px solid ${cardBorder}`, cursor: 'pointer' }}
+                        onClick={() => window.open(finding.photo, '_blank')}
+                      />
+                    )}
+                    <button
+                      onClick={() => fileInputRefs.current[key]?.click()}
+                      style={{
+                        background: cardBorder,
+                        border: 'none',
+                        borderRadius: 8,
+                        width: 36,
+                        height: 36,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        fontSize: 18,
+                      }}
+                    >
+                      📷
+                    </button>
+                    <input
+                      ref={(el) => { fileInputRefs.current[key] = el; }}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      style={{ display: 'none' }}
+                      onChange={(e) => handlePhotoCapture(key, e)}
+                    />
+                  </div>
+                )}
               </div>
 
               {item.hasPosition ? (
@@ -2857,7 +2943,7 @@ function InspectionScreen({
             onClick={
               isFirst
                 ? onBack
-                : () => { setAttempted(false); setCurrentCategoryIdx(currentCategoryIdx - 1); }
+                : () => { setAttempted(false); window.scrollTo({ top: 0, behavior: 'instant' }); setCurrentCategoryIdx(currentCategoryIdx - 1); }
             }
             variant="secondary"
           >
@@ -3001,12 +3087,14 @@ function SubmitModal({ onCancel, onConfirm }) {
 function AdminDashboard({
   inspections,
   onView,
+  onResume,
   onNewInspection,
   technicians,
 }) {
   const [search, setSearch] = useState('');
   const [filterPkg, setFilterPkg] = useState('');
   const [filterTech, setFilterTech] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
 
   const filtered = inspections.filter((ins) => {
     if (
@@ -3018,6 +3106,7 @@ function AdminDashboard({
       return false;
     if (filterPkg && ins.packageType !== filterPkg) return false;
     if (filterTech && ins.technicianName !== filterTech) return false;
+    if (filterStatus && ins.status !== filterStatus) return false;
     return true;
   });
 
@@ -3027,6 +3116,14 @@ function AdminDashboard({
     express: BRAND.yellowStatus,
     plus: BRAND.red,
   };
+
+  const statusLabel = { draft: 'Draft', in_progress: 'In Progress', finished: 'Finished', submitted: 'Finished', reviewed: 'Finished' };
+  const statusColor = { draft: BRAND.gray, in_progress: BRAND.yellowStatus, finished: BRAND.green, submitted: BRAND.green, reviewed: BRAND.green };
+  const statusBg = { draft: BRAND.grayLight, in_progress: BRAND.yellowStatusBg, finished: BRAND.greenBg, submitted: BRAND.greenBg, reviewed: BRAND.greenBg };
+
+  const finishedCount = inspections.filter((i) => ['finished', 'submitted', 'reviewed'].includes(i.status)).length;
+  const inProgressCount = inspections.filter((i) => i.status === 'in_progress').length;
+  const draftCount = inspections.filter((i) => i.status === 'draft').length;
 
   return (
     <div className="form-screen">
@@ -3054,7 +3151,7 @@ function AdminDashboard({
           <p
             style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}
           >
-            {inspections.length} inspections completed
+            {finishedCount} finished · {inProgressCount} in progress · {draftCount} draft
           </p>
         </div>
         <PrimaryButton
@@ -3120,6 +3217,23 @@ function AdminDashboard({
             </option>
           ))}
         </select>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          style={{
+            minHeight: 44,
+            padding: '8px 14px',
+            border: `2px solid ${BRAND.grayBorder}`,
+            borderRadius: 10,
+            fontSize: 14,
+            background: BRAND.white,
+          }}
+        >
+          <option value="">All Status</option>
+          <option value="draft">Draft</option>
+          <option value="in_progress">In Progress</option>
+          <option value="finished">Finished</option>
+        </select>
       </div>
 
       {/* Table */}
@@ -3141,6 +3255,7 @@ function AdminDashboard({
                 'Customer',
                 'Technician',
                 'Package',
+                'Status',
                 'Actions',
               ].map((h) => (
                 <th
@@ -3164,7 +3279,7 @@ function AdminDashboard({
             {filtered.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   style={{
                     padding: 40,
                     textAlign: 'center',
@@ -3175,68 +3290,104 @@ function AdminDashboard({
                 </td>
               </tr>
             )}
-            {filtered.map((ins, i) => (
-              <tr
-                key={ins.rif}
-                style={{
-                  background: i % 2 === 0 ? BRAND.white : BRAND.grayLight,
-                  cursor: 'pointer',
-                }}
-                onClick={() => onView(ins)}
-              >
-                <td
+            {filtered.map((ins, i) => {
+              const isResumable = ins.status === 'draft' || ins.status === 'in_progress';
+              return (
+                <tr
+                  key={ins.rif}
                   style={{
-                    padding: '14px 16px',
-                    fontWeight: 700,
-                    fontFamily: 'monospace',
+                    background: i % 2 === 0 ? BRAND.white : BRAND.grayLight,
+                    cursor: 'pointer',
                   }}
+                  onClick={() => isResumable ? onResume(ins) : onView(ins)}
                 >
-                  {ins.rif}
-                </td>
-                <td style={{ padding: '14px 16px' }}>{ins.date}</td>
-                <td style={{ padding: '14px 16px', fontWeight: 600 }}>
-                  {ins.customerName}
-                </td>
-                <td style={{ padding: '14px 16px' }}>{ins.technicianName}</td>
-                <td style={{ padding: '14px 16px' }}>
-                  <span
+                  <td
                     style={{
-                      padding: '4px 12px',
-                      borderRadius: 6,
-                      fontSize: 12,
-                      fontWeight: 800,
-                      background: pkgColor[ins.packageType] + '20',
-                      color: pkgColor[ins.packageType],
-                      textTransform: 'uppercase',
+                      padding: '14px 16px',
+                      fontWeight: 700,
+                      fontFamily: 'monospace',
                     }}
                   >
-                    {pkgLabel[ins.packageType]}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onView(ins);
-                      }}
+                    {ins.rif}
+                  </td>
+                  <td style={{ padding: '14px 16px' }}>{ins.date}</td>
+                  <td style={{ padding: '14px 16px', fontWeight: 600 }}>
+                    {ins.customerName}
+                  </td>
+                  <td style={{ padding: '14px 16px' }}>{ins.technicianName}</td>
+                  <td style={{ padding: '14px 16px' }}>
+                    <span
                       style={{
-                        padding: '6px 14px',
+                        padding: '4px 12px',
                         borderRadius: 6,
-                        border: `1px solid ${BRAND.yellow}`,
-                        background: BRAND.yellowPale,
-                        color: BRAND.black,
-                        fontWeight: 700,
                         fontSize: 12,
-                        cursor: 'pointer',
+                        fontWeight: 800,
+                        background: pkgColor[ins.packageType] + '20',
+                        color: pkgColor[ins.packageType],
+                        textTransform: 'uppercase',
                       }}
                     >
-                      View
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {pkgLabel[ins.packageType]}
+                    </span>
+                  </td>
+                  <td style={{ padding: '14px 16px' }}>
+                    <span
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: 6,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        background: statusBg[ins.status] || BRAND.grayLight,
+                        color: statusColor[ins.status] || BRAND.gray,
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {statusLabel[ins.status] || ins.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {isResumable ? (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onResume(ins); }}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: 6,
+                            border: `1px solid ${BRAND.yellowStatus}`,
+                            background: BRAND.yellowStatusBg,
+                            color: BRAND.black,
+                            fontWeight: 700,
+                            fontSize: 12,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Resume
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onView(ins); }}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: 6,
+                            border: `1px solid ${BRAND.yellow}`,
+                            background: BRAND.yellowPale,
+                            color: BRAND.black,
+                            fontWeight: 700,
+                            fontSize: 12,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          View
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -3972,6 +4123,54 @@ function AppInner() {
   const [technicians, setTechnicians] = useState([]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
 
+  // Draft tracking — use a ref so RIF is stable across re-renders
+  const draftRifRef = useRef(null);
+
+  const getOrCreateDraftRif = () => {
+    if (!draftRifRef.current) draftRifRef.current = generateRIF();
+    return draftRifRef.current;
+  };
+
+  const saveCurrentDraft = (savedScreen, savedCatIdx) => {
+    const rif = getOrCreateDraftRif();
+    const status = (savedScreen === 'inspection' || savedScreen === 'techComment') ? 'in_progress' : 'draft';
+    const draft = {
+      rif,
+      packageType,
+      date: new Date().toLocaleDateString('en-PH'),
+      customerName: `${customerData.title || ''} ${customerData.firstName || ''} ${customerData.lastName || ''}`.trim(),
+      technicianName: serviceData.technicianName || '',
+      customerData: { ...customerData },
+      serviceData: { ...serviceData },
+      findings: { ...findings },
+      techComment,
+      status,
+      savedScreen,
+      savedCatIdx: savedCatIdx !== undefined ? savedCatIdx : currentCatIdx,
+    };
+    setInspections((prev) => {
+      const idx = prev.findIndex((i) => i.rif === rif);
+      if (idx >= 0) {
+        const updated = [...prev];
+        updated[idx] = draft;
+        return updated;
+      }
+      return [draft, ...prev];
+    });
+  };
+
+  const handleResume = (ins) => {
+    draftRifRef.current = ins.rif;
+    setPackageType(ins.packageType);
+    setCustomerData({ ...ins.customerData });
+    setServiceData({ ...ins.serviceData });
+    setFindings({ ...ins.findings });
+    setTechComment(ins.techComment || '');
+    setCurrentCatIdx(ins.savedCatIdx || 0);
+    setViewingInspection(null);
+    setScreen(ins.savedScreen || 'customerVehicle');
+  };
+
   const handleLogin = (u) => {
     setUser(u);
     setScreen('packageSelect');
@@ -3982,6 +4181,7 @@ function AppInner() {
   };
 
   const handlePackageSelect = (pkg) => {
+    draftRifRef.current = null; // new inspection = new draft RIF
     setPackageType(pkg);
     setCustomerData({ date: new Date().toLocaleDateString('en-PH') });
     setServiceData({});
@@ -3992,7 +4192,7 @@ function AppInner() {
   };
 
   const handleSubmitInspection = () => {
-    const rif = generateRIF();
+    const rif = getOrCreateDraftRif();
     const newInspection = {
       rif,
       packageType,
@@ -4005,9 +4205,18 @@ function AppInner() {
       serviceData: { ...serviceData },
       findings: { ...findings },
       techComment,
-      status: 'submitted',
+      status: 'finished',
     };
-    setInspections((prev) => [newInspection, ...prev]);
+    setInspections((prev) => {
+      const idx = prev.findIndex((i) => i.rif === rif);
+      if (idx >= 0) {
+        const updated = [...prev];
+        updated[idx] = newInspection;
+        return updated;
+      }
+      return [newInspection, ...prev];
+    });
+    draftRifRef.current = null;
     setShowSubmitModal(false);
     setScreen('packageSelect');
     setSuccessToast(rif);
@@ -4097,7 +4306,11 @@ function AppInner() {
         <TopBar
           user={user}
           onLogout={handleLogout}
+          packageType={['customerVehicle', 'serviceQuestions', 'inspection', 'techComment'].includes(screen) ? packageType : null}
           onDashboard={() => {
+            if (!['login', 'packageSelect', 'dashboard', 'manage'].includes(screen)) {
+              saveCurrentDraft(screen);
+            }
             setViewingInspection(null);
             setScreen('dashboard');
           }}
@@ -4113,7 +4326,8 @@ function AppInner() {
         <CustomerVehicleScreen
           data={customerData}
           setData={setCustomerData}
-          onNext={() => setScreen('serviceQuestions')}
+          onNext={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
+          onBack={() => setScreen('packageSelect')}
           brands={brands}
           models={models}
           municipalities={municipalities}
@@ -4128,9 +4342,10 @@ function AppInner() {
           setData={setServiceData}
           onNext={() => {
             setCurrentCatIdx(0);
+            saveCurrentDraft('inspection', 0);
             setScreen('inspection');
           }}
-          onBack={() => setScreen('customerVehicle')}
+          onBack={() => { saveCurrentDraft('customerVehicle'); setScreen('customerVehicle'); }}
           technicians={technicians}
         />
       )}
@@ -4142,8 +4357,8 @@ function AppInner() {
           setFindings={setFindings}
           currentCategoryIdx={currentCatIdx}
           setCurrentCategoryIdx={setCurrentCatIdx}
-          onFinish={() => setScreen('techComment')}
-          onBack={() => setScreen('serviceQuestions')}
+          onFinish={() => { saveCurrentDraft('techComment'); setScreen('techComment'); }}
+          onBack={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
         />
       )}
 
@@ -4153,7 +4368,9 @@ function AppInner() {
           setComment={setTechComment}
           onFinish={() => setShowSubmitModal(true)}
           onBack={() => {
-            setCurrentCatIdx(categories.length - 1);
+            const lastIdx = categories.length - 1;
+            setCurrentCatIdx(lastIdx);
+            saveCurrentDraft('inspection', lastIdx);
             setScreen('inspection');
           }}
         />
@@ -4188,6 +4405,7 @@ function AppInner() {
         <AdminDashboard
           inspections={inspections}
           onView={(ins) => setViewingInspection(ins)}
+          onResume={handleResume}
           onNewInspection={() => setScreen('packageSelect')}
           technicians={technicians}
         />
