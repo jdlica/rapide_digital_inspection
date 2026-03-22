@@ -4006,107 +4006,109 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     };
 
     // ── Build HTML ────────────────────────────────────────────────────────────
-    // Inline field helper: label + underlined value
-    const fld = (label, value, minW) =>
-      `${label} <span style="border-bottom:1px solid #555;display:inline-block;min-width:${minW||48}px;font-weight:400;">${value||'&nbsp;'}</span>`;
+    // Flex label+underline helper — underline fills remaining cell width
+    const fld = (label, value) =>
+      `<div style="display:flex;align-items:baseline;gap:1px;"><span style="font-weight:700;white-space:nowrap;font-size:10px;">${label}&nbsp;</span><span style="flex:1;border-bottom:1px solid #000;min-height:12px;font-size:10px;">${value||''}</span></div>`;
 
     return `<!DOCTYPE html><html>
 <head>
   <meta charset="UTF-8"/>
   <title>Quick Safety Inspection - ${inspection.rif}</title>
   <style>
-    @media print { body{margin:0;} @page{size:8.5in 13in portrait;margin:10mm 12mm;} }
+    @media print { body{margin:0;} @page{size:8.5in 11in portrait;margin:8mm 10mm;} }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:Arial,Helvetica,sans-serif;padding:16px 20px;color:#1A1A1A;font-size:11px;background:#fff;}
+    body{font-family:Arial,Helvetica,sans-serif;padding:10px 14px;color:#000;font-size:10px;background:#fff;}
     table{width:100%;border-collapse:collapse;}
-    td,th{border:1px solid #333;padding:5px 7px;vertical-align:middle;font-size:11px;}
+    td,th{border:1px solid #000;padding:3px 5px;vertical-align:middle;font-size:10px;}
   </style>
 </head>
 <body>
 
 <!-- ══ TITLE ══ -->
-<div style="text-align:center;margin-bottom:8px;line-height:1;">
-  <span style="font-family:'Arial Black',Impact,Arial,sans-serif;font-size:44px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;">QUICK SAFETY INSPECTION FORM</span>
+<div style="text-align:center;margin-bottom:5px;line-height:1;">
+  <span style="font-family:'Arial Black',Impact,Arial,sans-serif;font-size:40px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#000;">QUICK SAFETY INSPECTION FORM</span>
 </div>
 
 <!-- ══ OUTER BORDER ══ -->
-<div style="border:2px solid #1A1A1A;border-radius:12px;overflow:hidden;">
+<div style="border:2px solid #000;border-radius:10px;overflow:hidden;">
 
 <!-- ─── VEHICLE DETAILS ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:700;font-size:11px;letter-spacing:2px;">VEHICLE DETAILS</div>
-<!-- 8-column: col1-3 = Model/Year/Make, col4-6 merged as Plate No, col7 = KM Reading (rowspan), col8 = Date (rowspan) -->
+<div style="background:#000;color:#fff;text-align:center;padding:4px 0;font-weight:700;font-size:10px;letter-spacing:2.5px;">VEHICLE DETAILS</div>
 <table>
   <colgroup>
     <col style="width:12%"/>
+    <col style="width:14%"/>
     <col style="width:12%"/>
-    <col style="width:12%"/>
     <col style="width:10%"/>
     <col style="width:10%"/>
     <col style="width:10%"/>
-    <col style="width:17%"/>
+    <col style="width:15%"/>
     <col style="width:17%"/>
   </colgroup>
   <tbody>
     <tr>
-      <td style="padding:5px 7px;">${fld('Model:', cd.model, 42)}</td>
-      <td style="padding:5px 7px;">${fld('Year:', cd.year, 32)}</td>
-      <td style="padding:5px 7px;">${fld('Make:', cd.make, 42)}</td>
-      <td colspan="3" style="padding:5px 7px;">${fld('Plate No:', cd.plateNo, 90)}</td>
-      <td rowspan="2" style="padding:5px 7px;font-weight:700;text-align:center;vertical-align:middle;">KM Reading<br/><span style="font-weight:400;">${cd.kmReading||'&nbsp;'}</span></td>
-      <td rowspan="2" style="padding:5px 7px;vertical-align:middle;">Date:<br/><span style="font-weight:400;">${inspection.date||'&nbsp;'}</span></td>
+      <td style="padding:4px 5px;">${fld('Model:', cd.model)}</td>
+      <td style="padding:4px 5px;">${fld('Year:', cd.year)}</td>
+      <td style="padding:4px 5px;">${fld('Make:', cd.make)}</td>
+      <td colspan="3" style="padding:4px 5px;">${fld('Plate No:', cd.plateNo)}</td>
+      <td rowspan="2" style="padding:4px 5px;font-weight:700;text-align:center;vertical-align:middle;font-size:10px;">KM Reading<br/><span style="font-weight:400;">${cd.kmReading||''}</span></td>
+      <td rowspan="2" style="padding:4px 5px;vertical-align:middle;font-size:10px;"><span style="font-weight:700;">Date:</span><br/>${inspection.date||''}</td>
     </tr>
     <tr>
-      <td style="padding:5px 7px;">Manual &nbsp;${sq(isManual, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">A/T &nbsp;${sq(isAT, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">CVT &nbsp;${sq(isCVT, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">Gas &nbsp;${sq(isGas, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">Diesel &nbsp;${sq(isDiesel, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">EV/HEV &nbsp;${sq(isEV, '#1A1A1A')}</td>
+      <td style="padding:4px 5px;">Manual &nbsp;${sq(isManual, '#000')}</td>
+      <td style="padding:4px 5px;">A/T &nbsp;${sq(isAT, '#000')}</td>
+      <td style="padding:4px 5px;">CVT &nbsp;${sq(isCVT, '#000')}</td>
+      <td style="padding:4px 5px;">Gas &nbsp;${sq(isGas, '#000')}</td>
+      <td style="padding:4px 5px;">Diesel &nbsp;${sq(isDiesel, '#000')}</td>
+      <td style="padding:4px 5px;">EV/HEV &nbsp;${sq(isEV, '#000')}</td>
     </tr>
   </tbody>
 </table>
 
 <!-- ─── COSTUMER DETAILS ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:700;font-size:11px;letter-spacing:2px;">COSTUMER DETAILS</div>
+<div style="background:#000;color:#fff;text-align:center;padding:4px 0;font-weight:700;font-size:10px;letter-spacing:2.5px;">COSTUMER DETAILS</div>
 <table>
   <colgroup>
-    <col style="width:18%"/>
+    <col style="width:17%"/>
+    <col style="width:10%"/>
     <col style="width:11%"/>
     <col style="width:22%"/>
-    <col style="width:25%"/>
-    <col style="width:24%"/>
+    <col style="width:20%"/>
+    <col style="width:20%"/>
   </colgroup>
   <tbody>
     <tr>
-      <td style="padding:10px 7px 5px;">${fld('Company:', cd.company, 60)}</td>
-      <td style="padding:10px 7px 5px;">Mr. &nbsp;${sq(isMr, '#1A1A1A')}</td>
-      <td style="padding:10px 7px 5px;">${fld('First Name:', cd.firstName, 65)}</td>
-      <td style="padding:10px 7px 5px;">${fld('Mobile No.', cd.mobileNo, 80)}</td>
-      <td style="padding:10px 7px 5px;">${fld('City:', cd.city, 70)}</td>
+      <td style="padding:6px 5px 3px;">${fld('Company:', cd.company)}</td>
+      <td style="padding:6px 5px 3px;white-space:nowrap;">Mr. &nbsp;${sq(isMr, '#000')}</td>
+      <td style="padding:6px 5px 3px;font-weight:700;">First Name:</td>
+      <td style="padding:6px 5px 3px;border-bottom:1px solid #000;">${cd.firstName||''}</td>
+      <td style="padding:6px 5px 3px;font-weight:700;">Mobile No.</td>
+      <td style="padding:6px 5px 3px;">${fld('', cd.mobileNo)}</td>
     </tr>
     <tr>
-      <td style="padding:5px 7px;"></td>
-      <td style="padding:5px 7px;">Ms. &nbsp;${sq(isMs, '#1A1A1A')}</td>
-      <td style="padding:5px 7px;">${fld('Last Name:', cd.lastName, 65)}</td>
-      <td style="padding:5px 7px;">${fld('Email:', cd.email, 90)}</td>
-      <td style="padding:5px 7px;">${fld('Barangay:', cd.barangay, 60)}</td>
+      <td style="padding:3px 5px;"></td>
+      <td style="padding:3px 5px;white-space:nowrap;">Ms. &nbsp;${sq(isMs, '#000')}</td>
+      <td style="padding:3px 5px;font-weight:700;">Last Name:</td>
+      <td style="padding:3px 5px;">${cd.lastName||''}</td>
+      <td style="padding:3px 5px;font-weight:700;">Email:</td>
+      <td style="padding:3px 5px;">${fld('', cd.email)}</td>
     </tr>
   </tbody>
 </table>
 
 <!-- ─── SERVICE QUESTIONS ─── -->
-<div style="padding:10px 12px 6px;font-size:11px;line-height:2.6;">
-  <div>1. When was your last change oil / PMS ? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:360px;">${lastOilChange||'&nbsp;'}</span></div>
-  <div>2. What part/s were replaced in your last service? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:325px;">${partsReplaced||'&nbsp;'}</span></div>
-  <div>3. Any problems with your Vehicle ATM? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:365px;">${problems||'&nbsp;'}</span></div>
+<div style="padding:5px 10px 4px;font-size:10px;">
+  <div style="display:flex;align-items:baseline;margin-bottom:5px;"><span style="white-space:nowrap;">1. When was your last change oil / PMS ?&nbsp;&nbsp;</span><span style="flex:1;border-bottom:1px solid #000;min-height:12px;">${lastOilChange||''}</span></div>
+  <div style="display:flex;align-items:baseline;margin-bottom:5px;"><span style="white-space:nowrap;">2. What part/s were replaced in your last service?&nbsp;&nbsp;</span><span style="flex:1;border-bottom:1px solid #000;min-height:12px;">${partsReplaced||''}</span></div>
+  <div style="display:flex;align-items:baseline;margin-bottom:3px;"><span style="white-space:nowrap;">3. Any problems with your Vehicle ATM?&nbsp;&nbsp;</span><span style="flex:1;border-bottom:1px solid #000;min-height:12px;">${problems||''}</span></div>
 </div>
 
 <!-- ─── VEHICLE INSPECTION BANNER ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:800;font-size:12px;letter-spacing:2px;margin:6px 14px 10px;border-radius:6px;">VEHICLE INSPECTION</div>
+<div style="background:#000;color:#fff;text-align:center;padding:5px 0;font-weight:800;font-size:11px;letter-spacing:2px;margin:4px 12px 7px;border-radius:6px;">VEHICLE INSPECTION</div>
 
 <!-- ─── MEASURE ─── -->
-<div style="border:1.5px solid #555;border-radius:10px;overflow:hidden;margin:0 10px 10px;">
-  <div style="background:#555;color:#fff;text-align:center;padding:5px 8px;font-weight:700;font-size:12px;letter-spacing:2px;">MEASURE</div>
+<div style="border:1.5px solid #4a4a4a;border-radius:9px;overflow:hidden;margin:0 8px 7px;">
+  <div style="background:#4a4a4a;color:#fff;text-align:center;padding:4px 6px;font-weight:700;font-size:11px;letter-spacing:2px;">MEASURE</div>
   <table>
     <colgroup>
       <col style="width:14%"/>
@@ -4118,51 +4120,51 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </colgroup>
     <thead>
       <tr>
-        <th style="background:#fff;font-weight:normal;border-color:#555;padding:5px 8px;"></th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Condition</th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Action</th>
-        <th style="background:#fff;font-weight:normal;border-color:#555;padding:5px 8px;"></th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Condition</th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Action</th>
+        <th style="background:#fff;font-weight:normal;border-color:#4a4a4a;padding:3px 6px;"></th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Condition</th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Action</th>
+        <th style="background:#fff;font-weight:normal;border-color:#4a4a4a;padding:3px 6px;"></th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Condition</th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td rowspan="2" style="text-align:center;font-weight:900;font-size:14px;vertical-align:middle;border-color:#555;padding:12px 5px;line-height:1.5;">TEST<br/>BATTERY</td>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="font-weight:700;margin-bottom:6px;">Voltage Power</div>
-          <div style="margin-bottom:4px;">${sq(bv1, bv1?'#22C55E':'')} 12.6V to 12.8 V</div>
-          <div style="margin-bottom:4px;">${sq(bv2, bv2?'#F59E0B':'')} 12.2V to 12.6 V</div>
+        <td rowspan="2" style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#4a4a4a;padding:8px 3px;line-height:1.4;">TEST<br/>BATTERY</td>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="font-weight:700;margin-bottom:4px;">Voltage Power</div>
+          <div style="margin-bottom:3px;">${sq(bv1, bv1?'#22C55E':'')} 12.6V to 12.8 V</div>
+          <div style="margin-bottom:3px;">${sq(bv2, bv2?'#F59E0B':'')} 12.2V to 12.6 V</div>
           <div>${sq(bv3, bv3?'#EF4444':'')} 12.2V</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="height:22px;"></div>
-          <div style="margin-bottom:4px;${bvAct1}">Good</div>
-          <div style="margin-bottom:4px;${bvAct2}">Recharge</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="height:18px;"></div>
+          <div style="margin-bottom:3px;${bvAct1}">Good</div>
+          <div style="margin-bottom:3px;${bvAct2}">Recharge</div>
           <div style="${bvAct3}">Replace</div>
         </td>
-        <td rowspan="2" style="text-align:center;font-weight:900;font-size:14px;vertical-align:middle;border-color:#555;padding:12px 5px;">TIRES</td>
-        <td rowspan="2" style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="margin-bottom:6px;">${sq(false)} Bulges<br/><span style="margin-left:14px;font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
-          <div style="margin-bottom:6px;">${sq(false)} Side Wall Cracks<br/><span style="margin-left:14px;font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
-          <div style="margin-bottom:6px;">${sq(false)} &lt;1.7 mm<br/><span style="margin-left:14px;font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+        <td rowspan="2" style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#4a4a4a;padding:8px 3px;">TIRES</td>
+        <td rowspan="2" style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="margin-bottom:4px;">${sq(false)} Bulges<br/><span style="margin-left:13px;font-size:9px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+          <div style="margin-bottom:4px;">${sq(false)} Side Wall Cracks<br/><span style="margin-left:13px;font-size:9px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+          <div style="margin-bottom:4px;">${sq(false)} &lt;1.7 mm<br/><span style="margin-left:13px;font-size:9px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
           <div>${sq(false)} No Damage</div>
         </td>
-        <td rowspan="2" style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:18px;">Replace</div>
-          <div style="margin-bottom:18px;">Replace</div>
-          <div style="margin-bottom:18px;">Replace</div>
+        <td rowspan="2" style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:15px;">Replace</div>
+          <div style="margin-bottom:15px;">Replace</div>
+          <div style="margin-bottom:15px;">Replace</div>
           <div>Good</div>
         </td>
       </tr>
       <tr>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="font-weight:700;margin-bottom:6px;">Starting Power (CCA)</div>
-          <div style="margin-bottom:4px;">${sq(cca1, cca1?'#22C55E':'')} &gt;80%</div>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="font-weight:700;margin-bottom:4px;">Starting Power (CCA)</div>
+          <div style="margin-bottom:3px;">${sq(cca1, cca1?'#22C55E':'')} &gt;80%</div>
           <div>${sq(cca2, cca2?'#EF4444':'')} &lt;80%</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:4px;${ccaAct1}">Good</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:3px;${ccaAct1}">Good</div>
           <div style="${ccaAct2}">Replace</div>
         </td>
       </tr>
@@ -4171,8 +4173,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 </div>
 
 <!-- ─── INSPECT ─── -->
-<div style="border:1.5px solid #555;border-radius:10px;overflow:hidden;margin:0 10px 10px;">
-  <div style="background:#555;color:#fff;text-align:center;padding:5px 8px;font-weight:700;font-size:12px;letter-spacing:2px;">INSPECT</div>
+<div style="border:1.5px solid #4a4a4a;border-radius:9px;overflow:hidden;margin:0 8px 7px;">
+  <div style="background:#4a4a4a;color:#fff;text-align:center;padding:4px 6px;font-weight:700;font-size:11px;letter-spacing:2px;">INSPECT</div>
   <table>
     <colgroup>
       <col style="width:14%"/>
@@ -4184,52 +4186,52 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </colgroup>
     <thead>
       <tr>
-        <th style="background:#fff;font-weight:normal;border-color:#555;padding:5px 8px;"></th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Condition</th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Action</th>
-        <th style="background:#fff;font-weight:normal;border-color:#555;padding:5px 8px;"></th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Condition</th>
-        <th style="background:#fff;font-weight:600;border-color:#555;padding:5px 8px;">Action</th>
+        <th style="background:#fff;font-weight:normal;border-color:#4a4a4a;padding:3px 6px;"></th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Condition</th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Action</th>
+        <th style="background:#fff;font-weight:normal;border-color:#4a4a4a;padding:3px 6px;"></th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Condition</th>
+        <th style="background:#fff;font-weight:600;border-color:#4a4a4a;padding:3px 6px;">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#555;padding:10px 5px;"><strong>Coolant</strong></td>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="margin-bottom:4px;">${sq(coolantF&&coolantF.color!=='green', coolantF&&coolantF.color!=='green'?'#EF4444':'')} Low Level</div>
+        <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border-color:#4a4a4a;padding:7px 4px;"><strong>Coolant</strong></td>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="margin-bottom:3px;">${sq(coolantF&&coolantF.color!=='green', coolantF&&coolantF.color!=='green'?'#EF4444':'')} Low Level</div>
           <div>${sq(coolantF?.color==='green', coolantF?.color==='green'?'#22C55E':'')} Correct Level</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:4px;${cAct.topUp}">Top Up</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:3px;${cAct.topUp}">Top Up</div>
           <div style="${cAct.good}">Good</div>
         </td>
-        <td style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#555;padding:10px 5px;"><strong>Brake Fluid</strong></td>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="margin-bottom:4px;">${sq(brakeFluidF&&brakeFluidF.color!=='green', brakeFluidF&&brakeFluidF.color!=='green'?'#EF4444':'')} Low Level</div>
+        <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border-color:#4a4a4a;padding:7px 4px;"><strong>Brake Fluid</strong></td>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="margin-bottom:3px;">${sq(brakeFluidF&&brakeFluidF.color!=='green', brakeFluidF&&brakeFluidF.color!=='green'?'#EF4444':'')} Low Level</div>
           <div>${sq(brakeFluidF?.color==='green', brakeFluidF?.color==='green'?'#22C55E':'')} Correct Level</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:4px;${bAct.topUp}">Top Up</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:3px;${bAct.topUp}">Top Up</div>
           <div style="${bAct.good}">Good</div>
         </td>
       </tr>
       <tr>
-        <td style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#555;padding:10px 5px;line-height:1.5;"><strong>Power<br/>Steering<br/>Fluid</strong></td>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="margin-bottom:4px;">${sq(psFluidF&&psFluidF.color!=='green', psFluidF&&psFluidF.color!=='green'?'#EF4444':'')} Low Level</div>
+        <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border-color:#4a4a4a;padding:7px 4px;line-height:1.4;"><strong>Power<br/>Steering<br/>Fluid</strong></td>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="margin-bottom:3px;">${sq(psFluidF&&psFluidF.color!=='green', psFluidF&&psFluidF.color!=='green'?'#EF4444':'')} Low Level</div>
           <div>${sq(psFluidF?.color==='green', psFluidF?.color==='green'?'#22C55E':'')} Correct Level</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:4px;${psAct.topUp}">Top Up</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:3px;${psAct.topUp}">Top Up</div>
           <div style="${psAct.good}">Good</div>
         </td>
-        <td style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border-color:#555;padding:10px 5px;"><strong>Clutch Fuid</strong></td>
-        <td style="border-color:#555;padding:8px 10px;vertical-align:top;">
-          <div style="margin-bottom:4px;">${sq(clutchF&&clutchF.color!=='green', clutchF&&clutchF.color!=='green'?'#EF4444':'')} Low Level</div>
+        <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border-color:#4a4a4a;padding:7px 4px;"><strong>Clutch Fuid</strong></td>
+        <td style="border-color:#4a4a4a;padding:5px 8px;vertical-align:top;">
+          <div style="margin-bottom:3px;">${sq(clutchF&&clutchF.color!=='green', clutchF&&clutchF.color!=='green'?'#EF4444':'')} Low Level</div>
           <div>${sq(clutchF?.color==='green', clutchF?.color==='green'?'#22C55E':'')} Correct Level</div>
         </td>
-        <td style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:4px;${clAct.topUp}">Top Up</div>
+        <td style="border-color:#4a4a4a;padding:5px 6px;vertical-align:top;">
+          <div style="margin-bottom:3px;${clAct.topUp}">Top Up</div>
           <div style="${clAct.good}">Good</div>
         </td>
       </tr>
@@ -4238,23 +4240,23 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 </div>
 
 <!-- ─── TECHNICIAN'S COMMENT ─── -->
-<div style="border:1.5px solid #555;border-radius:10px;overflow:hidden;margin:0 10px 8px;">
-  <div style="background:#555;color:#fff;text-align:center;padding:5px 8px;font-weight:700;font-size:12px;letter-spacing:2px;">TECHNICIAN'S COMMENT</div>
-  <div style="min-height:80px;padding:10px 12px;font-size:11px;">${inspection.techComment?inspection.techComment.replace(/\n/g,'<br/>'):'&nbsp;'}</div>
+<div style="border:1.5px solid #4a4a4a;border-radius:9px;overflow:hidden;margin:0 8px 5px;">
+  <div style="background:#4a4a4a;color:#fff;text-align:center;padding:4px 6px;font-weight:700;font-size:11px;letter-spacing:2px;">TECHNICIAN'S COMMENT</div>
+  <div style="min-height:55px;padding:6px 10px;font-size:10px;">${inspection.techComment?inspection.techComment.replace(/\n/g,'<br/>'):'&nbsp;'}</div>
 </div>
-<div style="font-size:10px;color:#555;padding:2px 12px 10px;">**Indicate measurements</div>
+<div style="font-size:9px;color:#555;padding:2px 10px 6px;">**Indicate measurements</div>
 
 </div><!-- ══ end outer border ══ -->
 
 <!-- ─── DISCLAIMER ─── -->
-<ol style="font-size:10px;line-height:1.75;padding-left:18px;margin-top:10px;">
+<ol style="font-size:9px;line-height:1.65;padding-left:16px;margin-top:7px;">
   <li><strong>THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></li>
   <li>The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</li>
   <li>It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</li>
 </ol>
 
 <!-- ─── SIGNATURES ─── -->
-<div style="display:flex;justify-content:space-between;margin-top:46px;padding:0 20px;">
+<div style="display:flex;justify-content:space-between;margin-top:36px;padding:0 16px;">
   <div style="text-align:center;width:32%;">
     <div style="border-top:1.5px solid #1A1A1A;padding-top:5px;font-size:10px;">Client's Printed Name and Signature</div>
   </div>
