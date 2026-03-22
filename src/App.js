@@ -3928,8 +3928,345 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </body></html>`;
   };
 
+  // ─── QUICK SAFETY INSPECTION FORM ───────────────────────────────────────────
+  const buildQuickSafetyFormHTML = () => {
+    const findings = inspection.findings || {};
+    const cd = inspection.customerData || {};
+    const sd = inspection.serviceData || {};
+
+    // ── Checkbox helpers ──────────────────────────────────────────────────────
+    const cb = (checked, color) => {
+      let fill = 'white';
+      if (checked) {
+        fill = color === 'green' ? '#22C55E' : color === 'yellow' ? '#F59E0B' : color === 'red' ? '#E31E24' : '#1A1A1A';
+      }
+      return `<span style="display:inline-block;width:11px;height:11px;border:1.5px solid #333;background:${fill};vertical-align:middle;margin-right:3px;border-radius:1px;"></span>`;
+    };
+
+    // Position label – highlighted if that position is the one being described
+    const pos = (label, highlighted) => highlighted
+      ? `<span style="font-weight:900;background:#FFD100;padding:0 2px;border-radius:2px;">${label}</span>`
+      : `<span style="color:#555;">${label}</span>`;
+
+    // ── Battery findings ──────────────────────────────────────────────────────
+    const bvF = findings['BATTERY TEST::Battery Voltage'];
+    const tcF = findings['BATTERY TEST::Terminal Condition'];
+
+    const bv1 = bvF?.condition === '12.6V \u2013 12.8V';
+    const bv2 = bvF?.condition === '12.2V \u2013 12.6V';
+    const bv3 = bvF?.condition === 'Below 12.2V';
+    const bvColor = bvF?.color || 'green';
+
+    // Terminal Condition → Starting Power (CCA): green/yellow = >80%, red = <80%
+    const cca1 = tcF?.color === 'green' || tcF?.color === 'yellow';
+    const cca2 = tcF?.color === 'red';
+    const tcColor = tcF?.color || 'green';
+
+    // ── INSPECT fluid findings ────────────────────────────────────────────────
+    const fluidFinding = (itemName) => findings[`UNDER THE HOOD::${itemName}`];
+    const coolantF     = fluidFinding('Coolant Level');
+    const brakeFluidF  = fluidFinding('Brake Fluid Level');
+    const psFluidF     = fluidFinding('Power Steering Fluid');
+    const clutchF      = fluidFinding('Transmission Fluid'); // closest proxy
+
+    const fluidRow = (label, f) => {
+      const isLow     = f && f.color !== 'green';
+      const isCorrect = f?.color === 'green';
+      const fc        = f?.color || 'green';
+      return `
+        <tr>
+          <td style="padding:6px 10px;font-size:11px;font-weight:900;text-align:center;vertical-align:middle;border:1px solid #bbb;width:18%;">${label}</td>
+          <td style="padding:6px 10px;font-size:11px;border:1px solid #bbb;">
+            <div>${cb(isLow, fc)} Low Level</div>
+            <div style="margin-top:3px;">${cb(isCorrect, fc)} Correct Level</div>
+          </td>
+          <td style="padding:6px 10px;font-size:11px;border:1px solid #bbb;">
+            <div>Top Up</div>
+            <div style="margin-top:3px;">Good</div>
+          </td>
+        </tr>`;
+    };
+
+    // ── Lights & Wipers findings ──────────────────────────────────────────────
+    const lightsCat = 'LIGHTS & WIPERS';
+    const headlightF = findings[`${lightsCat}::Headlights (Low/High)`];
+    const signalF    = findings[`${lightsCat}::Signal / Hazard Lights`];
+    const brakeLightF= findings[`${lightsCat}::Brake Lights`];
+    const wiperF     = findings[`${lightsCat}::Wiper Blades`];
+
+    const lightCondRow = (label, f) => {
+      const isGood     = f?.color === 'green';
+      const isWarn     = f?.color === 'yellow';
+      const isCrit     = f?.color === 'red';
+      const fc         = f?.color || 'green';
+      const condLabel  = f?.condition || '—';
+      const actionLabel= f?.action   || '—';
+      return `
+        <tr>
+          <td style="padding:5px 8px;font-size:11px;border:1px solid #bbb;">${cb(!!f, fc)} ${label}</td>
+          <td style="padding:5px 8px;font-size:11px;border:1px solid #bbb;">${condLabel}</td>
+          <td style="padding:5px 8px;font-size:11px;border:1px solid #bbb;">${actionLabel}</td>
+        </tr>`;
+    };
+
+    // ── Vehicle / Customer data ───────────────────────────────────────────────
+    const isManual = /manual/i.test(cd.transmission || '');
+    const isAT     = /a\/t|automatic/i.test(cd.transmission || '');
+    const isCVT    = /cvt/i.test(cd.transmission || '');
+    const isGas    = /gas|gasoline/i.test(cd.fuelType || '');
+    const isDiesel = /diesel/i.test(cd.fuelType || '');
+    const isEV     = /ev|hev|hybrid|electric/i.test(cd.fuelType || '');
+
+    const isMr = /mr/i.test(cd.title || '');
+    const isMs = /ms|mrs/i.test(cd.title || '');
+
+    const lastOilChange = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
+    const partsReplaced = Array.isArray(sd.replacedParts)  ? sd.replacedParts.join(', ')  : (sd.replacedParts  || '');
+    const problems      = Array.isArray(sd.currentProblems) ? sd.currentProblems.join(', ') : (sd.currentProblems || '');
+
+    const field = (val) => `<span style="border-bottom:1px solid #555;display:inline-block;min-width:60px;padding:0 4px;">${val || '&nbsp;'}</span>`;
+
+    // ── Under-the-hood non-fluid findings for INSPECT rows ───────────────────
+    const engineOilF  = fluidFinding('Engine Oil Level');
+    const transFluidF = fluidFinding('Transmission Fluid');
+    const washerFluidF= fluidFinding('Windshield Washer Fluid');
+
+    // ── Build HTML ────────────────────────────────────────────────────────────
+    return `<!DOCTYPE html><html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Quick Safety Inspection - ${inspection.rif}</title>
+  <style>
+    @media print { body { margin:0; } @page { size: A4 portrait; margin: 8mm 10mm; } }
+    body { font-family: Arial, sans-serif; margin: 16px; color: #1A1A1A; font-size: 11px; }
+    * { box-sizing: border-box; }
+    table { width:100%; border-collapse:collapse; }
+    td,th { border:1px solid #bbb; padding:4px 7px; vertical-align:middle; font-size:11px; }
+    .sec-header { background:#1A1A1A; color:#fff; text-align:center; padding:5px 10px;
+                  font-weight:800; font-size:12px; letter-spacing:1px; }
+    .sub-header  { background:#555; color:#fff; text-align:center; padding:4px 10px;
+                  font-weight:700; font-size:11px; letter-spacing:0.5px; border-radius:4px 4px 0 0; }
+    .rnd-header  { background:#1A1A1A; color:#fff; text-align:center; padding:7px;
+                  font-weight:800; font-size:13px; letter-spacing:1px; border-radius:20px; margin:10px 0 6px; }
+  </style>
+</head>
+<body>
+
+<!-- ── TITLE ─────────────────────────────────────────────────────────── -->
+<div style="text-align:center;font-size:26px;font-weight:900;text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:8px;">QUICK SAFETY INSPECTION FORM</div>
+
+<!-- ── VEHICLE DETAILS ───────────────────────────────────────────────── -->
+<div class="sec-header" style="border-radius:4px 4px 0 0;">VEHICLE DETAILS</div>
+<table>
+  <tbody>
+    <tr>
+      <td style="width:14%;">Model: ${field(cd.model)}</td>
+      <td style="width:18%;">Year: ${field(cd.year)}</td>
+      <td style="width:18%;">Make: ${field(cd.make)}</td>
+      <td style="width:26%;">Plate No: ${field(cd.plateNo)}</td>
+      <td style="width:14%;">KM Reading</td>
+      <td style="width:10%;">Date:</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="white-space:nowrap;">
+        ${cb(isManual,'green')} Manual &nbsp;
+        ${cb(isAT,'green')} A/T &nbsp;
+        ${cb(isCVT,'green')} CVT
+      </td>
+      <td colspan="2" style="white-space:nowrap;">
+        ${cb(isGas,'green')} Gas &nbsp;
+        ${cb(isDiesel,'green')} Diesel &nbsp;
+        ${cb(isEV,'green')} EV/HEV
+      </td>
+      <td>${field(cd.kmReading)}</td>
+      <td>${field(inspection.date)}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ── CUSTOMER DETAILS ──────────────────────────────────────────────── -->
+<div class="sec-header" style="margin-top:6px;">CUSTOMER DETAILS</div>
+<table>
+  <tbody>
+    <tr>
+      <td style="width:18%;">Company: ${field(cd.company)}</td>
+      <td style="width:8%;white-space:nowrap;">${cb(isMr,'green')} Mr.</td>
+      <td style="width:16%;">First Name: ${field(cd.firstName)}</td>
+      <td style="width:20%;">Mobile No. ${field(cd.mobileNo)}</td>
+      <td>City: ${field(cd.city)}</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td style="white-space:nowrap;">${cb(isMs,'green')} Ms.</td>
+      <td>Last Name: ${field(cd.lastName)}</td>
+      <td>Email: ${field(cd.email)}</td>
+      <td>Barangay: ${field(cd.barangay)}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ── SERVICE QUESTIONS ─────────────────────────────────────────────── -->
+<div style="margin-top:10px;font-size:11px;">
+  <div style="margin-bottom:5px;">1. When was your last change oil / PMS ?
+    <span style="border-bottom:1px solid #555;display:inline-block;min-width:340px;padding:0 4px;">${lastOilChange || '&nbsp;'}</span>
+  </div>
+  <div style="margin-bottom:5px;">2. What part/s were replaced in your last service?
+    <span style="border-bottom:1px solid #555;display:inline-block;min-width:320px;padding:0 4px;">${partsReplaced || '&nbsp;'}</span>
+  </div>
+  <div>3. Any problems with your Vehicle ATM?
+    <span style="border-bottom:1px solid #555;display:inline-block;min-width:360px;padding:0 4px;">${problems || '&nbsp;'}</span>
+  </div>
+</div>
+
+<!-- ── VEHICLE INSPECTION ─────────────────────────────────────────────── -->
+<div class="rnd-header">VEHICLE INSPECTION</div>
+
+<!-- ── MEASURE ────────────────────────────────────────────────────────── -->
+<div class="sub-header">MEASURE</div>
+<table style="border:1px solid #bbb;">
+  <thead>
+    <tr style="background:#f0f0f0;">
+      <th style="width:16%;"></th>
+      <th style="width:22%;">Condition</th>
+      <th style="width:12%;">Action</th>
+      <th style="width:16%;"></th>
+      <th style="width:22%;">Condition</th>
+      <th style="width:12%;">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <!-- TEST BATTERY -->
+      <td rowspan="2" style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border:1px solid #bbb;">
+        TEST<br/>BATTERY
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div style="font-weight:700;margin-bottom:3px;">Voltage Power</div>
+        <div>${cb(bv1, bvColor)} 12.6V to 12.8 V</div>
+        <div style="margin-top:2px;">${cb(bv2, bvColor)} 12.2V to 12.6 V</div>
+        <div style="margin-top:2px;">${cb(bv3, bvColor)} 12.2V</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;vertical-align:top;">
+        <div>Good</div>
+        <div style="margin-top:4px;">Recharge</div>
+        <div style="margin-top:4px;">Replace</div>
+      </td>
+      <!-- TIRES – no tire data in Quick package; checkboxes remain empty; positions shown plain -->
+      <td rowspan="2" style="text-align:center;font-weight:900;font-size:13px;vertical-align:middle;border:1px solid #bbb;">
+        TIRES
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div>${cb(false)} Bulges</div>
+        <div style="margin-left:18px;font-size:10px;color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</div>
+        <div style="margin-top:4px;">${cb(false)} Side Wall Cracks</div>
+        <div style="margin-left:18px;font-size:10px;color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</div>
+        <div style="margin-top:4px;">${cb(false)} &lt;1.7 mm</div>
+        <div style="margin-left:18px;font-size:10px;color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</div>
+        <div style="margin-top:4px;">${cb(false)} No Damage</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;vertical-align:top;">
+        <div>&nbsp;</div>
+        <div>Replace</div>
+        <div style="margin-top:12px;">Replace</div>
+        <div style="margin-top:12px;">Replace</div>
+        <div style="margin-top:4px;">Good</div>
+      </td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div style="font-weight:700;margin-bottom:3px;">Starting Power (CCA)</div>
+        <div>${cb(cca1, tcColor)} &gt;80%</div>
+        <div style="margin-top:2px;">${cb(cca2, tcColor)} &lt;80%</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;vertical-align:top;">
+        <div>Good</div>
+        <div style="margin-top:4px;">Replace</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ── INSPECT ────────────────────────────────────────────────────────── -->
+<div class="sub-header" style="margin-top:6px;">INSPECT</div>
+<table style="border:1px solid #bbb;">
+  <thead>
+    <tr style="background:#f0f0f0;">
+      <th style="width:16%;"></th>
+      <th style="width:22%;">Condition</th>
+      <th style="width:12%;">Action</th>
+      <th style="width:16%;"></th>
+      <th style="width:22%;">Condition</th>
+      <th style="width:12%;">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border:1px solid #bbb;">Coolant</td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div>${cb(coolantF && coolantF.color !== 'green', coolantF?.color)} Low Level</div>
+        <div style="margin-top:3px;">${cb(coolantF?.color === 'green', 'green')} Correct Level</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;"><div>Top Up</div><div style="margin-top:4px;">Good</div></td>
+      <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border:1px solid #bbb;">Brake Fluid</td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div>${cb(brakeFluidF && brakeFluidF.color !== 'green', brakeFluidF?.color)} Low Level</div>
+        <div style="margin-top:3px;">${cb(brakeFluidF?.color === 'green', 'green')} Correct Level</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;"><div>Top Up</div><div style="margin-top:4px;">Good</div></td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border:1px solid #bbb;padding:6px;">Power<br/>Steering<br/>Fluid</td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div>${cb(psFluidF && psFluidF.color !== 'green', psFluidF?.color)} Low Level</div>
+        <div style="margin-top:3px;">${cb(psFluidF?.color === 'green', 'green')} Correct Level</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;"><div>Top Up</div><div style="margin-top:4px;">Good</div></td>
+      <td style="text-align:center;font-weight:900;font-size:12px;vertical-align:middle;border:1px solid #bbb;padding:6px;">Clutch Fuid</td>
+      <td style="border:1px solid #bbb;padding:5px 8px;">
+        <div>${cb(clutchF && clutchF.color !== 'green', clutchF?.color)} Low Level</div>
+        <div style="margin-top:3px;">${cb(clutchF?.color === 'green', 'green')} Correct Level</div>
+      </td>
+      <td style="border:1px solid #bbb;padding:5px 8px;"><div>Top Up</div><div style="margin-top:4px;">Good</div></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ── TECHNICIAN'S COMMENT ───────────────────────────────────────────── -->
+<div class="sub-header" style="margin-top:8px;border-radius:4px 4px 0 0;">TECHNICIAN'S COMMENT</div>
+<div style="border:1px solid #bbb;border-top:none;min-height:70px;padding:8px 10px;font-size:11px;border-radius:0 0 4px 4px;">
+  ${inspection.techComment ? inspection.techComment.replace(/\n/g,'<br/>') : '&nbsp;'}
+</div>
+<div style="font-size:10px;color:#555;margin-top:3px;">**Indicate measurements</div>
+
+<!-- ── DISCLAIMER ─────────────────────────────────────────────────────── -->
+<ol style="font-size:10px;margin-top:10px;padding-left:16px;line-height:1.6;">
+  <li><strong>THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></li>
+  <li>The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</li>
+  <li>It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</li>
+</ol>
+
+<!-- ── SIGNATURES ─────────────────────────────────────────────────────── -->
+<div style="display:flex;justify-content:space-between;margin-top:30px;gap:20px;">
+  <div style="flex:1;text-align:center;">
+    <div style="border-top:1.5px solid #1A1A1A;padding-top:4px;font-size:10px;">Client's Printed Name and Signature</div>
+  </div>
+  <div style="flex:1;text-align:center;">
+    <div style="border-top:1.5px solid #1A1A1A;padding-top:4px;font-size:10px;">Technician</div>
+  </div>
+  <div style="flex:1;text-align:center;">
+    <div style="border-top:1.5px solid #1A1A1A;padding-top:4px;font-size:10px;">Store Manager</div>
+  </div>
+</div>
+
+</body></html>`;
+  };
+  // ─────────────────────────────────────────────────────────────────────────────
+
   const printInspection = () => {
-    const html = buildSummaryHTML();
+    const html = inspection.packageType === 'quick'
+      ? buildQuickSafetyFormHTML()
+      : buildSummaryHTML();
     const printWindow = window.open('', '_blank');
     printWindow.document.write(html);
     printWindow.document.close();
@@ -3937,7 +4274,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   const downloadSummary = async () => {
-    const html = buildSummaryHTML();
+    const html = inspection.packageType === 'quick'
+      ? buildQuickSafetyFormHTML()
+      : buildSummaryHTML();
 
     // Render HTML into a hidden off-screen container
     const container = document.createElement('div');
