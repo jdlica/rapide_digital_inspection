@@ -3936,15 +3936,236 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     printWindow.print();
   };
 
-  const downloadSummary = async () => {
-    const html = buildSummaryHTML();
+  const buildQuickFormHTML = () => {
+    const findings = inspection.findings || {};
+    const cd = inspection.customerData || {};
+    const sd = inspection.serviceData || {};
 
-    // Render HTML into a hidden off-screen container
+    const cb = (checked) =>
+      checked
+        ? `<span style="display:inline-block;width:11px;height:11px;border:1.5px solid #000;text-align:center;line-height:10px;font-size:9px;vertical-align:middle;">&#10003;</span>`
+        : `<span style="display:inline-block;width:11px;height:11px;border:1.5px solid #000;vertical-align:middle;"></span>`;
+
+    const battV = findings['BATTERY TEST::Battery Voltage'];
+    const battVIdx = battV !== undefined ? battV.conditionIdx : -1;
+
+    const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
+    const coolantIdx = getIdx('UNDER THE HOOD::Coolant Level');
+    const brakeIdx = getIdx('UNDER THE HOOD::Brake Fluid Level');
+    const psIdx = getIdx('UNDER THE HOOD::Power Steering Fluid');
+    const isLow = (i) => i === 1 || i === 2;
+    const isFull = (i) => i === 0;
+
+    const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
+    const partsAnswer = (sd.replacedParts || []).join(', ');
+    const problemsAnswer = (sd.currentProblems || []).join(', ');
+
+    const T = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:middle;`;
+    const Ttop = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:top;`;
+
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+      *{box-sizing:border-box;margin:0;padding:0;}
+      body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;padding:14px 18px;width:816px;}
+      table{border-collapse:collapse;width:100%;}
+    </style></head><body>
+
+    <div style="text-align:center;margin-bottom:10px;">
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1.1;">QUICK SAFETY INSPECTION FORM</div>
+    </div>
+
+    <!-- VEHICLE DETAILS -->
+    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
+      <table>
+        <tr>
+          <td style="width:16%;${T}"><strong>Model:</strong>&nbsp;${cd.model || ''}</td>
+          <td style="width:17%;${T}"><strong>Year:</strong>&nbsp;${cd.year || ''}</td>
+          <td style="width:18%;${T}"><strong>Make:</strong>&nbsp;${cd.make || ''}</td>
+          <td style="width:22%;${T}"><strong>Plate No:</strong>&nbsp;${cd.plateNo || ''}</td>
+          <td style="width:14%;${Ttop}" rowspan="2"><strong>KM Reading</strong><br>${cd.kmReading || ''}</td>
+          <td style="width:13%;${Ttop}" rowspan="2"><strong>Date:</strong><br>${inspection.date || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(cd.transmission === 'Manual')}&nbsp;Manual</td>
+          <td style="${T}">${cb(cd.transmission === 'A/T')}&nbsp;A/T</td>
+          <td style="${T}">${cb(cd.transmission === 'CVT')}&nbsp;CVT</td>
+          <td style="${T}">${cb(cd.fuelType === 'Gas')}&nbsp;Gas &nbsp;&nbsp; ${cb(cd.fuelType === 'Diesel')}&nbsp;Diesel &nbsp;&nbsp; ${cb(cd.fuelType === 'EV/HEV')}&nbsp;EV/HEV</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- COSTUMER DETAILS -->
+    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:10px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">COSTUMER DETAILS</div>
+      <table>
+        <tr>
+          <td style="width:18%;${T}" rowspan="2"><strong>Company:</strong>&nbsp;${cd.company || ''}</td>
+          <td style="width:10%;${T}">${cb(cd.title === 'Mr.')} Mr.</td>
+          <td style="width:22%;${T}"><strong>First Name:</strong>&nbsp;${cd.firstName || ''}</td>
+          <td style="width:24%;${T}"><strong>Mobile No.</strong>&nbsp;${cd.mobileNo || ''}</td>
+          <td style="width:13%;${T}"><strong>City:</strong>&nbsp;${cd.city || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(cd.title === 'Ms.')} Ms.</td>
+          <td style="${T}"><strong>Last Name:</strong>&nbsp;${cd.lastName || ''}</td>
+          <td style="${T}"><strong>Email:</strong>&nbsp;${cd.email || ''}</td>
+          <td style="${T}"><strong>Barangay:</strong>&nbsp;${cd.barangay || ''}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Questions -->
+    <div style="margin-bottom:10px;font-size:11px;">
+      <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
+        <span style="white-space:nowrap;">1.&nbsp;When was your last change oil / PMS ?&nbsp;</span>
+        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${pmsAnswer}</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
+        <span style="white-space:nowrap;">2.&nbsp;What part/s were replaced in your last service?&nbsp;</span>
+        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${partsAnswer}</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <span style="white-space:nowrap;">3.&nbsp;Any problems with your Vehicle ATM?&nbsp;</span>
+        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${problemsAnswer}</span>
+      </div>
+    </div>
+
+    <!-- VEHICLE INSPECTION -->
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;border-radius:6px;margin-bottom:8px;">VEHICLE INSPECTION</div>
+
+    <!-- MEASURE -->
+    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <table>
+        <tr>
+          <td style="width:13%;${T}"></td>
+          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+          <td style="width:13%;${T}"></td>
+          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+        </tr>
+        <tr>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
+          <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TIRES</td>
+          <td style="${Ttop}">${cb(false)}&nbsp;Bulges<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${T}">Replace</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(battVIdx === 0)}&nbsp;12.6V to 12.8 V</td>
+          <td style="${T}">Good</td>
+          <td style="${Ttop}">${cb(false)}&nbsp;Side Wall Cracks<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${T}">Replace</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(battVIdx === 1)}&nbsp;12.2V to 12.6 V</td>
+          <td style="${T}">Recharge</td>
+          <td style="${Ttop}">${cb(false)}&nbsp;&lt;1.7 mm<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${T}">Replace</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(battVIdx === 2)}&nbsp;12.2V</td>
+          <td style="${T}">Replace</td>
+          <td style="${T}">${cb(false)}&nbsp;No Damage</td>
+          <td style="${T}">Good</td>
+        </tr>
+        <tr>
+          <td style="${Ttop}" colspan="2"><strong>Starting Power (CCA)</strong></td>
+          <td style="${T}" rowspan="3"></td>
+          <td style="${T}" rowspan="3"></td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(false)}&nbsp;&gt;80%</td>
+          <td style="${T}">Good</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(false)}&nbsp;&lt;80%</td>
+          <td style="${T}">Replace</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- INSPECT -->
+    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <table>
+        <tr>
+          <td style="width:13%;${T}"></td>
+          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+          <td style="width:13%;${T}"></td>
+          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+        </tr>
+        <tr>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Coolant</strong></td>
+          <td style="${T}">${cb(isLow(coolantIdx))}&nbsp;Low Level</td>
+          <td style="${T}">Top Up</td>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Brake Fluid</strong></td>
+          <td style="${T}">${cb(isLow(brakeIdx))}&nbsp;Low Level</td>
+          <td style="${T}">Top Up</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(isFull(coolantIdx))}&nbsp;Correct Level</td>
+          <td style="${T}">Good</td>
+          <td style="${T}">${cb(isFull(brakeIdx))}&nbsp;Correct Level</td>
+          <td style="${T}">Good</td>
+        </tr>
+        <tr>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Power<br>Steering<br>Fluid</strong></td>
+          <td style="${T}">${cb(isLow(psIdx))}&nbsp;Low Level</td>
+          <td style="${T}">Top Up</td>
+          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Clutch Fuid</strong></td>
+          <td style="${T}">${cb(false)}&nbsp;Low Level</td>
+          <td style="${T}">Top Up</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(isFull(psIdx))}&nbsp;Correct Level</td>
+          <td style="${T}">Good</td>
+          <td style="${T}">${cb(false)}&nbsp;Correct Level</td>
+          <td style="${T}">Good</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TECHNICIAN'S COMMENT -->
+    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="min-height:64px;padding:8px 10px;font-size:11px;">${inspection.techComment || ''}</div>
+    </div>
+
+    <!-- Footnotes -->
+    <div style="margin-bottom:18px;font-size:9px;">
+      <div style="margin-bottom:3px;">**Indicate measurements</div>
+      <div style="margin-bottom:2px;"><strong>1.&nbsp;&nbsp;THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
+      <div style="margin-bottom:2px;">2.&nbsp;&nbsp;The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
+      <div>3.&nbsp;&nbsp;It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
+    </div>
+
+    <!-- Signatures -->
+    <div style="display:flex;justify-content:space-around;margin-top:10px;">
+      <div style="text-align:center;width:30%;">
+        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Client's Printed Name and Signature</div>
+      </div>
+      <div style="text-align:center;width:22%;">
+        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Technician</div>
+      </div>
+      <div style="text-align:center;width:22%;">
+        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Store Manager</div>
+      </div>
+    </div>
+
+    </body></html>`;
+  };
+
+  const downloadSummary = async () => {
+    const html = buildQuickFormHTML();
+
     const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:white;padding:20px;font-family:Arial,sans-serif;color:#1A1A1A;box-sizing:border-box;';
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:816px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
     container.innerHTML = bodyMatch ? bodyMatch[1] : '';
-    // Strip any <script> tags from the injected HTML
     container.querySelectorAll('script').forEach((s) => s.remove());
     document.body.appendChild(container);
 
@@ -3954,13 +4175,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         useCORS: true,
         allowTaint: true,
         logging: false,
-        width: 800,
+        width: 816,
       });
 
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Long bond paper: 8.5" × 13" = 215.9mm × 330.2mm
+      const pdf = new jsPDF('p', 'mm', [215.9, 330.2]);
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 10;
+      const margin = 8;
       const contentW = pageW - margin * 2;
       const imgHeightMm = (canvas.height * contentW) / canvas.width;
 
@@ -3980,7 +4202,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         sliceCanvas.height = slicePx;
         sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
 
-        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, sliceMm);
 
         srcY += slicePx;
         remaining -= sliceMm;
