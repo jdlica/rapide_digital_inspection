@@ -4037,7 +4037,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   <meta charset="UTF-8"/>
   <title>Quick Safety Inspection - ${inspection.rif}</title>
   <style>
-    @media print { body { margin:0; } @page { size: A4 portrait; margin: 8mm 10mm; } }
+    @media print { body { margin:0; } @page { size: 8.5in 13in portrait; margin: 8mm 10mm; } }
     body { font-family: Arial, sans-serif; margin: 16px; color: #1A1A1A; font-size: 11px; }
     * { box-sizing: border-box; }
     table { width:100%; border-collapse:collapse; }
