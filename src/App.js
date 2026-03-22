@@ -3963,6 +3963,15 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const T = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:middle;`;
     const Ttop = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:top;`;
 
+    const actionBg = (action) => {
+      if (action === 'Good') return 'background:#DCFCE7;color:#16A34A;font-weight:700;';
+      if (action === 'Replace') return 'background:#FEE2E2;color:#DC2626;font-weight:700;';
+      return 'background:#FEF3C7;color:#D97706;font-weight:700;';
+    };
+    // Returns colored action cell only when that row is selected, plain otherwise
+    const actionTd = (action, selected) =>
+      `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
+
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
       *{box-sizing:border-box;margin:0;padding:0;}
       body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;padding:14px 18px;width:816px;}
@@ -3978,18 +3987,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table>
         <tr>
-          <td style="width:16%;${T}"><strong>Model:</strong>&nbsp;${cd.model || ''}</td>
-          <td style="width:17%;${T}"><strong>Year:</strong>&nbsp;${cd.year || ''}</td>
-          <td style="width:18%;${T}"><strong>Make:</strong>&nbsp;${cd.make || ''}</td>
-          <td style="width:22%;${T}"><strong>Plate No:</strong>&nbsp;${cd.plateNo || ''}</td>
+          <td style="width:16%;${T}"><strong>Model:</strong> ${cd.model || ''}</td>
+          <td style="width:17%;${T}"><strong>Year:</strong> ${cd.year || ''}</td>
+          <td style="width:18%;${T}"><strong>Make:</strong> ${cd.make || ''}</td>
+          <td style="width:22%;${T}"><strong>Plate No:</strong> ${cd.plateNo || ''}</td>
           <td style="width:14%;${Ttop}" rowspan="2"><strong>KM Reading</strong><br>${cd.kmReading || ''}</td>
           <td style="width:13%;${Ttop}" rowspan="2"><strong>Date:</strong><br>${inspection.date || ''}</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(cd.transmission === 'Manual')}&nbsp;Manual</td>
-          <td style="${T}">${cb(cd.transmission === 'A/T')}&nbsp;A/T</td>
-          <td style="${T}">${cb(cd.transmission === 'CVT')}&nbsp;CVT</td>
-          <td style="${T}">${cb(cd.fuelType === 'Gas')}&nbsp;Gas &nbsp;&nbsp; ${cb(cd.fuelType === 'Diesel')}&nbsp;Diesel &nbsp;&nbsp; ${cb(cd.fuelType === 'EV/HEV')}&nbsp;EV/HEV</td>
+          <td style="${T}">${cb(cd.transmission === 'Manual')} Manual</td>
+          <td style="${T}">${cb(cd.transmission === 'A/T')} A/T</td>
+          <td style="${T}">${cb(cd.transmission === 'CVT')} CVT</td>
+          <td style="${T}">${cb(cd.fuelType === 'Gas')} Gas &nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
         </tr>
       </table>
     </div>
@@ -3999,17 +4008,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">COSTUMER DETAILS</div>
       <table>
         <tr>
-          <td style="width:18%;${T}" rowspan="2"><strong>Company:</strong>&nbsp;${cd.company || ''}</td>
+          <td style="width:18%;${T}" rowspan="2"><strong>Company:</strong> ${cd.company || ''}</td>
           <td style="width:10%;${T}">${cb(cd.title === 'Mr.')} Mr.</td>
-          <td style="width:22%;${T}"><strong>First Name:</strong>&nbsp;${cd.firstName || ''}</td>
-          <td style="width:24%;${T}"><strong>Mobile No.</strong>&nbsp;${cd.mobileNo || ''}</td>
-          <td style="width:13%;${T}"><strong>City:</strong>&nbsp;${cd.city || ''}</td>
+          <td style="width:22%;${T}"><strong>First Name:</strong> ${cd.firstName || ''}</td>
+          <td style="width:24%;${T}"><strong>Mobile No.</strong> ${cd.mobileNo || ''}</td>
+          <td style="width:13%;${T}"><strong>City:</strong> ${cd.city || ''}</td>
         </tr>
         <tr>
           <td style="${T}">${cb(cd.title === 'Ms.')} Ms.</td>
-          <td style="${T}"><strong>Last Name:</strong>&nbsp;${cd.lastName || ''}</td>
-          <td style="${T}"><strong>Email:</strong>&nbsp;${cd.email || ''}</td>
-          <td style="${T}"><strong>Barangay:</strong>&nbsp;${cd.barangay || ''}</td>
+          <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
+          <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
+          <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
         </tr>
       </table>
     </div>
@@ -4017,16 +4026,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Questions -->
     <div style="margin-bottom:10px;font-size:11px;">
       <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
-        <span style="white-space:nowrap;">1.&nbsp;When was your last change oil / PMS ?&nbsp;</span>
-        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${pmsAnswer}</span>
+        <span style="white-space:nowrap;">1. When was your last change oil / PMS ? </span>
+        <span style="flex:1;border-bottom:1px solid #000;">${pmsAnswer}</span>
       </div>
       <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
-        <span style="white-space:nowrap;">2.&nbsp;What part/s were replaced in your last service?&nbsp;</span>
-        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${partsAnswer}</span>
+        <span style="white-space:nowrap;">2. What part/s were replaced in your last service? </span>
+        <span style="flex:1;border-bottom:1px solid #000;">${partsAnswer}</span>
       </div>
       <div style="display:flex;align-items:flex-end;">
-        <span style="white-space:nowrap;">3.&nbsp;Any problems with your Vehicle ATM?&nbsp;</span>
-        <span style="flex:1;border-bottom:1px solid #000;">&nbsp;${problemsAnswer}</span>
+        <span style="white-space:nowrap;">3. Any problems with your Vehicle ATM? </span>
+        <span style="flex:1;border-bottom:1px solid #000;">${problemsAnswer}</span>
       </div>
     </div>
 
@@ -4049,25 +4058,25 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
           <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TIRES</td>
-          <td style="${Ttop}">${cb(false)}&nbsp;Bulges<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${Ttop}">${cb(false)} Bulges<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(battVIdx === 0)}&nbsp;12.6V to 12.8 V</td>
-          <td style="${T}">Good</td>
-          <td style="${Ttop}">${cb(false)}&nbsp;Side Wall Cracks<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
+          ${actionTd('Good', battVIdx === 0)}
+          <td style="${Ttop}">${cb(false)} Side Wall Cracks<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(battVIdx === 1)}&nbsp;12.2V to 12.6 V</td>
-          <td style="${T}">Recharge</td>
-          <td style="${Ttop}">${cb(false)}&nbsp;&lt;1.7 mm<br><span style="font-size:10px;padding-left:14px;">FL &nbsp; FR &nbsp; RL &nbsp; RR</span></td>
+          <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
+          ${actionTd('Recharge', battVIdx === 1)}
+          <td style="${Ttop}">${cb(false)} &lt;1.7 mm<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(battVIdx === 2)}&nbsp;12.2V</td>
-          <td style="${T}">Replace</td>
-          <td style="${T}">${cb(false)}&nbsp;No Damage</td>
+          <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
+          ${actionTd('Replace', battVIdx === 2)}
+          <td style="${T}">${cb(false)} No Damage</td>
           <td style="${T}">Good</td>
         </tr>
         <tr>
@@ -4076,11 +4085,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}" rowspan="3"></td>
         </tr>
         <tr>
-          <td style="${T}">${cb(false)}&nbsp;&gt;80%</td>
+          <td style="${T}">${cb(false)} &gt;80%</td>
           <td style="${T}">Good</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(false)}&nbsp;&lt;80%</td>
+          <td style="${T}">${cb(false)} &lt;80%</td>
           <td style="${T}">Replace</td>
         </tr>
       </table>
@@ -4100,30 +4109,30 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         </tr>
         <tr>
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Coolant</strong></td>
-          <td style="${T}">${cb(isLow(coolantIdx))}&nbsp;Low Level</td>
-          <td style="${T}">Top Up</td>
+          <td style="${T}">${cb(isLow(coolantIdx))} Low Level</td>
+          ${actionTd('Top Up', isLow(coolantIdx))}
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Brake Fluid</strong></td>
-          <td style="${T}">${cb(isLow(brakeIdx))}&nbsp;Low Level</td>
-          <td style="${T}">Top Up</td>
+          <td style="${T}">${cb(isLow(brakeIdx))} Low Level</td>
+          ${actionTd('Top Up', isLow(brakeIdx))}
         </tr>
         <tr>
-          <td style="${T}">${cb(isFull(coolantIdx))}&nbsp;Correct Level</td>
-          <td style="${T}">Good</td>
-          <td style="${T}">${cb(isFull(brakeIdx))}&nbsp;Correct Level</td>
-          <td style="${T}">Good</td>
+          <td style="${T}">${cb(isFull(coolantIdx))} Correct Level</td>
+          ${actionTd('Good', isFull(coolantIdx))}
+          <td style="${T}">${cb(isFull(brakeIdx))} Correct Level</td>
+          ${actionTd('Good', isFull(brakeIdx))}
         </tr>
         <tr>
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Power<br>Steering<br>Fluid</strong></td>
-          <td style="${T}">${cb(isLow(psIdx))}&nbsp;Low Level</td>
-          <td style="${T}">Top Up</td>
+          <td style="${T}">${cb(isLow(psIdx))} Low Level</td>
+          ${actionTd('Top Up', isLow(psIdx))}
           <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Clutch Fuid</strong></td>
-          <td style="${T}">${cb(false)}&nbsp;Low Level</td>
+          <td style="${T}">${cb(false)} Low Level</td>
           <td style="${T}">Top Up</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(isFull(psIdx))}&nbsp;Correct Level</td>
-          <td style="${T}">Good</td>
-          <td style="${T}">${cb(false)}&nbsp;Correct Level</td>
+          <td style="${T}">${cb(isFull(psIdx))} Correct Level</td>
+          ${actionTd('Good', isFull(psIdx))}
+          <td style="${T}">${cb(false)} Correct Level</td>
           <td style="${T}">Good</td>
         </tr>
       </table>
@@ -4138,9 +4147,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Footnotes -->
     <div style="margin-bottom:18px;font-size:9px;">
       <div style="margin-bottom:3px;">**Indicate measurements</div>
-      <div style="margin-bottom:2px;"><strong>1.&nbsp;&nbsp;THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
-      <div style="margin-bottom:2px;">2.&nbsp;&nbsp;The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
-      <div>3.&nbsp;&nbsp;It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
+      <div style="margin-bottom:2px;"><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
+      <div style="margin-bottom:2px;">2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
+      <div>3. It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
     </div>
 
     <!-- Signatures -->
