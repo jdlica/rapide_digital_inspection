@@ -3931,8 +3931,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   // ─── QUICK SAFETY INSPECTION FORM ───────────────────────────────────────────
   const buildQuickSafetyFormHTML = () => {
     const findings = inspection.findings || {};
-    const cd = inspection.customerData || {};
-    const sd = inspection.serviceData || {};
+    const cd       = inspection.customerData || {};
+    const sd       = inspection.serviceData  || {};
 
     // ── Checkbox helper ───────────────────────────────────────────────────────
     const cb = (checked, color) => {
@@ -4006,6 +4006,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     };
 
     // ── Build HTML ────────────────────────────────────────────────────────────
+    // Inline field helper: label + underlined value
+    const fld = (label, value, minW) =>
+      `${label} <span style="border-bottom:1px solid #555;display:inline-block;min-width:${minW||48}px;font-weight:400;">${value||'&nbsp;'}</span>`;
+
     return `<!DOCTYPE html><html>
 <head>
   <meta charset="UTF-8"/>
@@ -4015,52 +4019,55 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:Arial,Helvetica,sans-serif;padding:16px 20px;color:#1A1A1A;font-size:11px;background:#fff;}
     table{width:100%;border-collapse:collapse;}
-    td,th{border:1px solid #333;padding:5px 8px;vertical-align:middle;font-size:11px;}
+    td,th{border:1px solid #333;padding:5px 7px;vertical-align:middle;font-size:11px;}
   </style>
 </head>
 <body>
 
 <!-- ══ TITLE ══ -->
-<div style="text-align:center;margin-bottom:6px;line-height:1.05;">
-  <span style="font-family:'Arial Black',Impact,Arial,sans-serif;font-size:40px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;">QUICK SAFETY INSPECTION FORM</span>
+<div style="text-align:center;margin-bottom:8px;line-height:1;">
+  <span style="font-family:'Arial Black',Impact,Arial,sans-serif;font-size:44px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;">QUICK SAFETY INSPECTION FORM</span>
 </div>
 
 <!-- ══ OUTER BORDER ══ -->
-<div style="border:2px solid #1A1A1A;border-radius:0 0 12px 12px;">
+<div style="border:2px solid #1A1A1A;border-radius:12px;overflow:hidden;">
 
 <!-- ─── VEHICLE DETAILS ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 8px;font-weight:700;font-size:11px;letter-spacing:2px;">VEHICLE DETAILS</div>
+<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:700;font-size:11px;letter-spacing:2px;">VEHICLE DETAILS</div>
+<!-- 8-column: col1-3 = Model/Year/Make, col4-6 merged as Plate No, col7 = KM Reading (rowspan), col8 = Date (rowspan) -->
 <table>
   <colgroup>
-    <col style="width:15%"/>
-    <col style="width:14%"/>
-    <col style="width:15%"/>
-    <col style="width:24%"/>
+    <col style="width:12%"/>
+    <col style="width:12%"/>
+    <col style="width:12%"/>
+    <col style="width:10%"/>
+    <col style="width:10%"/>
+    <col style="width:10%"/>
     <col style="width:17%"/>
-    <col style="width:15%"/>
+    <col style="width:17%"/>
   </colgroup>
   <tbody>
     <tr>
-      <td style="padding:5px 7px;">Model: <span style="border-bottom:1px solid #555;display:inline-block;min-width:45px;">${cd.model||'&nbsp;'}</span></td>
-      <td style="padding:5px 7px;">Year: <span style="border-bottom:1px solid #555;display:inline-block;min-width:38px;">${cd.year||'&nbsp;'}</span></td>
-      <td style="padding:5px 7px;">Make: <span style="border-bottom:1px solid #555;display:inline-block;min-width:45px;">${cd.make||'&nbsp;'}</span></td>
-      <td style="padding:5px 7px;">Plate No: <span style="border-bottom:1px solid #555;display:inline-block;min-width:78px;">${cd.plateNo||'&nbsp;'}</span></td>
-      <td style="padding:5px 7px;font-weight:700;">KM Reading</td>
-      <td style="padding:5px 7px;">Date:</td>
+      <td style="padding:5px 7px;">${fld('Model:', cd.model, 42)}</td>
+      <td style="padding:5px 7px;">${fld('Year:', cd.year, 32)}</td>
+      <td style="padding:5px 7px;">${fld('Make:', cd.make, 42)}</td>
+      <td colspan="3" style="padding:5px 7px;">${fld('Plate No:', cd.plateNo, 90)}</td>
+      <td rowspan="2" style="padding:5px 7px;font-weight:700;text-align:center;vertical-align:middle;">KM Reading<br/><span style="font-weight:400;">${cd.kmReading||'&nbsp;'}</span></td>
+      <td rowspan="2" style="padding:5px 7px;vertical-align:middle;">Date:<br/><span style="font-weight:400;">${inspection.date||'&nbsp;'}</span></td>
     </tr>
     <tr>
-      <td style="padding:5px 7px;">Manual &nbsp;${sq(isManual)}</td>
-      <td style="padding:5px 7px;">A/T &nbsp;${sq(isAT)}</td>
-      <td style="padding:5px 7px;">CVT &nbsp;${sq(isCVT)}</td>
-      <td style="padding:5px 7px;">Gas &nbsp;${sq(isGas)}</td>
-      <td style="padding:5px 7px;">Diesel &nbsp;${sq(isDiesel)}</td>
-      <td style="padding:5px 7px;">EV/HEV &nbsp;${sq(isEV)}</td>
+      <td style="padding:5px 7px;">Manual &nbsp;${sq(isManual, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">A/T &nbsp;${sq(isAT, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">CVT &nbsp;${sq(isCVT, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">Gas &nbsp;${sq(isGas, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">Diesel &nbsp;${sq(isDiesel, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">EV/HEV &nbsp;${sq(isEV, '#1A1A1A')}</td>
     </tr>
   </tbody>
 </table>
 
 <!-- ─── COSTUMER DETAILS ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 8px;font-weight:700;font-size:11px;letter-spacing:2px;">COSTUMER DETAILS</div>
+<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:700;font-size:11px;letter-spacing:2px;">COSTUMER DETAILS</div>
 <table>
   <colgroup>
     <col style="width:18%"/>
@@ -4071,38 +4078,31 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   </colgroup>
   <tbody>
     <tr>
-      <td style="height:14px;border-bottom:none;padding:0;"></td>
-      <td style="height:14px;border-bottom:none;padding:0;"></td>
-      <td style="height:14px;border-bottom:none;padding:0;"></td>
-      <td style="height:14px;border-bottom:none;padding:0;"></td>
-      <td style="height:14px;border-bottom:none;padding:0;"></td>
-    </tr>
-    <tr>
-      <td style="border-top:none;padding:5px 7px;">Company:</td>
-      <td style="border-top:none;padding:5px 7px;">Mr. &nbsp;${sq(isMr)}</td>
-      <td style="border-top:none;padding:5px 7px;">First Name:</td>
-      <td style="border-top:none;padding:5px 7px;">Mobile No.</td>
-      <td style="border-top:none;padding:5px 7px;">City:</td>
+      <td style="padding:10px 7px 5px;">${fld('Company:', cd.company, 60)}</td>
+      <td style="padding:10px 7px 5px;">Mr. &nbsp;${sq(isMr, '#1A1A1A')}</td>
+      <td style="padding:10px 7px 5px;">${fld('First Name:', cd.firstName, 65)}</td>
+      <td style="padding:10px 7px 5px;">${fld('Mobile No.', cd.mobileNo, 80)}</td>
+      <td style="padding:10px 7px 5px;">${fld('City:', cd.city, 70)}</td>
     </tr>
     <tr>
       <td style="padding:5px 7px;"></td>
-      <td style="padding:5px 7px;">Ms. &nbsp;${sq(isMs)}</td>
-      <td style="padding:5px 7px;">Last Name:</td>
-      <td style="padding:5px 7px;">Email:</td>
-      <td style="padding:5px 7px;">Barangay:</td>
+      <td style="padding:5px 7px;">Ms. &nbsp;${sq(isMs, '#1A1A1A')}</td>
+      <td style="padding:5px 7px;">${fld('Last Name:', cd.lastName, 65)}</td>
+      <td style="padding:5px 7px;">${fld('Email:', cd.email, 90)}</td>
+      <td style="padding:5px 7px;">${fld('Barangay:', cd.barangay, 60)}</td>
     </tr>
   </tbody>
 </table>
 
 <!-- ─── SERVICE QUESTIONS ─── -->
-<div style="padding:10px 12px 8px;font-size:11px;line-height:2.5;">
-  <div>1. When was your last change oil / PMS ? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:370px;">${lastOilChange||'&nbsp;'}</span></div>
-  <div>2. What part/s were replaced in your last service? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:335px;">${partsReplaced||'&nbsp;'}</span></div>
-  <div>3. Any problems with your Vehicle ATM? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:370px;">${problems||'&nbsp;'}</span></div>
+<div style="padding:10px 12px 6px;font-size:11px;line-height:2.6;">
+  <div>1. When was your last change oil / PMS ? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:360px;">${lastOilChange||'&nbsp;'}</span></div>
+  <div>2. What part/s were replaced in your last service? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:325px;">${partsReplaced||'&nbsp;'}</span></div>
+  <div>3. Any problems with your Vehicle ATM? &nbsp;<span style="border-bottom:1px solid #1A1A1A;display:inline-block;min-width:365px;">${problems||'&nbsp;'}</span></div>
 </div>
 
 <!-- ─── VEHICLE INSPECTION BANNER ─── -->
-<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:800;font-size:12px;letter-spacing:2px;margin:4px 14px 10px;border-radius:6px;">VEHICLE INSPECTION</div>
+<div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-weight:800;font-size:12px;letter-spacing:2px;margin:6px 14px 10px;border-radius:6px;">VEHICLE INSPECTION</div>
 
 <!-- ─── MEASURE ─── -->
 <div style="border:1.5px solid #555;border-radius:10px;overflow:hidden;margin:0 10px 10px;">
@@ -4149,10 +4149,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <div>${sq(false)} No Damage</div>
         </td>
         <td rowspan="2" style="border-color:#555;padding:8px 8px;vertical-align:top;">
-          <div style="margin-bottom:18px;${act('replace')}">Replace</div>
-          <div style="margin-bottom:18px;${act('replace')}">Replace</div>
-          <div style="margin-bottom:18px;${act('replace')}">Replace</div>
-          <div style="${act('good')}">Good</div>
+          <div style="margin-bottom:18px;">Replace</div>
+          <div style="margin-bottom:18px;">Replace</div>
+          <div style="margin-bottom:18px;">Replace</div>
+          <div>Good</div>
         </td>
       </tr>
       <tr>
