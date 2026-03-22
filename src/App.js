@@ -3989,128 +3989,134 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   <style>
     @media print { body { margin:0; } @page { size: 8.5in 13in portrait; margin: 10mm 12mm; } }
     * { box-sizing: border-box; margin:0; padding:0; }
-    body { font-family: Arial, sans-serif; padding: 14px 18px; color: #1A1A1A; font-size: 11px; background: #fff; }
+    body { font-family: Arial, Helvetica, sans-serif; padding: 14px 18px; color: #1A1A1A; font-size: 11px; background: #fff; }
     table { width:100%; border-collapse:collapse; }
-    td, th { border:1px solid #999; padding:5px 8px; vertical-align:middle; font-size:11px; }
+    td, th { border:1px solid #333; padding:5px 8px; vertical-align:middle; font-size:11px; }
   </style>
 </head>
 <body>
 
 <!-- TITLE -->
-<div style="text-align:center; margin-bottom:10px; line-height:1;">
-  <span style="font-family:'Arial Black','Arial Bold',Arial,sans-serif; font-size:40px; font-weight:900; text-transform:uppercase; letter-spacing:0px;">QUICK SAFETY INSPECTION FORM</span>
+<div style="text-align:center; margin-bottom:6px; line-height:1.1;">
+  <span style="font-family:'Arial Black','Impact','Arial Bold',Arial,sans-serif; font-size:38px; font-weight:900; text-transform:uppercase; letter-spacing:0px;">QUICK SAFETY INSPECTION FORM</span>
 </div>
 
+<!-- ══ OUTER BORDER wrapping entire form ══ -->
+<div style="border:1.5px solid #333; border-radius:0 0 12px 12px; overflow:hidden;">
+
 <!-- VEHICLE DETAILS -->
-<div style="background:#1A1A1A; color:#fff; text-align:center; padding:5px 10px; font-weight:700; font-size:12px; letter-spacing:2px; border-radius:5px 5px 0 0;">VEHICLE DETAILS</div>
-<table style="border:1px solid #999; border-top:none; border-radius:0 0 5px 5px;">
+<div style="background:#1A1A1A; color:#fff; text-align:center; padding:4px 10px; font-weight:700; font-size:11px; letter-spacing:2px;">VEHICLE DETAILS</div>
+<table>
   <tbody>
     <tr>
-      <td style="width:14%;">Model: ${uline(cd.model, 50)}</td>
-      <td style="width:18%;">Year: ${uline(cd.year, 55)}</td>
-      <td style="width:18%;">Make: ${uline(cd.make, 55)}</td>
-      <td style="width:26%;">Plate No: ${uline(cd.plateNo, 80)}</td>
-      <td style="width:13%; font-weight:700; text-align:center;">KM Reading</td>
-      <td style="width:11%;">Date:</td>
+      <td style="width:16%;">Model:</td>
+      <td style="width:16%;">Year:</td>
+      <td colspan="2" style="width:18%;">Make:</td>
+      <td style="width:20%;">Plate No:</td>
+      <td style="width:16%;">KM Reading</td>
+      <td style="width:14%;">Date:</td>
     </tr>
     <tr>
-      <td colspan="2" style="white-space:nowrap;">
-        ${cb(isManual,'green')} Manual &nbsp;&nbsp;${cb(isAT,'green')} A/T &nbsp;&nbsp;${cb(isCVT,'green')} CVT
-      </td>
-      <td colspan="2" style="white-space:nowrap;">
-        ${cb(isGas,'green')} Gas &nbsp;&nbsp;${cb(isDiesel,'green')} Diesel &nbsp;&nbsp;${cb(isEV,'green')} EV/HEV
-      </td>
-      <td style="text-align:center;">${cd.kmReading || ''}</td>
-      <td>${inspection.date || ''}</td>
+      <td>Manual ${cb(isManual,'green')}</td>
+      <td>A/T ${cb(isAT,'green')}</td>
+      <td>CVT ${cb(isCVT,'green')}</td>
+      <td>Gas ${cb(isGas,'green')}</td>
+      <td>Diesel ${cb(isDiesel,'green')}</td>
+      <td>EV/HEV ${cb(isEV,'green')}</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
 
 <!-- COSTUMER DETAILS -->
-<div style="background:#1A1A1A; color:#fff; text-align:center; padding:5px 10px; font-weight:700; font-size:12px; letter-spacing:2px; margin-top:7px; border-radius:5px 5px 0 0;">COSTUMER DETAILS</div>
-<table style="border:1px solid #999; border-top:none; border-radius:0 0 5px 5px;">
+<div style="background:#1A1A1A; color:#fff; text-align:center; padding:4px 10px; font-weight:700; font-size:11px; letter-spacing:2px;">COSTUMER DETAILS</div>
+<table>
   <tbody>
-    <tr style="height:10px;">
-      <td colspan="5" style="border-left:1px solid #999; border-right:1px solid #999; border-top:none; border-bottom:none; padding:3px;"></td>
+    <tr>
+      <td style="width:18%; border-bottom:none; padding:2px 8px;" rowspan="1"></td>
+      <td style="width:10%; border-bottom:none; padding:2px 8px;"></td>
+      <td style="width:24%; border-bottom:none; padding:2px 8px;"></td>
+      <td style="width:24%; border-bottom:none; padding:2px 8px;"></td>
+      <td style="border-bottom:none; padding:2px 8px;"></td>
     </tr>
     <tr>
-      <td style="width:20%; border-top:none;">Company: ${uline(cd.company, 55)}</td>
-      <td style="width:11%; white-space:nowrap; border-top:none;">${cb(isMr,'green')} Mr. &nbsp;&nbsp;${cb(false,'green')}</td>
-      <td style="width:21%; border-top:none;">First Name: ${uline(cd.firstName, 60)}</td>
-      <td style="width:24%; border-top:none;">Mobile No. ${uline(cd.mobileNo, 70)}</td>
-      <td style="border-top:none;">City: ${uline(cd.city, 60)}</td>
+      <td style="border-top:none;">Company:</td>
+      <td style="white-space:nowrap; border-top:none;">Mr. ${cb(isMr,'green')}</td>
+      <td style="border-top:none;">First Name:</td>
+      <td style="border-top:none;">Mobile No.</td>
+      <td style="border-top:none;">City:</td>
     </tr>
     <tr>
       <td></td>
-      <td style="white-space:nowrap;">${cb(isMs,'green')} Ms. &nbsp;&nbsp;${cb(false,'green')}</td>
-      <td>Last Name: ${uline(cd.lastName, 60)}</td>
-      <td>Email: ${uline(cd.email, 80)}</td>
-      <td>Barangay: ${uline(cd.barangay, 55)}</td>
+      <td style="white-space:nowrap;">Ms. ${cb(isMs,'green')}</td>
+      <td>Last Name:</td>
+      <td>Email:</td>
+      <td>Barangay:</td>
     </tr>
   </tbody>
 </table>
 
 <!-- SERVICE QUESTIONS -->
-<div style="margin-top:12px; font-size:11px; line-height:2.2;">
-  <div>1. When was your last change oil / PMS ? ${uline(lastOilChange, 380)}</div>
-  <div>2. What part/s were replaced in your last service? ${uline(partsReplaced, 345)}</div>
-  <div>3. Any problems with your Vehicle ATM? ${uline(problems, 385)}</div>
+<div style="padding:10px 12px; font-size:11px; line-height:2.2;">
+  <div>1. When was your last change oil / PMS ? <span style="border-bottom:1px solid #333; display:inline-block; min-width:380px;">${lastOilChange || '&nbsp;'}</span></div>
+  <div>2. What part/s were replaced in your last service? <span style="border-bottom:1px solid #333; display:inline-block; min-width:340px;">${partsReplaced || '&nbsp;'}</span></div>
+  <div>3. Any problems with your Vehicle ATM? <span style="border-bottom:1px solid #333; display:inline-block; min-width:380px;">${problems || '&nbsp;'}</span></div>
 </div>
 
 <!-- VEHICLE INSPECTION BANNER -->
-<div style="background:#1A1A1A; color:#fff; text-align:center; padding:7px 20px; font-weight:800; font-size:13px; letter-spacing:2.5px; border-radius:30px; margin:14px 0 10px;">VEHICLE INSPECTION</div>
+<div style="background:#1A1A1A; color:#fff; text-align:center; padding:6px 20px; font-weight:800; font-size:12px; letter-spacing:2px; margin:6px 16px 10px;">VEHICLE INSPECTION</div>
 
 <!-- MEASURE SECTION -->
-<div style="border:1.5px solid #888; border-radius:10px; overflow:hidden; margin-bottom:10px;">
+<div style="border:1.5px solid #555; border-radius:8px; overflow:hidden; margin:0 10px 10px;">
   <div style="background:#555; color:#fff; text-align:center; padding:5px 10px; font-weight:700; font-size:12px; letter-spacing:1.5px;">MEASURE</div>
-  <table style="border-collapse:collapse; width:100%; border-radius:0 0 10px 10px;">
+  <table>
     <thead>
       <tr>
-        <th style="width:15%; border:1px solid #aaa; background:#fff; font-weight:400;"></th>
-        <th style="width:23%; border:1px solid #aaa; background:#fff; font-weight:600;">Condition</th>
-        <th style="width:12%; border:1px solid #aaa; background:#fff; font-weight:600;">Action</th>
-        <th style="width:15%; border:1px solid #aaa; background:#fff; font-weight:400;"></th>
-        <th style="width:23%; border:1px solid #aaa; background:#fff; font-weight:600;">Condition</th>
-        <th style="width:12%; border:1px solid #aaa; background:#fff; font-weight:600;">Action</th>
+        <th style="width:15%; background:#fff; font-weight:400; border-color:#555;"></th>
+        <th style="width:23%; background:#fff; font-weight:600; border-color:#555;">Condition</th>
+        <th style="width:12%; background:#fff; font-weight:600; border-color:#555;">Action</th>
+        <th style="width:15%; background:#fff; font-weight:400; border-color:#555;"></th>
+        <th style="width:23%; background:#fff; font-weight:600; border-color:#555;">Condition</th>
+        <th style="width:12%; background:#fff; font-weight:600; border-color:#555;">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td rowspan="2" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; border:1px solid #aaa; padding:12px 5px; line-height:1.4;">TEST<br/>BATTERY</td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td rowspan="2" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; border-color:#555; padding:10px 5px; line-height:1.4;">TEST<br/>BATTERY</td>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="font-weight:700; margin-bottom:6px;">Voltage Power</div>
-          <div style="margin-bottom:4px;">${cb(bv1, bvColor)} 12.6V to 12.8 V</div>
-          <div style="margin-bottom:4px;">${cb(bv2, bvColor)} 12.2V to 12.6 V</div>
+          <div style="margin-bottom:3px;">${cb(bv1, bvColor)} 12.6V to 12.8 V</div>
+          <div style="margin-bottom:3px;">${cb(bv2, bvColor)} 12.2V to 12.6 V</div>
           <div>${cb(bv3, bvColor)} 12.2V</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:20px;">&nbsp;</div>
-          <div style="margin-bottom:4px;">Good</div>
-          <div style="margin-bottom:4px;">Recharge</div>
+          <div style="margin-bottom:3px;">Good</div>
+          <div style="margin-bottom:3px;">Recharge</div>
           <div>Replace</div>
         </td>
-        <td rowspan="2" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; border:1px solid #aaa; padding:12px 5px;">TIRES</td>
-        <td rowspan="2" style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
-          <div style="margin-bottom:6px;">${cb(false)} Bulges<br/><span style="margin-left:16px; font-size:10px; color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
-          <div style="margin-bottom:6px;">${cb(false)} Side Wall Cracks<br/><span style="margin-left:16px; font-size:10px; color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
-          <div style="margin-bottom:6px;">${cb(false)} &lt;1.7 mm<br/><span style="margin-left:16px; font-size:10px; color:#555;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+        <td rowspan="2" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; border-color:#555; padding:10px 5px;">TIRES</td>
+        <td rowspan="2" style="border-color:#555; padding:8px 10px; vertical-align:top;">
+          <div style="margin-bottom:5px;">${cb(false)} Bulges<br/><span style="margin-left:16px; font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+          <div style="margin-bottom:5px;">${cb(false)} Side Wall Cracks<br/><span style="margin-left:16px; font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
+          <div style="margin-bottom:5px;">${cb(false)} &lt;1.7 mm<br/><span style="margin-left:16px; font-size:10px;">FL &nbsp;FR &nbsp;RL &nbsp;RR</span></div>
           <div>${cb(false)} No Damage</div>
         </td>
-        <td rowspan="2" style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
-          <div style="margin-bottom:18px;">Replace</div>
-          <div style="margin-bottom:18px;">Replace</div>
-          <div style="margin-bottom:18px;">Replace</div>
+        <td rowspan="2" style="border-color:#555; padding:8px 10px; vertical-align:top;">
+          <div style="margin-bottom:17px;">Replace</div>
+          <div style="margin-bottom:17px;">Replace</div>
+          <div style="margin-bottom:17px;">Replace</div>
           <div>Good</div>
         </td>
       </tr>
       <tr>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="font-weight:700; margin-bottom:6px;">Starting Power (CCA)</div>
-          <div style="margin-bottom:4px;">${cb(cca1, tcColor)} &gt;80%</div>
+          <div style="margin-bottom:3px;">${cb(cca1, tcColor)} &gt;80%</div>
           <div>${cb(cca2, tcColor)} &lt;80%</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
-          <div style="margin-bottom:4px;">Good</div>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
+          <div style="margin-bottom:3px;">Good</div>
           <div>Replace</div>
         </td>
       </tr>
@@ -4119,56 +4125,56 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 </div>
 
 <!-- INSPECT SECTION -->
-<div style="border:1.5px solid #888; border-radius:10px; overflow:hidden; margin-bottom:10px;">
+<div style="border:1.5px solid #555; border-radius:8px; overflow:hidden; margin:0 10px 10px;">
   <div style="background:#555; color:#fff; text-align:center; padding:5px 10px; font-weight:700; font-size:12px; letter-spacing:1.5px;">INSPECT</div>
-  <table style="border-collapse:collapse; width:100%;">
+  <table>
     <thead>
       <tr>
-        <th style="width:15%; border:1px solid #aaa; background:#fff; font-weight:400;"></th>
-        <th style="width:23%; border:1px solid #aaa; background:#fff; font-weight:600;">Condition</th>
-        <th style="width:12%; border:1px solid #aaa; background:#fff; font-weight:600;">Action</th>
-        <th style="width:15%; border:1px solid #aaa; background:#fff; font-weight:400;"></th>
-        <th style="width:23%; border:1px solid #aaa; background:#fff; font-weight:600;">Condition</th>
-        <th style="width:12%; border:1px solid #aaa; background:#fff; font-weight:600;">Action</th>
+        <th style="width:15%; background:#fff; font-weight:400; border-color:#555;"></th>
+        <th style="width:23%; background:#fff; font-weight:600; border-color:#555;">Condition</th>
+        <th style="width:12%; background:#fff; font-weight:600; border-color:#555;">Action</th>
+        <th style="width:15%; background:#fff; font-weight:400; border-color:#555;"></th>
+        <th style="width:23%; background:#fff; font-weight:600; border-color:#555;">Condition</th>
+        <th style="width:12%; background:#fff; font-weight:600; border-color:#555;">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border:1px solid #aaa; padding:10px 5px;"><strong>Coolant</strong></td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border-color:#555; padding:10px 5px;"><strong>Coolant</strong></td>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">${cb(coolantF && coolantF.color !== 'green', coolantF?.color)} Low Level</div>
           <div>${cb(coolantF?.color === 'green', 'green')} Correct Level</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">Top Up</div>
           <div>Good</div>
         </td>
-        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border:1px solid #aaa; padding:10px 5px;"><strong>Brake Fluid</strong></td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border-color:#555; padding:10px 5px;"><strong>Brake Fluid</strong></td>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">${cb(brakeFluidF && brakeFluidF.color !== 'green', brakeFluidF?.color)} Low Level</div>
           <div>${cb(brakeFluidF?.color === 'green', 'green')} Correct Level</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">Top Up</div>
           <div>Good</div>
         </td>
       </tr>
       <tr>
-        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border:1px solid #aaa; padding:10px 5px; line-height:1.5;"><strong>Power<br/>Steering<br/>Fluid</strong></td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border-color:#555; padding:10px 5px; line-height:1.5;"><strong>Power<br/>Steering<br/>Fluid</strong></td>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">${cb(psFluidF && psFluidF.color !== 'green', psFluidF?.color)} Low Level</div>
           <div>${cb(psFluidF?.color === 'green', 'green')} Correct Level</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">Top Up</div>
           <div>Good</div>
         </td>
-        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border:1px solid #aaa; padding:10px 5px;"><strong>Clutch Fuid</strong></td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="text-align:center; font-weight:900; font-size:13px; vertical-align:middle; border-color:#555; padding:10px 5px;"><strong>Clutch Fuid</strong></td>
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">${cb(clutchF && clutchF.color !== 'green', clutchF?.color)} Low Level</div>
           <div>${cb(clutchF?.color === 'green', 'green')} Correct Level</div>
         </td>
-        <td style="border:1px solid #aaa; padding:8px 10px; vertical-align:top;">
+        <td style="border-color:#555; padding:8px 10px; vertical-align:top;">
           <div style="margin-bottom:4px;">Top Up</div>
           <div>Good</div>
         </td>
@@ -4178,24 +4184,27 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 </div>
 
 <!-- TECHNICIAN'S COMMENT -->
-<div style="border:1.5px solid #888; border-radius:10px; overflow:hidden; margin-bottom:6px;">
+<div style="border:1.5px solid #555; border-radius:8px; overflow:hidden; margin:0 10px 8px;">
   <div style="background:#555; color:#fff; text-align:center; padding:5px 10px; font-weight:700; font-size:12px; letter-spacing:1.5px;">TECHNICIAN'S COMMENT</div>
   <div style="min-height:80px; padding:10px 12px; font-size:11px;">
     ${inspection.techComment ? inspection.techComment.replace(/\n/g,'<br/>') : ''}
   </div>
 </div>
-<div style="font-size:10px; color:#555; margin-bottom:8px;">**Indicate measurements</div>
+
+<div style="font-size:10px; color:#555; padding:0 10px 10px;">**Indicate measurements</div>
+
+</div><!-- end outer border -->
 
 <!-- DISCLAIMER -->
-<ol style="font-size:10px; line-height:1.8; padding-left:18px;">
+<ol style="font-size:10px; line-height:1.7; padding-left:18px; margin-top:10px;">
   <li><strong>THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></li>
   <li>The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</li>
   <li>It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</li>
 </ol>
 
 <!-- SIGNATURES -->
-<div style="display:flex; justify-content:space-around; margin-top:44px; gap:20px;">
-  <div style="text-align:center; width:32%;">
+<div style="display:flex; justify-content:space-between; margin-top:44px; padding:0 20px;">
+  <div style="text-align:center; width:30%;">
     <div style="border-top:1.5px solid #1A1A1A; padding-top:5px; font-size:10px;">Client's Printed Name and Signature</div>
   </div>
   <div style="text-align:center; width:25%;">
