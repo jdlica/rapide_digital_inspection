@@ -2366,7 +2366,6 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
             value={data.email || ''}
             onChange={(v) => update('email', v.replace(/\s/g, ''))}
             placeholder="Enter email"
-            type="email"
           />
           <SearchableDropdown
             label="City / Municipality"
@@ -2718,7 +2717,7 @@ function InspectionScreen({
         {cat.category}
       </h2>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {cat.items.map((item) => {
           const key = getKey(cat.category, item.name);
           const finding = findings[key];

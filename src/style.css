@@ -48,15 +48,15 @@ button {
 .form-card {
   background: #ffffff;
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
   border: 2px solid #d1d5db;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 18px;
 }
 
 /* Tablet: 2-column grid */
@@ -79,6 +79,6 @@ button {
   }
 
   .form-card {
-    padding: 20px 24px;
+    padding: 24px 28px;
   }
 }
