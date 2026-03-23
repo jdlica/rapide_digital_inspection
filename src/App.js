@@ -5829,6 +5829,52 @@ function AppInner() {
       f['TEST::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+    } else if (packageType === 'plus') {
+      f['BATTERY::Battery Voltage'] = { conditionIdx: 0, condition: '12.6V – 12.8V', action: 'Good', color: 'green' };
+      f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
+      f['BELT::Belt Condition'] = { conditionIdxs: [3] };
+      f['BELT::Belt Deflection'] = { conditionIdx: 1, condition: 'Correct Tension', action: 'Good', color: 'green' };
+      f['FLUIDS::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
+      f['TIRES::Tread Depth'] = { positions: {
+        FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
+        RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
+      }};
+      f['TIRES::Bulges / Side Wall Crack'] = { positions: {
+        FL: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+      }};
+      f['AIR CONDITIONER::Air Conditioner Filter'] = { conditionIdx: 2, condition: 'Good', action: 'Good', color: 'green' };
+      f['BRAKE PAD::Brake Pad'] = { positions: {
+        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
+        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+      }};
+      f['TEST::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['STEERING SYSTEM::Steering Rack'] = { conditionIdx: 0, condition: 'No Play / No Leak', action: 'Good', color: 'green' };
+      f['STEERING SYSTEM::Tie Rod Ends'] = { conditionIdx: 1, condition: 'Minor Play', action: 'Monitor', color: 'yellow' };
+      f['STEERING SYSTEM::Power Steering Pump'] = { conditionIdx: 0, condition: 'Quiet / No Leak', action: 'Good', color: 'green' };
+      f['EXHAUST SYSTEM::Exhaust Pipe'] = { conditionIdx: 0, condition: 'No Leaks / Intact', action: 'Good', color: 'green' };
+      f['EXHAUST SYSTEM::Muffler'] = { conditionIdx: 1, condition: 'Louder than Normal', action: 'Check', color: 'yellow' };
+      f['AIR CONDITIONING::A/C Cooling Performance'] = { conditionIdx: 0, condition: 'Cold', action: 'Good', color: 'green' };
+      f['AIR CONDITIONING::A/C Compressor'] = { conditionIdx: 0, condition: 'Engaging / Quiet', action: 'Good', color: 'green' };
+      f['AIR CONDITIONING::Cabin Filter'] = { conditionIdx: 1, condition: 'Dirty', action: 'Clean', color: 'yellow' };
+      f['AIR CONDITIONING::A/C Belt'] = { conditionIdx: 0, condition: 'Good', action: 'Good', color: 'green' };
+      f['AIR FILTER & FUEL SYSTEM::Air Filter'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
+      f['AIR FILTER & FUEL SYSTEM::Fuel Filter'] = { conditionIdx: 1, condition: 'Due for Replacement', action: 'Plan Replacement', color: 'yellow' };
+      f['AIR FILTER & FUEL SYSTEM::Spark Plugs'] = { conditionIdx: 2, condition: 'Fouled / Damaged', action: 'Replace', color: 'red' };
     }
     setFindings(f);
   };
