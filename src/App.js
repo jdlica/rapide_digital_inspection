@@ -3960,8 +3960,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const partsAnswer = (sd.replacedParts || []).join(', ');
     const problemsAnswer = (sd.currentProblems || []).join(', ');
 
-    const T = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:middle;`;
-    const Ttop = `border:1px solid #000;padding:4px 6px;font-size:11px;vertical-align:top;`;
+    const T = `border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:middle;`;
+    const Ttop = `border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:top;`;
 
     const actionBg = (action) => {
       if (action === 'Good') return 'background:#DCFCE7;color:#16A34A;font-weight:700;';
@@ -3972,47 +3972,46 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const actionTd = (action, selected) =>
       `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
 
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-      *{box-sizing:border-box;margin:0;padding:0;}
-      body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;padding:14px 18px;width:816px;}
-      table{border-collapse:collapse;width:100%;}
-    </style></head><body>
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
 
-    <div style="text-align:center;margin-bottom:10px;">
-      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1.1;">QUICK SAFETY INSPECTION FORM</div>
-    </div>
+    <!-- TITLE -->
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:8px 0 7px;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">QUICK SAFETY INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
-    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
-      <table>
+    <div style="border:1px solid #000;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:16%;"><col style="width:10%;"><col style="width:22%;"><col style="width:22%;"><col style="width:17%;"><col style="width:13%;"></colgroup>
         <tr>
-          <td style="width:16%;${T}"><strong>Model:</strong> ${cd.model || ''}</td>
-          <td style="width:17%;${T}"><strong>Year:</strong> ${cd.year || ''}</td>
-          <td style="width:18%;${T}"><strong>Make:</strong> ${cd.make || ''}</td>
-          <td style="width:22%;${T}"><strong>Plate No:</strong> ${cd.plateNo || ''}</td>
-          <td style="width:14%;${Ttop}" rowspan="2"><strong>KM Reading</strong><br>${cd.kmReading || ''}</td>
-          <td style="width:13%;${Ttop}" rowspan="2"><strong>Date:</strong><br>${inspection.date || ''}</td>
+          <td style="${T}"><strong>Model:</strong> ${cd.model || ''}</td>
+          <td style="${T}"><strong>Year:</strong> ${cd.year || ''}</td>
+          <td style="${T}"><strong>Make:</strong> ${cd.make || ''}</td>
+          <td style="${T}"><strong>Plate No:</strong> ${cd.plateNo || ''}</td>
+          <td style="${Ttop}" rowspan="2"><strong>KM Reading</strong><br>${cd.kmReading || ''}</td>
+          <td style="${Ttop}" rowspan="2"><strong>Date:</strong><br>${inspection.date || ''}</td>
         </tr>
         <tr>
           <td style="${T}">${cb(cd.transmission === 'Manual')} Manual</td>
           <td style="${T}">${cb(cd.transmission === 'A/T')} A/T</td>
           <td style="${T}">${cb(cd.transmission === 'CVT')} CVT</td>
-          <td style="${T}">${cb(cd.fuelType === 'Gas')} Gas &nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
+          <td style="${T}">${cb(cd.fuelType === 'Gas')} Gas &nbsp;&nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp;&nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
         </tr>
       </table>
     </div>
 
     <!-- COSTUMER DETAILS -->
-    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:10px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;">COSTUMER DETAILS</div>
-      <table>
+    <div style="border:1px solid #000;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">COSTUMER DETAILS</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
         <tr>
-          <td style="width:18%;${T}" rowspan="2"><strong>Company:</strong> ${cd.company || ''}</td>
-          <td style="width:10%;${T}">${cb(cd.title === 'Mr.')} Mr.</td>
-          <td style="width:22%;${T}"><strong>First Name:</strong> ${cd.firstName || ''}</td>
-          <td style="width:24%;${T}"><strong>Mobile No.</strong> ${cd.mobileNo || ''}</td>
-          <td style="width:13%;${T}"><strong>City:</strong> ${cd.city || ''}</td>
+          <td style="${T}" rowspan="2"><strong>Company:</strong> ${cd.company || ''}</td>
+          <td style="${T}">${cb(cd.title === 'Mr.')} Mr.</td>
+          <td style="${T}"><strong>First Name:</strong> ${cd.firstName || ''}</td>
+          <td style="${T}"><strong>Mobile No.</strong> ${cd.mobileNo || ''}</td>
+          <td style="${T}"><strong>City:</strong> ${cd.city || ''}</td>
         </tr>
         <tr>
           <td style="${T}">${cb(cd.title === 'Ms.')} Ms.</td>
@@ -4024,53 +4023,54 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Questions -->
-    <div style="margin-bottom:10px;font-size:11px;">
-      <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
-        <span style="white-space:nowrap;">1. When was your last change oil / PMS ? </span>
-        <span style="flex:1;border-bottom:1px solid #000;">${pmsAnswer}</span>
-      </div>
-      <div style="display:flex;align-items:flex-end;margin-bottom:5px;">
-        <span style="white-space:nowrap;">2. What part/s were replaced in your last service? </span>
-        <span style="flex:1;border-bottom:1px solid #000;">${partsAnswer}</span>
-      </div>
-      <div style="display:flex;align-items:flex-end;">
-        <span style="white-space:nowrap;">3. Any problems with your Vehicle ATM? </span>
-        <span style="flex:1;border-bottom:1px solid #000;">${problemsAnswer}</span>
-      </div>
-    </div>
+    <table style="margin-bottom:4px;">
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">1. When was your last change oil / PMS ?&nbsp;</td>
+        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;width:100%;">&nbsp;${pmsAnswer}</td>
+      </tr>
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">2. What part/s were replaced in your last service?&nbsp;</td>
+        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;">&nbsp;${partsAnswer}</td>
+      </tr>
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">3. Any problems with your Vehicle ATM?&nbsp;</td>
+        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;">&nbsp;${problemsAnswer}</td>
+      </tr>
+    </table>
 
     <!-- VEHICLE INSPECTION -->
-    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:5px 0;font-size:12px;font-weight:700;letter-spacing:2px;border-radius:6px;margin-bottom:8px;">VEHICLE INSPECTION</div>
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:3px;">VEHICLE INSPECTION</div>
 
     <!-- MEASURE -->
-    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">MEASURE</div>
-      <table>
+    <div style="border:1px solid #000;margin-bottom:3px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"></colgroup>
         <tr>
-          <td style="width:13%;${T}"></td>
-          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
-          <td style="width:13%;${T}"></td>
-          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
         </tr>
         <tr>
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
           <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="7">TIRES</td>
-          <td style="${Ttop}">${cb(false)} Bulges<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TIRES</td>
+          <td style="${Ttop}">${cb(false)} Bulges<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
           <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
           ${actionTd('Good', battVIdx === 0)}
-          <td style="${Ttop}">${cb(false)} Side Wall Cracks<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
+          <td style="${Ttop}">${cb(false)} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
           <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
           ${actionTd('Recharge', battVIdx === 1)}
-          <td style="${Ttop}">${cb(false)} &lt;1.7 mm<br><span style="font-size:10px;padding-left:13px;">FL FR RL RR</span></td>
+          <td style="${Ttop}">${cb(false)} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
@@ -4096,22 +4096,23 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- INSPECT -->
-    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">INSPECT</div>
-      <table>
+    <div style="border:1px solid #000;margin-bottom:3px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"></colgroup>
         <tr>
-          <td style="width:13%;${T}"></td>
-          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
-          <td style="width:13%;${T}"></td>
-          <td style="width:22%;${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="width:15%;${T};text-align:center;font-weight:700;">Action</td>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
         </tr>
         <tr>
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Coolant</strong></td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Coolant</td>
           <td style="${T}">${cb(isLow(coolantIdx))} Low Level</td>
           ${actionTd('Top Up', isLow(coolantIdx))}
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Brake Fluid</strong></td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Brake Fluid</td>
           <td style="${T}">${cb(isLow(brakeIdx))} Low Level</td>
           ${actionTd('Top Up', isLow(brakeIdx))}
         </tr>
@@ -4122,10 +4123,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           ${actionTd('Good', isFull(brakeIdx))}
         </tr>
         <tr>
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Power<br>Steering<br>Fluid</strong></td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Power<br>Steering<br>Fluid</td>
           <td style="${T}">${cb(isLow(psIdx))} Low Level</td>
           ${actionTd('Top Up', isLow(psIdx))}
-          <td style="${T};font-weight:900;font-size:13px;text-align:center;" rowspan="2"><strong>Clutch Fuid</strong></td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Clutch Fuid</td>
           <td style="${T}">${cb(false)} Low Level</td>
           <td style="${T}">Top Up</td>
         </tr>
@@ -4139,32 +4140,31 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TECHNICIAN'S COMMENT -->
-    <div style="border:1px solid #000;border-radius:6px;overflow:hidden;margin-bottom:8px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:4px 0;font-size:12px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
-      <div style="min-height:64px;padding:8px 10px;font-size:11px;">${inspection.techComment || ''}</div>
+    <div style="border:1px solid #000;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="min-height:90px;padding:6px 8px;font-size:11px;">${inspection.techComment || ''}</div>
     </div>
 
     <!-- Footnotes -->
-    <div style="margin-bottom:18px;font-size:9px;">
-      <div style="margin-bottom:3px;">**Indicate measurements</div>
-      <div style="margin-bottom:2px;"><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
-      <div style="margin-bottom:2px;">2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
+    <div style="margin-bottom:10px;font-size:8.5px;line-height:1.5;">
+      <div>**Indicate measurements</div>
+      <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
+      <div>2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
       <div>3. It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
     </div>
 
     <!-- Signatures -->
-    <div style="display:flex;justify-content:space-around;margin-top:10px;">
-      <div style="text-align:center;width:30%;">
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Client's Printed Name and Signature</div>
-      </div>
-      <div style="text-align:center;width:22%;">
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Technician</div>
-      </div>
-      <div style="text-align:center;width:22%;">
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Store Manager</div>
-      </div>
-    </div>
+    <table style="margin-top:18px;">
+      <tr>
+        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;width:5%;"></td>
+        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Technician</td>
+        <td style="border:none;width:5%;"></td>
+        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Store Manager</td>
+      </tr>
+    </table>
 
+    </div>
     </body></html>`;
   };
 
@@ -4172,7 +4172,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const html = buildQuickFormHTML();
 
     const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:816px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
     container.innerHTML = bodyMatch ? bodyMatch[1] : '';
     container.querySelectorAll('script').forEach((s) => s.remove());
@@ -4180,18 +4180,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     try {
       const canvas = await html2canvas(container, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         logging: false,
-        width: 816,
+        width: 794,
       });
 
-      // Long bond paper: 8.5" × 13" = 215.9mm × 330.2mm
-      const pdf = new jsPDF('p', 'mm', [215.9, 330.2]);
+      // A4: 210mm × 297mm, 0.25 inch (6.35mm) margins
+      const pdf = new jsPDF('p', 'mm', 'a4');
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 8;
+      const margin = 6.35;
       const contentW = pageW - margin * 2;
       const imgHeightMm = (canvas.height * contentW) / canvas.width;
 
