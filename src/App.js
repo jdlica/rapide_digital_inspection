@@ -2581,14 +2581,6 @@ function InspectionScreen({
         },
       };
     });
-    if (!isToggleOff) {
-      const currentPositions = findings[key]?.positions || {};
-      const newFilled = { ...currentPositions, [pos]: true };
-      const currentIdx = item.positions.indexOf(pos);
-      const ordered = [...item.positions.slice(currentIdx + 1), ...item.positions.slice(0, currentIdx)];
-      const nextPos = ordered.find((p) => !newFilled[p]);
-      setActivePosition(nextPos ? { itemName, pos: nextPos } : null);
-    }
     setAttempted(false);
   };
 
@@ -4196,20 +4188,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         return `<span style="color:#ccc;">${p}</span>`;
       }).join('&nbsp;');
     };
-    // Grid cell: each position shown in its own color — no gray
+    // Position cell: FL FR RL RR in color only — white background, printer-friendly
     const posGridCell = (key, label) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
-      const bgvs = { green: '#DCFCE7', yellow: '#FEF3C7', red: '#FEE2E2' };
       const pos = getPos(key);
-      const cells = ['FL','FR','RL','RR'].map(p => {
+      const tags = ['FL','FR','RL','RR'].map(p => {
         const pd = pos[p];
-        if (!pd) return `<td style="border:0.5px solid #ddd;text-align:center;font-size:7px;padding:2px 1px;color:#aaa;">—</td>`;
-        const bg = bgvs[pd.color] || '#fff';
-        const col = cvs[pd.color] || '#000';
-        return `<td style="border:0.5px solid #ddd;text-align:center;font-size:7px;padding:2px 1px;background:${bg};color:${col};font-weight:700;line-height:1.3;">${p}<br>${pd.condition}<br><span style="font-size:6px;">${pd.action}</span></td>`;
-      }).join('');
-      const titleRow = label ? `<tr><td colspan="4" style="border:none;padding:1px 3px;font-size:7px;font-weight:700;color:#555;border-bottom:0.5px solid #eee;">${label}</td></tr>` : '';
-      return `<td colspan="2" style="padding:1px;border:0.5px solid #bbb;vertical-align:top;"><table style="border-collapse:collapse;width:100%;table-layout:fixed;">${titleRow}<tr>${cells}</tr></table></td>`;
+        const col = pd ? (cvs[pd.color] || '#000') : '#999';
+        return `<span style="color:${col};font-weight:700;">${p}</span>`;
+      }).join('&nbsp;&nbsp;');
+      const labelPart = label ? `<span style="color:#555;font-weight:700;">${label}:</span>&nbsp;&nbsp;` : '';
+      return `<td colspan="2" style="${T}">${labelPart}${tags}</td>`;
     };
 
     const battVIdx = getIdx('BATTERY::Battery Voltage');
