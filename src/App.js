@@ -1959,7 +1959,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onChangePackage, brands, models, municipalities, barangays, fleets }) {
+function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onChangePackage, brands, models, municipalities, barangays, fleets, onFillDemo }) {
   const [errors, setErrors] = useState({});
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
   const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
@@ -1995,19 +1995,28 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
 
   return (
     <div className="form-screen">
-      <h2
-        style={{
-          fontSize: 22,
-          fontWeight: 900,
-          color: BRAND.black,
-          marginBottom: 4,
-        }}
-      >
-        Customer & Vehicle Details
-      </h2>
-      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
-        Fill in vehicle and customer information
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>
+            Customer & Vehicle Details
+          </h2>
+          <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
+            Fill in vehicle and customer information
+          </p>
+        </div>
+        {onFillDemo && (
+          <button
+            onClick={onFillDemo}
+            style={{
+              fontSize: 11, fontWeight: 700, padding: '4px 12px', marginTop: 4,
+              borderRadius: 8, border: `1px solid ${BRAND.grayBorder}`,
+              background: BRAND.grayLight, color: BRAND.gray, cursor: 'pointer',
+            }}
+          >
+            Fill Demo
+          </button>
+        )}
+      </div>
 
       {/* Package switcher */}
       {(() => {
@@ -4539,18 +4548,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       <table style="table-layout:fixed;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
-          <td style="${T};text-align:center;font-weight:700;">LIGHT</td>
-          <td style="${T};text-align:center;font-weight:700;">SIGNAL LIGHT</td>
-          <td style="${T};text-align:center;font-weight:700;">HORN</td>
-          <td style="${T};text-align:center;font-weight:700;">WIPER</td>
-          <td style="${T};text-align:center;font-weight:700;">WASHER</td>
-        </tr>
-        <tr>
-          <td style="${T};text-align:center;">${cb(lightIdx === 0)} All Good<br>${cb(lightIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;">${cb(signalIdx === 0)} All Good<br>${cb(signalIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;">${cb(hornIdx === 0)} All Good<br>${cb(hornIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;">${cb(wiperIdx === 0)} All Good<br>${cb(wiperIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;">${cb(washerIdx === 0)} All Good<br>${cb(washerIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;"><strong>LIGHT</strong><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;"><strong>SIGNAL LIGHT</strong><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;"><strong>HORN</strong><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;"><strong>WIPER</strong><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;"><strong>WASHER</strong><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
         </tr>
       </table>
     </div>
@@ -4570,7 +4572,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:18px;">
+    <table style="margin-top:50px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;">Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
@@ -5438,6 +5440,7 @@ function AppInner() {
           municipalities={municipalities}
           barangays={barangays}
           fleets={fleets}
+          onFillDemo={() => { fillDemoData(); setCurrentCatIdx(0); setScreen('inspection'); }}
         />
       )}
 
@@ -5464,7 +5467,6 @@ function AppInner() {
           setCurrentCategoryIdx={setCurrentCatIdx}
           onFinish={() => { saveCurrentDraft('techComment'); setScreen('techComment'); }}
           onBack={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
-          onFillDemo={fillDemoData}
         />
       )}
 
