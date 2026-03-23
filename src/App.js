@@ -4209,13 +4209,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
     <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
-    <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:12px;">
+    <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:14px;">
 
     <!-- TITLE -->
-    <div style="color:#000;text-align:center;padding:3px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:3px;">EXPRESS INSPECTION FORM</div>
+    <div style="color:#000;text-align:center;padding:3px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:5px;">EXPRESS INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:2px;">
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
@@ -4237,7 +4237,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- CUSTOMER DETAILS -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
+    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
@@ -4258,7 +4258,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- QUESTIONS -->
-    <table style="margin-bottom:4px;">
+    <table style="margin-bottom:6px;">
       <tr>
         <td style="border:none;white-space:nowrap;padding:2px 0;font-size:8.5px;">1. When was your last change oil / PMS ?&nbsp;</td>
         <td style="border:none;border-bottom:0.5px solid #bbb;padding:2px 0;font-size:8.5px;width:100%;">&nbsp;${pmsAnswer}</td>
@@ -4274,10 +4274,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </table>
 
     <!-- VEHICLE INSPECTION header -->
-    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:2px;margin-bottom:3px;border-radius:6px;">VEHICLE INSPECTION</div>
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:2px;margin-bottom:5px;border-radius:6px;">VEHICLE INSPECTION</div>
 
     <!-- MEASURE -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
+    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
@@ -4354,7 +4354,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- INSPECT -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
+    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
@@ -4513,7 +4513,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TEST -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
+    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TEST</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
@@ -4535,13 +4535,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TECHNICIAN'S COMMENT -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:2px;">
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
-      <div style="min-height:40px;padding:3px 6px;font-size:9px;">${inspection.techComment || ''}</div>
+      <div style="min-height:44px;padding:4px 6px;font-size:9px;">${inspection.techComment || ''}</div>
     </div>
 
     <!-- Footnotes -->
-    <div style="margin-bottom:3px;font-size:7px;line-height:1.4;">
+    <div style="margin-bottom:5px;font-size:7px;line-height:1.4;">
       <div>**Indicate measurements</div>
       <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
       <div>2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
@@ -4549,7 +4549,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:6px;">
+    <table style="margin-top:18px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;">Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
