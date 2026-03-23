@@ -2468,6 +2468,7 @@ function InspectionScreen({
   setCurrentCategoryIdx,
   onFinish,
   onBack,
+  onFillDemo,
 }) {
   const [attempted, setAttempted] = useState(false);
   const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
@@ -2603,9 +2604,23 @@ function InspectionScreen({
           <span style={{ fontSize: 13, fontWeight: 700, color: BRAND.gray }}>
             Category {currentCategoryIdx + 1} of {categories.length}
           </span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: BRAND.black }}>
-            {Math.round(progress)}%
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: BRAND.black }}>
+              {Math.round(progress)}%
+            </span>
+            {onFillDemo && (
+              <button
+                onClick={onFillDemo}
+                style={{
+                  fontSize: 10, fontWeight: 700, padding: '2px 8px',
+                  borderRadius: 6, border: `1px solid ${BRAND.grayBorder}`,
+                  background: BRAND.grayLight, color: BRAND.gray, cursor: 'pointer',
+                }}
+              >
+                Fill Demo
+              </button>
+            )}
+          </div>
         </div>
         <div
           style={{
@@ -4145,10 +4160,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;text-align:center;line-height:9px;font-size:8px;vertical-align:middle;">&#10003;</span>`
         : `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;vertical-align:middle;"></span>`;
 
-    const T = `border:0.5px solid #bbb;padding:1px 3px;font-size:8.5px;vertical-align:middle;`;
-    const Ttop = `border:0.5px solid #bbb;padding:1px 3px;font-size:8.5px;vertical-align:top;`;
+    const T = `border:0.5px solid #bbb;padding:3px 5px;font-size:8.5px;vertical-align:middle;`;
+    const Ttop = `border:0.5px solid #bbb;padding:3px 5px;font-size:8.5px;vertical-align:top;`;
 
-    // Action column: position items show colored set positions only; others blank
+    const actionBg = (action) => {
+      if (action === 'Good') return 'color:#16A34A;font-weight:700;';
+      if (action === 'Replace') return 'color:#DC2626;font-weight:700;';
+      return 'color:#D97706;font-weight:700;';
+    };
+    const actionTd = (action, selected) =>
+      `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
+    // Position items: action column shows only set positions in their colors
     const posTd = (key) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
@@ -4159,7 +4181,6 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       }).join('&nbsp;');
       return `<td style="${T};text-align:center;font-size:8px;">${spans}</td>`;
     };
-    const actionTd = () => `<td style="${T}"></td>`;
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
     const getSubOpt = (key) => findings[key]?.subOption || '';
@@ -4416,27 +4437,27 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- TIRES: Tread Depth (3) + Bulges/Side Wall Crack (3) = 6 rows -->
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="6">Tires</td>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm</td>
                 ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm</td>
                 ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm</td>
                 ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges</td>
                 ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} Side Wall Crack<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} Side Wall Crack</td>
                 ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 2))} No Issue<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 2))} No Issue</td>
                 ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
             </table>
@@ -4495,15 +4516,15 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- BRAKE PAD: 3 rows with positions -->
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="3">Brake<br>Pad</td>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm</td>
                 ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm</td>
                 ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm</td>
                 ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
             </table>
@@ -5146,6 +5167,60 @@ function AppInner() {
   const [technicians, setTechnicians] = useState([]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
 
+  const fillDemoData = () => {
+    setCustomerData({
+      date: new Date().toLocaleDateString('en-PH'),
+      model: 'Civic', year: '2020', make: 'Honda',
+      plateNo: 'ABC 1234', kmReading: '45,000',
+      transmission: 'A/T', fuelType: 'Gas',
+      title: 'Mr', firstName: 'Juan', lastName: 'dela Cruz',
+      mobileNo: '09171234567', city: 'Makati', barangay: 'Bel-Air', company: '',
+    });
+    setServiceData({
+      lastPmsMonth: 'January', lastPmsYear: '2025',
+      replacedParts: ['Oil Filter', 'Air Filter'],
+      currentProblems: ['Noise when braking'],
+    });
+    setTechComment('Vehicle in generally good condition. Recommend tire rotation on next visit.');
+    const f = {};
+    if (packageType === 'express') {
+      f['BATTERY::Battery Voltage'] = { conditionIdx: 0, condition: '12.6V – 12.8V', action: 'Good', color: 'green' };
+      f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
+      f['BELT::Belt Condition'] = { conditionIdxs: [3] };
+      f['BELT::Belt Deflection'] = { conditionIdx: 1, condition: 'Correct Tension', action: 'Good', color: 'green' };
+      f['FLUIDS::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['FLUIDS::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
+      f['TIRES::Tread Depth'] = { positions: {
+        FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
+        RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
+      }};
+      f['TIRES::Bulges / Side Wall Crack'] = { positions: {
+        FL: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 2, condition: 'No Issue', action: 'Good', color: 'green' },
+      }};
+      f['AIR CONDITIONER::Air Conditioner Filter'] = { conditionIdx: 2, condition: 'Good', action: 'Good', color: 'green' };
+      f['BRAKE PAD::Brake Pad'] = { positions: {
+        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
+        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+      }};
+      f['TEST::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+    }
+    setFindings(f);
+  };
+
   // Draft tracking — use a ref so RIF is stable across re-renders
   const draftRifRef = useRef(null);
 
@@ -5389,6 +5464,7 @@ function AppInner() {
           setCurrentCategoryIdx={setCurrentCatIdx}
           onFinish={() => { saveCurrentDraft('techComment'); setScreen('techComment'); }}
           onBack={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
+          onFillDemo={fillDemoData}
         />
       )}
 
