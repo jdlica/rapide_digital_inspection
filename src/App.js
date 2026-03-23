@@ -2652,61 +2652,8 @@ function InspectionScreen({
         {cat.category}
       </h2>
 
-      {/* TEST category: all items in one row */}
-      {cat.category === 'TEST' && (
-        <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, overflow: 'hidden' }}>
-          <div style={{ display: 'flex' }}>
-            {cat.items.map((item, itemIdx) => {
-              const key = getKey(cat.category, item.name);
-              const finding = findings[key];
-              return (
-                <div key={item.name} style={{
-                  flex: 1,
-                  borderRight: itemIdx < cat.items.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
-                  background: finding ? bgColorMap[finding.color] : BRAND.white,
-                  transition: 'background 0.15s',
-                }}>
-                  <div style={{ padding: '10px 6px 6px', textAlign: 'center', fontWeight: 800, fontSize: 11, color: BRAND.black, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
-                    {item.name}
-                  </div>
-                  {item.conditions.map((cond, ci) => {
-                    const selected = finding?.conditionIdx === ci;
-                    return (
-                      <div
-                        key={ci}
-                        onClick={() => selectCondition(item.name, ci)}
-                        style={{
-                          padding: '10px 6px', cursor: 'pointer', textAlign: 'center',
-                          borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
-                          background: selected ? bgColorMap[cond.color] : 'transparent',
-                          transition: 'background 0.15s',
-                        }}
-                      >
-                        <div style={{
-                          width: 22, height: 22, borderRadius: 6, margin: '0 auto 4px',
-                          border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
-                          background: selected ? colorMap[cond.color] : BRAND.white,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: BRAND.white, fontSize: 12, fontWeight: 700,
-                        }}>
-                          {selected && '✓'}
-                        </div>
-                        <div style={{ fontSize: 10, fontWeight: selected ? 700 : 400, color: selected ? colorMap[cond.color] : BRAND.black, lineHeight: 1.2 }}>
-                          {cond.label}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {cat.items.map((item) => {
-          if (cat.category === 'TEST') return null;
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
 
@@ -2824,7 +2771,7 @@ function InspectionScreen({
                         >
                           <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
                           <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.gray, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
-                            {pf ? pf.action : '—'}
+                            {pf ? '✓ ' + pf.action : '—'}
                           </span>
                         </button>
                       );
