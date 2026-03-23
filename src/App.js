@@ -160,37 +160,22 @@ const INSPECTION_DATA = {
         {
           name: 'Coolant Level',
           conditions: [
-            { label: 'Full', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            {
-              label: 'Very Low / Contaminated',
-              color: 'red',
-              action: 'Flush & Replace',
-            },
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           ],
         },
         {
           name: 'Brake Fluid Level',
           conditions: [
-            { label: 'Full', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            {
-              label: 'Very Low / Dark',
-              color: 'red',
-              action: 'Flush & Replace',
-            },
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           ],
         },
         {
           name: 'Power Steering Fluid',
           conditions: [
-            { label: 'Full', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            {
-              label: 'Very Low / Leaking',
-              color: 'red',
-              action: 'Repair & Replace',
-            },
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           ],
         },
         {
@@ -4135,7 +4120,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Power<br>Steering<br>Fluid</td>
           <td style="${T}">${cb(isLow(psIdx))} Low Level</td>
           ${actionTd('Top Up', isLow(psIdx))}
-          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Clutch Fuid</td>
+          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Clutch Fluid</td>
           <td style="${T}">${cb(clutchIdx === 1)} Low Level</td>
           ${actionTd('Top Up', clutchIdx === 1)}
         </tr>
