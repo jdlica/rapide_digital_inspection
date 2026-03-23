@@ -2765,8 +2765,8 @@ function InspectionScreen({
                             flex: 1,
                             borderRadius: 10,
                             padding: '10px 6px',
-                            border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
-                            background: pf ? bgColorMap[pf.color] : BRAND.white,
+                            border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.yellowStatus}`,
+                            background: pf ? bgColorMap[pf.color] : BRAND.yellowStatusBg,
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
@@ -2776,8 +2776,8 @@ function InspectionScreen({
                             boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
                           }}
                         >
-                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.grayBorder }}>{pos}</span>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.gray, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
+                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.yellowStatus }}>{pos}</span>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.yellowStatus, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
                             {pf ? pf.action : 'Tap'}
                           </span>
                         </button>
