@@ -255,11 +255,12 @@ const INSPECTION_DATA = {
       items: [
         {
           name: 'Belt Condition',
+          multiSelect: true,
           conditions: [
             { label: 'Cracked', color: 'red', action: 'Replace' },
             { label: 'Side Wall', color: 'red', action: 'Replace' },
             { label: 'Loose', color: 'yellow', action: 'Adjust' },
-            { label: 'No Damage', color: 'green', action: 'Good' },
+            { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
           ],
         },
         {
@@ -279,7 +280,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
           ],
         },
         {
@@ -287,7 +288,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
           ],
         },
         {
@@ -295,7 +296,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
           ],
         },
         {
@@ -303,7 +304,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+            { label: 'Contaminated (3-4% moisture flush)', color: 'red', action: 'Flush/Replace' },
           ],
         },
       ],
@@ -313,10 +314,12 @@ const INSPECTION_DATA = {
       items: [
         {
           name: 'Steering Linkage',
+          multiSelect: true,
           conditions: [
-            { label: 'No Sign of Damage', color: 'green', action: 'Good' },
+            { label: 'Boot Damage', color: 'red', action: 'Replace' },
+            { label: 'Tie Rod Loose', color: 'red', action: 'Repair' },
             { label: 'Steering Loose', color: 'yellow', action: 'Repair' },
-            { label: 'Bad Damage', color: 'red', action: 'Replace' },
+            { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
           ],
         },
       ],
@@ -340,15 +343,24 @@ const INSPECTION_DATA = {
         {
           name: 'Tread Depth',
           conditions: [
-            { label: '≥5 mm', color: 'green', action: 'Good' },
-            { label: '2.5 – 5 mm', color: 'yellow', action: 'Observe' },
-            { label: '≤2.5 mm', color: 'red', action: 'Replace' },
+            { label: '>3.2 mm', color: 'green', action: 'Good' },
+            { label: '3.2 – 1.7 mm', color: 'yellow', action: 'Observe' },
+            { label: '<1.7 mm', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
           positions: ['FL', 'FR', 'RL', 'RR'],
         },
         {
-          name: 'Bulges / Side Wall',
+          name: 'Bulges',
+          conditions: [
+            { label: 'No Issue', color: 'green', action: 'Good' },
+            { label: 'Issue Found', color: 'red', action: 'Replace' },
+          ],
+          hasPosition: true,
+          positions: ['FL', 'FR', 'RL', 'RR'],
+        },
+        {
+          name: 'Side Wall Crack',
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -364,8 +376,8 @@ const INSPECTION_DATA = {
         {
           name: 'Brake Pad',
           conditions: [
-            { label: '>7 mm', color: 'green', action: 'Good' },
-            { label: '3 – 7 mm', color: 'yellow', action: 'Observe' },
+            { label: '>6 mm', color: 'green', action: 'Good' },
+            { label: '3 – 6 mm', color: 'yellow', action: 'Observe' },
             { label: '<3 mm', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
@@ -2495,6 +2507,7 @@ function InspectionScreen({
       return finding?.positions && item.positions.every((p) => finding.positions[p]);
     }
     if (!finding) return false;
+    if (item.multiSelect) return (finding.conditionIdxs?.length || 0) > 0;
     const selectedCond = item.conditions[finding.conditionIdx];
     if (selectedCond?.subOptions?.length && !finding.subOption) return false;
     return true;
@@ -2530,6 +2543,27 @@ function InspectionScreen({
       if (!prev[key]) return prev;
       return { ...prev, [key]: { ...prev[key], subOption } };
     });
+  };
+
+  const selectMultiCondition = (itemName, condIdx) => {
+    const key = getKey(cat.category, itemName);
+    const item = cat.items.find((i) => i.name === itemName);
+    const cond = item.conditions[condIdx];
+    setFindings((prev) => {
+      const existing = prev[key]?.conditionIdxs || [];
+      if (existing.includes(condIdx)) {
+        const next = existing.filter((i) => i !== condIdx);
+        if (next.length === 0) { const u = { ...prev }; delete u[key]; return u; }
+        return { ...prev, [key]: { conditionIdxs: next } };
+      }
+      if (cond.exclusive) {
+        return { ...prev, [key]: { conditionIdxs: [condIdx] } };
+      }
+      const exclusiveIdxs = item.conditions.map((c, i) => c.exclusive ? i : -1).filter((i) => i >= 0);
+      const next = [...existing.filter((i) => !exclusiveIdxs.includes(i)), condIdx];
+      return { ...prev, [key]: { conditionIdxs: next } };
+    });
+    setAttempted(false);
   };
 
   const selectPositionCondition = (itemName, pos, condIdx) => {
@@ -2793,7 +2827,9 @@ function InspectionScreen({
                 /* Standard condition list for non-position items */
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {item.conditions.map((cond, ci) => {
-                    const selected = finding?.conditionIdx === ci;
+                    const selected = item.multiSelect
+                      ? (finding?.conditionIdxs?.includes(ci) ?? false)
+                      : finding?.conditionIdx === ci;
                     return (
                       <div
                         key={ci}
@@ -2804,7 +2840,7 @@ function InspectionScreen({
                         }}
                       >
                         <div
-                          onClick={() => selectCondition(item.name, ci)}
+                          onClick={() => item.multiSelect ? selectMultiCondition(item.name, ci) : selectCondition(item.name, ci)}
                           style={{
                             padding: '14px 18px', cursor: 'pointer', display: 'flex',
                             alignItems: 'center', justifyContent: 'space-between',
@@ -4127,12 +4163,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
     const getSubOpt = (key) => findings[key]?.subOption || '';
-    const contaminatedTd = (key, condIdx) => {
+    const contaminatedTd = (key, condIdx, subOpts, label = 'Contaminated') => {
       const selected = getIdx(key) === condIdx;
       const sub = getSubOpt(key);
-      const opts = ['Oil', 'Sludge', 'Rust', 'Debris'];
-      const subLine = opts.map(o => selected && o === sub ? `<u>${o}</u>` : o).join('&nbsp;&nbsp;');
-      return `<td style="${T}">${cb(selected)} Contaminated${selected ? `<br><span style="font-size:9px;padding-left:14px;">${subLine}</span>` : ''}</td>`;
+      const subLine = subOpts.map(o => selected && o === sub ? `<u>${o}</u>` : o).join('&nbsp;&nbsp;');
+      return `<td style="${T}">${cb(selected)} ${label}${selected && subOpts.length ? `<br><span style="font-size:9px;padding-left:14px;">${subLine}</span>` : ''}</td>`;
+    };
+    const isSelected = (key, condIdx) => {
+      const f = findings[key];
+      if (!f) return false;
+      if (Array.isArray(f.conditionIdxs)) return f.conditionIdxs.includes(condIdx);
+      return f.conditionIdx === condIdx;
     };
     const getPos = (key) => findings[key]?.positions || {};
     const anyAtCond = (key, condIdx) =>
@@ -4155,13 +4196,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const battVIdx = getIdx('BATTERY::Battery Voltage');
     const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
-    const beltCondIdx = getIdx('BELT::Belt Condition');
     const beltDeflIdx = getIdx('BELT::Belt Deflection');
     const coolantIdx = getIdx('FLUIDS::Coolant Level');
     const brakeFluidIdx = getIdx('FLUIDS::Brake Fluid Level');
     const psIdx = getIdx('FLUIDS::Power Steering Fluid');
     const clutchIdx = getIdx('FLUIDS::Clutch Fluid');
-    const steeringIdx = getIdx('STEERING LINKAGE::Steering Linkage');
     const airIdx = getIdx('AIR CONDITIONER::Air Conditioner Filter');
     const lightIdx = getIdx('TEST::Light');
     const signalIdx = getIdx('TEST::Signal Light');
@@ -4290,20 +4329,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${T};font-weight:900;font-size:11px;text-align:center;" rowspan="6">BELT</td>
-                <td style="${T}">${cb(beltCondIdx === 0)} Cracked</td>
-                ${actionTd('Replace', beltCondIdx === 0)}
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 0))} Cracked</td>
+                ${actionTd('Replace', isSelected('BELT::Belt Condition', 0))}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltCondIdx === 1)} Side Wall</td>
-                ${actionTd('Replace', beltCondIdx === 1)}
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 1))} Side Wall</td>
+                ${actionTd('Replace', isSelected('BELT::Belt Condition', 1))}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltCondIdx === 2)} Loose</td>
-                ${actionTd('Adjust', beltCondIdx === 2)}
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 2))} Loose</td>
+                ${actionTd('Adjust', isSelected('BELT::Belt Condition', 2))}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltCondIdx === 3)} No Damage</td>
-                ${actionTd('Good', beltCondIdx === 3)}
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 3))} No Damage</td>
+                ${actionTd('Good', isSelected('BELT::Belt Condition', 3))}
               </tr>
               <tr>
                 <td style="${T}">${cb(beltDeflIdx === 0)} &lt;1/2 inch Deflection</td>
@@ -4340,7 +4379,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', coolantIdx === 1)}
               </tr>
               <tr>
-                ${contaminatedTd('FLUIDS::Coolant Level', 2)}
+                ${contaminatedTd('FLUIDS::Coolant Level', 2, ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'])}
                 ${actionTd('Flush/Replace', coolantIdx === 2)}
               </tr>
               <tr>
@@ -4354,7 +4393,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', psIdx === 1)}
               </tr>
               <tr>
-                ${contaminatedTd('FLUIDS::Power Steering Fluid', 2)}
+                ${contaminatedTd('FLUIDS::Power Steering Fluid', 2, ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'])}
                 ${actionTd('Flush/Replace', psIdx === 2)}
               </tr>
               <tr>
@@ -4363,39 +4402,51 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <!-- STEERING LINKAGE -->
               <tr>
-                <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="3">Steering<br>Linkage</td>
-                <td style="${T}">${cb(steeringIdx === 2)} Bad Damage</td>
-                ${actionTd('Replace', steeringIdx === 2)}
+                <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 0))} Boot Damage</td>
+                ${actionTd('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 0))}
               </tr>
               <tr>
-                <td style="${T}">${cb(steeringIdx === 1)} Steering Loose</td>
-                ${actionTd('Repair', steeringIdx === 1)}
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 1))} Tie Rod Loose</td>
+                ${actionTd('Repair', isSelected('STEERING LINKAGE::Steering Linkage', 1))}
               </tr>
               <tr>
-                <td style="${T}">${cb(steeringIdx === 0)} No Sign of Damage</td>
-                ${actionTd('Good', steeringIdx === 0)}
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 2))} Steering Loose</td>
+                ${actionTd('Repair', isSelected('STEERING LINKAGE::Steering Linkage', 2))}
               </tr>
-              <!-- TIRES: Tread Depth (3 rows) + Bulges (2 rows) = 5 rows -->
               <tr>
-                <td style="${Ttop};font-weight:900;font-size:11px;text-align:center;" rowspan="5">Tires</td>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &le;2.5 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 2)}</span></td>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
+                ${actionTd('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
+              </tr>
+              <!-- TIRES: Tread Depth (3) + Bulges (2) + Side Wall Crack (2) = 7 rows -->
+              <tr>
+                <td style="${Ttop};font-weight:900;font-size:11px;text-align:center;" rowspan="7">Tires</td>
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 2)}</span></td>
                 ${actionTd('Replace', anyAtCond('TIRES::Tread Depth', 2))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 2.5 – 5 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 1)}</span></td>
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 1)}</span></td>
                 ${actionTd('Observe', anyAtCond('TIRES::Tread Depth', 1))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &ge;5 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 0)}</span></td>
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &gt;3.2 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 0)}</span></td>
                 ${actionTd('Good', anyAtCond('TIRES::Tread Depth', 0))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall', 1))} Bulges / Side Wall<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall', 1)}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Bulges / Side Wall', 1))}
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges', 1))} Bulges<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges', 1)}</span></td>
+                ${actionTd('Replace', anyAtCond('TIRES::Bulges', 1))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall', 0))} No Issue<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall', 0)}</span></td>
-                ${actionTd('Good', anyAtCond('TIRES::Bulges / Side Wall', 0))}
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges', 0))} No Issue (Bulges)<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges', 0)}</span></td>
+                ${actionTd('Good', anyAtCond('TIRES::Bulges', 0))}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Side Wall Crack', 1))} Side Wall Crack<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Side Wall Crack', 1)}</span></td>
+                ${actionTd('Replace', anyAtCond('TIRES::Side Wall Crack', 1))}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(anyAtCond('TIRES::Side Wall Crack', 0))} No Issue (Side Wall)<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Side Wall Crack', 0)}</span></td>
+                ${actionTd('Good', anyAtCond('TIRES::Side Wall Crack', 0))}
               </tr>
             </table>
           </td>
@@ -4415,7 +4466,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', brakeFluidIdx === 1)}
               </tr>
               <tr>
-                ${contaminatedTd('FLUIDS::Brake Fluid Level', 2)}
+                ${contaminatedTd('FLUIDS::Brake Fluid Level', 2, ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'])}
                 ${actionTd('Flush/Replace', brakeFluidIdx === 2)}
               </tr>
               <tr>
@@ -4429,7 +4480,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', clutchIdx === 1)}
               </tr>
               <tr>
-                ${contaminatedTd('FLUIDS::Clutch Fluid', 2)}
+                <td style="${T}">${cb(clutchIdx === 2)} Contaminated (3-4% moisture flush)</td>
                 ${actionTd('Flush/Replace', clutchIdx === 2)}
               </tr>
               <tr>
@@ -4457,11 +4508,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Replace', anyAtCond('BRAKE PAD::Brake Pad', 2))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 1)}</span></td>
+                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 1)}</span></td>
                 ${actionTd('Observe', anyAtCond('BRAKE PAD::Brake Pad', 1))}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &gt;7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 0)}</span></td>
+                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &gt;6 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 0)}</span></td>
                 ${actionTd('Good', anyAtCond('BRAKE PAD::Brake Pad', 0))}
               </tr>
             </table>
