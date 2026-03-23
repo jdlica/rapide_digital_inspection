@@ -237,6 +237,8 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'No Damage', color: 'green', action: 'Good' },
           ],
+          hasPosition: true,
+          positions: ['FL', 'FR', 'RL', 'RR'],
         },
       ],
     },
@@ -3929,7 +3931,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const psIdx = getIdx('UNDER THE HOOD::Power Steering Fluid');
     const clutchIdx = getIdx('UNDER THE HOOD::Clutch Fluid');
     const battCCAIdx = getIdx('BATTERY TEST::Starting Power (CCA)');
-    const noDamageIdx = getIdx('TIRES::No Damage');
+    const noDamageAllGood = ['FL','FR','RL','RR'].every(p => findings['TIRES::No Damage']?.positions?.[p]?.conditionIdx === 0);
     const isLow = (i) => i === 1 || i === 2;
     const isFull = (i) => i === 0;
 
@@ -4093,8 +4095,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Replace', hasTireIssue('Tread <1.7mm'))}
               </tr>
               <tr>
-                <td style="${T}">${cb(noDamageIdx === 0)} No Damage</td>
-                ${actionTd('Good', noDamageIdx === 0)}
+                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('No Damage')}</span></td>
+                ${actionTd('Good', noDamageAllGood)}
               </tr>
             </table>
           </td>
