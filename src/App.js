@@ -221,6 +221,7 @@ const INSPECTION_DATA = {
           name: 'No Damage',
           conditions: [
             { label: 'No Damage', color: 'green', action: 'Good' },
+            { label: 'Has Damage', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
           positions: ['FL', 'FR', 'RL', 'RR'],
@@ -4081,7 +4082,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(noDamageAllGood)} No Damage<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('No Damage')}</span></td>
-                ${actionTd('Good', noDamageAllGood)}
+                ${hasTireIssue('No Damage') ? actionTd('Replace', true) : actionTd('Good', noDamageAllGood)}
               </tr>
             </table>
           </td>
