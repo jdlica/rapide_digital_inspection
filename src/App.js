@@ -4548,11 +4548,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       <table style="table-layout:fixed;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
-          <td style="${T};text-align:center;"><strong>LIGHT</strong><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;"><strong>SIGNAL LIGHT</strong><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;"><strong>HORN</strong><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;"><strong>WIPER</strong><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;"><strong>WASHER</strong><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>LIGHT</strong><br><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>SIGNAL LIGHT</strong><br><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>WIPER</strong><br><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
         </tr>
       </table>
     </div>
