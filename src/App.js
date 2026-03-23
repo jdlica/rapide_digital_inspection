@@ -2769,10 +2769,7 @@ function InspectionScreen({
                             boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
                           }}
                         >
-                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.gray, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
-                            {pf ? '✓ ' + pf.action : '—'}
-                          </span>
+                          <span style={{ fontWeight: 900, fontSize: 18, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
                         </button>
                       );
                     })}
