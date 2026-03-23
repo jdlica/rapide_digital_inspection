@@ -152,39 +152,11 @@ const INSPECTION_DATA = {
             { label: '<80%', color: 'red', action: 'Replace' },
           ],
         },
-        {
-          name: 'Terminal Condition',
-          conditions: [
-            { label: 'Clean / Tight', color: 'green', action: 'Good' },
-            {
-              label: 'Minor Corrosion',
-              color: 'yellow',
-              action: 'Clean & Grease',
-            },
-            {
-              label: 'Heavy Corrosion / Loose',
-              color: 'red',
-              action: 'Clean / Replace Terminal',
-            },
-          ],
-        },
       ],
     },
     {
       category: 'UNDER THE HOOD',
       items: [
-        {
-          name: 'Engine Oil Level',
-          conditions: [
-            { label: 'Full', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            {
-              label: 'Very Low / Contaminated',
-              color: 'red',
-              action: 'Change Oil',
-            },
-          ],
-        },
         {
           name: 'Coolant Level',
           conditions: [
@@ -222,63 +194,10 @@ const INSPECTION_DATA = {
           ],
         },
         {
-          name: 'Transmission Fluid',
-          conditions: [
-            { label: 'Full / Clear', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            { label: 'Very Low / Burnt', color: 'red', action: 'Change' },
-          ],
-        },
-        {
-          name: 'Windshield Washer Fluid',
-          conditions: [
-            { label: 'Full', color: 'green', action: 'Good' },
-            { label: 'Low', color: 'yellow', action: 'Top Up' },
-            { label: 'Empty', color: 'red', action: 'Refill' },
-          ],
-        },
-        {
           name: 'Clutch Fluid',
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          ],
-        },
-      ],
-    },
-    {
-      category: 'LIGHTS & WIPERS',
-      items: [
-        {
-          name: 'Headlights (Low/High)',
-          conditions: [
-            { label: 'Working', color: 'green', action: 'Good' },
-            { label: 'Dim', color: 'yellow', action: 'Adjust / Clean' },
-            { label: 'Not Working', color: 'red', action: 'Replace Bulb' },
-          ],
-        },
-        {
-          name: 'Signal / Hazard Lights',
-          conditions: [
-            { label: 'Working', color: 'green', action: 'Good' },
-            { label: 'Intermittent', color: 'yellow', action: 'Check Wiring' },
-            { label: 'Not Working', color: 'red', action: 'Replace' },
-          ],
-        },
-        {
-          name: 'Brake Lights',
-          conditions: [
-            { label: 'Working', color: 'green', action: 'Good' },
-            { label: 'Dim', color: 'yellow', action: 'Check' },
-            { label: 'Not Working', color: 'red', action: 'Replace Bulb' },
-          ],
-        },
-        {
-          name: 'Wiper Blades',
-          conditions: [
-            { label: 'Good', color: 'green', action: 'Good' },
-            { label: 'Streaking', color: 'yellow', action: 'Monitor' },
-            { label: 'Worn / Cracked', color: 'red', action: 'Replace' },
           ],
         },
       ],
