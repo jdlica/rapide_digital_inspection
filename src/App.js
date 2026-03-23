@@ -2562,21 +2562,34 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
+    const isToggleOff = findings[key]?.positions?.[pos]?.conditionIdx === condIdx;
     setFindings((prev) => {
       const existing = prev[key] || { positions: {} };
-      const currentPosData = existing.positions?.[pos];
-      // Toggle: clicking the already-selected condition unchecks it
-      if (currentPosData?.conditionIdx === condIdx) {
+      if (existing.positions?.[pos]?.conditionIdx === condIdx) {
         const updatedPositions = { ...existing.positions };
         delete updatedPositions[pos];
         return { ...prev, [key]: { ...existing, positions: updatedPositions } };
       }
-      const updatedPositions = {
-        ...existing.positions,
-        [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
+      return {
+        ...prev,
+        [key]: {
+          ...existing,
+          positions: {
+            ...existing.positions,
+            [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
+          },
+        },
       };
-      return { ...prev, [key]: { ...existing, positions: updatedPositions } };
     });
+    if (!isToggleOff) {
+      // Auto-advance to next unfilled position
+      const currentPositions = findings[key]?.positions || {};
+      const newFilled = { ...currentPositions, [pos]: true };
+      const currentIdx = item.positions.indexOf(pos);
+      const ordered = [...item.positions.slice(currentIdx + 1), ...item.positions.slice(0, currentIdx)];
+      const nextPos = ordered.find((p) => !newFilled[p]);
+      setActivePosition(nextPos ? { itemName, pos: nextPos } : null);
+    }
     setAttempted(false);
   };
 
@@ -2753,7 +2766,7 @@ function InspectionScreen({
                             borderRadius: 10,
                             padding: '10px 6px',
                             border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
-                            background: pf ? bgColorMap[pf.color] : BRAND.grayLight,
+                            background: pf ? bgColorMap[pf.color] : BRAND.white,
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
@@ -2763,7 +2776,7 @@ function InspectionScreen({
                             boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
                           }}
                         >
-                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.gray }}>{pos}</span>
+                          <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.grayBorder }}>{pos}</span>
                           <span style={{ fontSize: 10, fontWeight: 700, color: pf ? colorMap[pf.color] : BRAND.gray, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' }}>
                             {pf ? pf.action : 'Tap'}
                           </span>
@@ -2813,8 +2826,8 @@ function InspectionScreen({
                             </div>
                             <div style={{
                               padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
-                              background: posSelected ? colorMap[cond.color] : BRAND.grayLight,
-                              color: posSelected ? BRAND.white : BRAND.gray,
+                              background: posSelected ? colorMap[cond.color] : bgColorMap[cond.color],
+                              color: posSelected ? BRAND.white : colorMap[cond.color],
                               minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
                               textTransform: 'uppercase', letterSpacing: 0.5,
                             }}>
