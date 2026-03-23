@@ -2364,7 +2364,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
             required
             error={!!errors.email}
             value={data.email || ''}
-            onChange={(v) => update('email', v)}
+            onChange={(v) => update('email', v.replace(/\s/g, ''))}
             placeholder="Enter email"
             type="email"
           />
@@ -2625,10 +2625,14 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
-    setFindings((prev) => ({
-      ...prev,
-      [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
-    }));
+    setFindings((prev) => {
+      if (prev[key]?.conditionIdx === condIdx) {
+        const updated = { ...prev };
+        delete updated[key];
+        return updated;
+      }
+      return { ...prev, [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color } };
+    });
     setAttempted(false);
   };
 
@@ -3932,9 +3936,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const getTirePos = (name) => findings[`TIRES::${name}`]?.positions || {};
     const hasTireIssue = (name) => Object.values(getTirePos(name)).some(p => p.conditionIdx === 1);
-    const tirePosDots = (name) => ['FL', 'FR', 'RL', 'RR'].map(p =>
-      getTirePos(name)[p]?.conditionIdx === 1 ? `<strong>${p}</strong>` : p
-    ).join('&nbsp;');
+    const tirePosDots = (name) => ['FL', 'FR', 'RL', 'RR'].map(p => {
+      const pos = getTirePos(name)[p];
+      if (!pos) return p;
+      if (pos.conditionIdx === 1) return `<strong style="color:#DC2626;">${p}</strong>`;
+      return `<span style="color:#16A34A;">${p}</span>`;
+    }).join('&nbsp;');
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -3963,7 +3970,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="border:1px solid #000;margin-bottom:3px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table style="table-layout:fixed;">
-        <colgroup><col style="width:16%;"><col style="width:10%;"><col style="width:22%;"><col style="width:22%;"><col style="width:17%;"><col style="width:13%;"></colgroup>
+        <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
         <tr>
           <td style="${T}"><strong>Model:</strong> ${cd.model || ''}</td>
           <td style="${T}"><strong>Year:</strong> ${cd.year || ''}</td>
@@ -3981,20 +3988,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
     </div>
 
-    <!-- COSTUMER DETAILS -->
+    <!-- CUSTOMER DETAILS -->
     <div style="border:1px solid #000;margin-bottom:3px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">COSTUMER DETAILS</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
         <tr>
           <td style="${T}" rowspan="2"><strong>Company:</strong> ${cd.company || ''}</td>
-          <td style="${T}">${cb(cd.title === 'Mr.')} Mr.</td>
+          <td style="${T}">${cb(cd.title === 'Mr')} Mr.</td>
           <td style="${T}"><strong>First Name:</strong> ${cd.firstName || ''}</td>
           <td style="${T}"><strong>Mobile No.</strong> ${cd.mobileNo || ''}</td>
           <td style="${T}"><strong>City:</strong> ${cd.city || ''}</td>
         </tr>
         <tr>
-          <td style="${T}">${cb(cd.title === 'Ms.')} Ms.</td>
+          <td style="${T}">${cb(cd.title === 'Ms')} Ms.</td>
           <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
           <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
           <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
