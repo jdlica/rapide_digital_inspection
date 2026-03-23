@@ -3918,8 +3918,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const cb = (checked) =>
       checked
-        ? `<span style="display:inline-block;width:11px;height:11px;border:1.5px solid #000;text-align:center;line-height:10px;font-size:9px;vertical-align:middle;">&#10003;</span>`
-        : `<span style="display:inline-block;width:11px;height:11px;border:1.5px solid #000;vertical-align:middle;"></span>`;
+        ? `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:10px;font-size:9px;vertical-align:middle;">&#10003;</span>`
+        : `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;vertical-align:middle;"></span>`;
 
     const battV = findings['BATTERY TEST::Battery Voltage'];
     const battVIdx = battV !== undefined ? battV.conditionIdx : -1;
@@ -3951,9 +3951,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const Ttop = `border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:top;`;
 
     const actionBg = (action) => {
-      if (action === 'Good') return 'background:#DCFCE7;color:#16A34A;font-weight:700;';
-      if (action === 'Replace') return 'background:#FEE2E2;color:#DC2626;font-weight:700;';
-      return 'background:#FEF3C7;color:#D97706;font-weight:700;';
+      if (action === 'Good') return 'color:#16A34A;font-weight:700;';
+      if (action === 'Replace') return 'color:#DC2626;font-weight:700;';
+      return 'color:#D97706;font-weight:700;';
     };
     // Returns colored action cell only when that row is selected, plain otherwise
     const actionTd = (action, selected) =>
@@ -3964,7 +3964,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
 
     <!-- TITLE -->
-    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:8px 0 7px;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">QUICK SAFETY INSPECTION FORM</div>
+    <div style="color:#000;text-align:center;padding:6px 0 4px;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">QUICK SAFETY INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
     <div style="border:1px solid #000;margin-bottom:3px;">
