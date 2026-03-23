@@ -4148,13 +4148,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const T = `border:0.5px solid #bbb;padding:1px 3px;font-size:8.5px;vertical-align:middle;`;
     const Ttop = `border:0.5px solid #bbb;padding:1px 3px;font-size:8.5px;vertical-align:top;`;
 
-    const actionBg = (action) => {
-      if (action === 'Good') return 'color:#16A34A;font-weight:700;';
-      if (action === 'Replace') return 'color:#DC2626;font-weight:700;';
-      return 'color:#D97706;font-weight:700;';
+    // Action column: position items show colored set positions only; others blank
+    const posTd = (key) => {
+      const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
+      const pos = getPos(key);
+      const spans = ['FL','FR','RL','RR'].flatMap(p => {
+        const pd = pos[p];
+        if (!pd) return [];
+        return [`<span style="color:${cvs[pd.color]||'#000'};font-weight:700;">${p}</span>`];
+      }).join('&nbsp;');
+      return `<td style="${T};text-align:center;font-size:8px;">${spans}</td>`;
     };
-    const actionTd = (action, selected) =>
-      `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
+    const actionTd = () => `<td style="${T}"></td>`;
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
     const getSubOpt = (key) => findings[key]?.subOption || '';
@@ -4412,27 +4417,27 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="6">Tires</td>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Tread Depth', 0))}
+                ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
-                ${actionTd('Observe', anyAtCond('TIRES::Tread Depth', 1))}
+                ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth')}</span></td>
-                ${actionTd('Good', anyAtCond('TIRES::Tread Depth', 2))}
+                ${posTd('TIRES::Tread Depth')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Bulges / Side Wall Crack', 0))}
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} Side Wall Crack<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Bulges / Side Wall Crack', 1))}
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 2))} No Issue<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack')}</span></td>
-                ${actionTd('Good', anyAtCond('TIRES::Bulges / Side Wall Crack', 2))}
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
               </tr>
             </table>
           </td>
@@ -4491,15 +4496,15 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="3">Brake<br>Pad</td>
                 <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
-                ${actionTd('Replace', anyAtCond('BRAKE PAD::Brake Pad', 0))}
+                ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
-                ${actionTd('Observe', anyAtCond('BRAKE PAD::Brake Pad', 1))}
+                ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm<br><span style="font-size:8px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad')}</span></td>
-                ${actionTd('Good', anyAtCond('BRAKE PAD::Brake Pad', 2))}
+                ${posTd('BRAKE PAD::Brake Pad')}
               </tr>
             </table>
           </td>
