@@ -3947,8 +3947,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const partsAnswer = (sd.replacedParts || []).join(', ');
     const problemsAnswer = (sd.currentProblems || []).join(', ');
 
-    const T = `border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:middle;`;
-    const Ttop = `border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:top;`;
+    const T = `border:0.5px solid #000;padding:3px 5px;font-size:11px;vertical-align:middle;`;
+    const Ttop = `border:0.5px solid #000;padding:3px 5px;font-size:11px;vertical-align:top;`;
 
     const actionBg = (action) => {
       if (action === 'Good') return 'color:#16A34A;font-weight:700;';
@@ -3967,7 +3967,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="color:#000;text-align:center;padding:6px 0 4px;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">QUICK SAFETY INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
-    <div style="border:1px solid #000;margin-bottom:3px;">
+    <div style="border:0.5px solid #000;margin-bottom:3px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
@@ -3989,7 +3989,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- CUSTOMER DETAILS -->
-    <div style="border:1px solid #000;margin-bottom:3px;">
+    <div style="border:0.5px solid #000;margin-bottom:3px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
@@ -4013,15 +4013,15 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <table style="margin-bottom:4px;">
       <tr>
         <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">1. When was your last change oil / PMS ?&nbsp;</td>
-        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;width:100%;">&nbsp;${pmsAnswer}</td>
+        <td style="border:none;border-bottom:0.5px solid #000;padding:2px 0;font-size:11px;width:100%;">&nbsp;${pmsAnswer}</td>
       </tr>
       <tr>
         <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">2. What part/s were replaced in your last service?&nbsp;</td>
-        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;">&nbsp;${partsAnswer}</td>
+        <td style="border:none;border-bottom:0.5px solid #000;padding:2px 0;font-size:11px;">&nbsp;${partsAnswer}</td>
       </tr>
       <tr>
         <td style="border:none;white-space:nowrap;padding:2px 0;font-size:11px;">3. Any problems with your Vehicle ATM?&nbsp;</td>
-        <td style="border:none;border-bottom:1px solid #000;padding:2px 0;font-size:11px;">&nbsp;${problemsAnswer}</td>
+        <td style="border:none;border-bottom:0.5px solid #000;padding:2px 0;font-size:11px;">&nbsp;${problemsAnswer}</td>
       </tr>
     </table>
 
@@ -4029,61 +4029,82 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:3px;">VEHICLE INSPECTION</div>
 
     <!-- MEASURE -->
-    <div style="border:1px solid #000;margin-bottom:3px;">
+    <div style="border:0.5px solid #000;margin-bottom:3px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">MEASURE</div>
-      <table style="table-layout:fixed;">
-        <colgroup><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"></colgroup>
+      <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
-          <td style="${T}"></td>
-          <td style="${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="${T};text-align:center;font-weight:700;">Action</td>
-          <td style="${T}"></td>
-          <td style="${T};text-align:center;font-weight:700;">Condition</td>
-          <td style="${T};text-align:center;font-weight:700;">Action</td>
-        </tr>
-        <tr>
-          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
-          <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
-          <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TIRES</td>
-          <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Bulges')}</span></td>
-          <td style="${T}">Replace</td>
-        </tr>
-        <tr>
-          <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
-          ${actionTd('Good', battVIdx === 0)}
-          <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Side Wall Cracks')}</span></td>
-          <td style="${T}">Replace</td>
-        </tr>
-        <tr>
-          <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
-          ${actionTd('Recharge', battVIdx === 1)}
-          <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Tread <1.7mm')}</span></td>
-          <td style="${T}">Replace</td>
-        </tr>
-        <tr>
-          <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
-          ${actionTd('Replace', battVIdx === 2)}
-          <td style="${T}">${cb(noDamageIdx === 0)} No Damage</td>
-          <td style="${T}">Good</td>
-        </tr>
-        <tr>
-          <td style="${Ttop}" colspan="2"><strong>Starting Power (CCA)</strong></td>
-          <td style="${T}" rowspan="3"></td>
-          <td style="${T}" rowspan="3"></td>
-        </tr>
-        <tr>
-          <td style="${T}">${cb(battCCAIdx === 0)} &gt;80%</td>
-          ${actionTd('Good', battCCAIdx === 0)}
-        </tr>
-        <tr>
-          <td style="${T}">${cb(battCCAIdx === 1)} &lt;80%</td>
-          ${actionTd('Replace', battCCAIdx === 1)}
+          <!-- LEFT: TEST BATTERY -->
+          <td style="width:50%;padding:0;vertical-align:top;border:none;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:26%;"><col style="width:44%;"><col style="width:30%;"></colgroup>
+              <tr>
+                <td style="${T}"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
+                <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
+                ${actionTd('Good', battVIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
+                ${actionTd('Recharge', battVIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
+                ${actionTd('Replace', battVIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Ttop}" colspan="2"><strong>Starting Power (CCA)</strong></td>
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battCCAIdx === 0)} &gt;80%</td>
+                ${actionTd('Good', battCCAIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battCCAIdx === 1)} &lt;80%</td>
+                ${actionTd('Replace', battCCAIdx === 1)}
+              </tr>
+            </table>
+          </td>
+          <!-- RIGHT: TIRES -->
+          <td style="width:50%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #000;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:26%;"><col style="width:44%;"><col style="width:30%;"></colgroup>
+              <tr>
+                <td style="${T}"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="4">TIRES</td>
+                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Bulges')}</span></td>
+                <td style="${T}">Replace</td>
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Side Wall Cracks')}</span></td>
+                <td style="${T}">Replace</td>
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Tread <1.7mm')}</span></td>
+                <td style="${T}">Replace</td>
+              </tr>
+              <tr>
+                <td style="${T}">${cb(noDamageIdx === 0)} No Damage</td>
+                <td style="${T}">Good</td>
+              </tr>
+            </table>
+          </td>
         </tr>
       </table>
     </div>
 
     <!-- INSPECT -->
-    <div style="border:1px solid #000;margin-bottom:3px;">
+    <div style="border:0.5px solid #000;margin-bottom:3px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"></colgroup>
@@ -4127,7 +4148,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TECHNICIAN'S COMMENT -->
-    <div style="border:1px solid #000;margin-bottom:4px;">
+    <div style="border:0.5px solid #000;margin-bottom:4px;">
       <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
       <div style="min-height:90px;padding:6px 8px;font-size:11px;">${inspection.techComment || ''}</div>
     </div>
@@ -4143,11 +4164,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Signatures -->
     <table style="margin-top:18px;">
       <tr>
-        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;border-top:0.5px solid #000;text-align:center;padding-top:4px;font-size:9px;width:40%;">Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
-        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Technician</td>
+        <td style="border:none;border-top:0.5px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Technician</td>
         <td style="border:none;width:5%;"></td>
-        <td style="border:none;border-top:1px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Store Manager</td>
+        <td style="border:none;border-top:0.5px solid #000;text-align:center;padding-top:4px;font-size:9px;width:25%;">Store Manager</td>
       </tr>
     </table>
 
