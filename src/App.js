@@ -4586,10 +4586,620 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </body></html>`;
   };
 
+  const buildPlusFormHTML = () => {
+    const findings = inspection.findings || {};
+    const cd = inspection.customerData || {};
+    const sd = inspection.serviceData || {};
+
+    const cb = (checked) =>
+      checked
+        ? `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;text-align:center;line-height:9px;font-size:8px;vertical-align:middle;">&#10003;</span>`
+        : `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;vertical-align:middle;"></span>`;
+
+    const T = `border:0.5px solid #bbb;padding:2px 4px;font-size:8px;vertical-align:middle;`;
+    const Ttop = `border:0.5px solid #bbb;padding:2px 4px;font-size:8px;vertical-align:top;`;
+    const Tp = `border:0.5px solid #bbb;padding:1px 3px;font-size:8px;vertical-align:middle;`;
+
+    const actionBg = (action) => {
+      if (action === 'Good') return 'color:#16A34A;font-weight:700;';
+      if (action === 'Replace') return 'color:#DC2626;font-weight:700;';
+      return 'color:#D97706;font-weight:700;';
+    };
+    const actionTd = (action, selected) =>
+      `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
+    const colorToHex = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
+    const colorTd = (action, color, selected) =>
+      `<td style="${Tp}${selected ? `color:${colorToHex[color]||'#000'};font-weight:700;` : ''}">${action}</td>`;
+
+    const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
+    const getSubOpt = (key) => findings[key]?.subOption || '';
+    const contaminatedTd = (key, condIdx, subOpts, label = 'Contaminated') => {
+      const selected = getIdx(key) === condIdx;
+      const sub = getSubOpt(key);
+      const subLine = subOpts.map(o => selected && o === sub ? `<u>${o}</u>` : o).join('&nbsp;&nbsp;');
+      return `<td style="${T}">${cb(selected)} ${label}${selected && subOpts.length ? `<br><span style="font-size:7px;padding-left:14px;">${subLine}</span>` : ''}</td>`;
+    };
+    const isSelected = (key, condIdx) => {
+      const f = findings[key];
+      if (!f) return false;
+      if (Array.isArray(f.conditionIdxs)) return f.conditionIdxs.includes(condIdx);
+      return f.conditionIdx === condIdx;
+    };
+    const getPos = (key) => findings[key]?.positions || {};
+    const anyAtCond = (key, condIdx) =>
+      ['FL','FR','RL','RR'].some(p => getPos(key)[p]?.conditionIdx === condIdx);
+    const posTd = (key) => {
+      const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
+      const pos = getPos(key);
+      const spans = ['FL','FR','RL','RR'].flatMap(p => {
+        const pd = pos[p];
+        if (!pd) return [];
+        return [`<span style="color:${cvs[pd.color]||'#000'};font-weight:700;">${p}</span>`];
+      }).join('&nbsp;');
+      return `<td style="${T};text-align:center;font-size:8px;">${spans}</td>`;
+    };
+
+    const battVIdx = getIdx('BATTERY::Battery Voltage');
+    const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
+    const beltDeflIdx = getIdx('BELT::Belt Deflection');
+    const coolantIdx = getIdx('FLUIDS::Coolant Level');
+    const brakeFluidIdx = getIdx('FLUIDS::Brake Fluid Level');
+    const psIdx = getIdx('FLUIDS::Power Steering Fluid');
+    const clutchIdx = getIdx('FLUIDS::Clutch Fluid');
+    const airIdx = getIdx('AIR CONDITIONER::Air Conditioner Filter');
+    const lightIdx = getIdx('TEST::Light');
+    const signalIdx = getIdx('TEST::Signal Light');
+    const hornIdx = getIdx('TEST::Horn');
+    const wiperIdx = getIdx('TEST::Wiper');
+    const washerIdx = getIdx('TEST::Washer');
+
+    const steerRackIdx = getIdx('STEERING SYSTEM::Steering Rack');
+    const tieRodIdx = getIdx('STEERING SYSTEM::Tie Rod Ends');
+    const psPumpIdx = getIdx('STEERING SYSTEM::Power Steering Pump');
+    const exhaustPipeIdx = getIdx('EXHAUST SYSTEM::Exhaust Pipe');
+    const mufflerIdx = getIdx('EXHAUST SYSTEM::Muffler');
+    const acCoolingIdx = getIdx('AIR CONDITIONING::A/C Cooling Performance');
+    const acCompressorIdx = getIdx('AIR CONDITIONING::A/C Compressor');
+    const cabinFilterIdx = getIdx('AIR CONDITIONING::Cabin Filter');
+    const acBeltIdx = getIdx('AIR CONDITIONING::A/C Belt');
+    const airFilterIdx = getIdx('AIR FILTER & FUEL SYSTEM::Air Filter');
+    const fuelFilterIdx = getIdx('AIR FILTER & FUEL SYSTEM::Fuel Filter');
+    const sparkPlugsIdx = getIdx('AIR FILTER & FUEL SYSTEM::Spark Plugs');
+
+    const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
+    const partsAnswer = (sd.replacedParts || []).join(', ');
+    const problemsAnswer = (sd.currentProblems || []).join(', ');
+
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
+    <div style="font-family:Arial,sans-serif;font-size:8px;color:#000;background:#fff;width:794px;padding:12px;">
+
+    <!-- TITLE -->
+    <div style="color:#000;text-align:center;padding:2px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">PLUS INSPECTION FORM</div>
+
+    <!-- VEHICLE DETAILS -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
+        <tr>
+          <td style="${T}"><strong>Model:</strong> ${cd.model || ''}</td>
+          <td style="${T}"><strong>Year:</strong> ${cd.year || ''}</td>
+          <td style="${T}"><strong>Make:</strong> ${cd.make || ''}</td>
+          <td style="${T}"><strong>Plate No:</strong> ${cd.plateNo || ''}</td>
+          <td style="${Ttop}" rowspan="2"><strong>KM Reading</strong><br>${cd.kmReading || ''}</td>
+          <td style="${Ttop}" rowspan="2"><strong>Date:</strong><br>${inspection.date || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(cd.transmission === 'Manual')} Manual</td>
+          <td style="${T}">${cb(cd.transmission === 'A/T')} A/T</td>
+          <td style="${T}">${cb(cd.transmission === 'CVT')} CVT</td>
+          <td style="${T};white-space:nowrap;">${cb(cd.fuelType === 'Gas')} Gas &nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- CUSTOMER DETAILS -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
+        <tr>
+          <td style="${T}" rowspan="2"><strong>Company:</strong> ${cd.company || ''}</td>
+          <td style="${T}">${cb(cd.title === 'Mr')} Mr.</td>
+          <td style="${T}"><strong>First Name:</strong> ${cd.firstName || ''}</td>
+          <td style="${T}"><strong>Mobile No.</strong> ${cd.mobileNo || ''}</td>
+          <td style="${T}"><strong>City:</strong> ${cd.city || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}">${cb(cd.title === 'Ms')} Ms.</td>
+          <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
+          <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
+          <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- QUESTIONS -->
+    <table style="margin-bottom:4px;">
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:8px;">1. When was your last change oil / PMS ?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:8px;width:100%;">&nbsp;${pmsAnswer}</td>
+      </tr>
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:8px;">2. What part/s were replaced in your last service?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:8px;">&nbsp;${partsAnswer}</td>
+      </tr>
+      <tr>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:8px;">3. Any problems with your Vehicle ATM?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:8px;">&nbsp;${problemsAnswer}</td>
+      </tr>
+    </table>
+
+    <!-- VEHICLE INSPECTION header -->
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:8px;font-weight:700;letter-spacing:2px;margin-bottom:4px;border-radius:4px;">VEHICLE INSPECTION</div>
+
+    <!-- MEASURE -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+        <tr>
+          <td style="width:50%;padding:0;vertical-align:top;border:none;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:26%;"><col style="width:44%;"><col style="width:30%;"></colgroup>
+              <tr>
+                <td style="${T};text-align:center;font-weight:700;"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:11px;text-align:center;" rowspan="5">BATTERY</td>
+                <td style="${T}">${cb(battVIdx === 0)} 12.6V – 12.8V</td>
+                ${actionTd('Good', battVIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battVIdx === 1)} 12.2V – 12.6V</td>
+                ${actionTd('Recharge', battVIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battVIdx === 2)} Below 12.2V</td>
+                ${actionTd('Replace', battVIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battCCAIdx === 0)} &gt;80%</td>
+                ${actionTd('Good', battCCAIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(battCCAIdx === 1)} &lt;80%</td>
+                ${actionTd('Replace', battCCAIdx === 1)}
+              </tr>
+            </table>
+          </td>
+          <td style="width:50%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:20%;"><col style="width:50%;"><col style="width:30%;"></colgroup>
+              <tr>
+                <td style="${T};text-align:center;font-weight:700;"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="6">BELT</td>
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 0))} Cracked</td>
+                ${actionTd('Replace', isSelected('BELT::Belt Condition', 0))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 1))} Side Wall</td>
+                ${actionTd('Replace', isSelected('BELT::Belt Condition', 1))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 2))} Loose</td>
+                ${actionTd('Adjust', isSelected('BELT::Belt Condition', 2))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('BELT::Belt Condition', 3))} No Damage</td>
+                ${actionTd('Good', isSelected('BELT::Belt Condition', 3))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(beltDeflIdx === 0)} &lt;1/2 inch Deflection</td>
+                ${actionTd('Adjust', beltDeflIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(beltDeflIdx === 1)} Correct Tension</td>
+                ${actionTd('Good', beltDeflIdx === 1)}
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- INSPECT -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+        <tr>
+          <td style="width:50%;padding:0;vertical-align:top;border:none;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:22%;"><col style="width:53%;"><col style="width:25%;"></colgroup>
+              <tr>
+                <td style="${T};text-align:center;font-weight:700;"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Coolant</td>
+                <td style="${T}">${cb(coolantIdx === 0)} Low Level</td>
+                ${actionTd('Top Up', coolantIdx === 0)}
+              </tr>
+              <tr>
+                ${contaminatedTd('FLUIDS::Coolant Level', 1, ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'])}
+                ${actionTd('Flush/Replace', coolantIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(coolantIdx === 2)} Correct Level</td>
+                ${actionTd('Good', coolantIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Power<br>Steering<br>Fluid</td>
+                <td style="${T}">${cb(psIdx === 0)} Low Level</td>
+                ${actionTd('Top Up', psIdx === 0)}
+              </tr>
+              <tr>
+                ${contaminatedTd('FLUIDS::Power Steering Fluid', 1, ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'])}
+                ${actionTd('Flush/Replace', psIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(psIdx === 2)} Correct Level</td>
+                ${actionTd('Good', psIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 0))} Boot Damage</td>
+                ${actionTd('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 0))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 1))} Tie Rod Loose</td>
+                ${actionTd('Repair', isSelected('STEERING LINKAGE::Steering Linkage', 1))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 2))} Steering Loose</td>
+                ${actionTd('Repair', isSelected('STEERING LINKAGE::Steering Linkage', 2))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
+                ${actionTd('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
+              </tr>
+              <tr>
+                <td style="${Ttop};font-weight:900;font-size:8px;text-align:center;" rowspan="6">Tires</td>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm</td>
+                ${posTd('TIRES::Tread Depth')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm</td>
+                ${posTd('TIRES::Tread Depth')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm</td>
+                ${posTd('TIRES::Tread Depth')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges</td>
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} Side Wall Crack</td>
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 2))} No Issue</td>
+                ${posTd('TIRES::Bulges / Side Wall Crack')}
+              </tr>
+            </table>
+          </td>
+          <td style="width:50%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:22%;"><col style="width:53%;"><col style="width:25%;"></colgroup>
+              <tr>
+                <td style="${T};text-align:center;font-weight:700;"></td>
+                <td style="${T};text-align:center;font-weight:700;">Condition</td>
+                <td style="${T};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Brake<br>Fluid</td>
+                <td style="${T}">${cb(brakeFluidIdx === 0)} Low Level</td>
+                ${actionTd('Top Up', brakeFluidIdx === 0)}
+              </tr>
+              <tr>
+                ${contaminatedTd('FLUIDS::Brake Fluid Level', 1, ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'])}
+                ${actionTd('Flush/Replace', brakeFluidIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(brakeFluidIdx === 2)} Correct Level</td>
+                ${actionTd('Good', brakeFluidIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Clutch<br>Fluid</td>
+                <td style="${T}">${cb(clutchIdx === 0)} Low Level</td>
+                ${actionTd('Top Up', clutchIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(clutchIdx === 1)} Contaminated (3-4% moisture flush)</td>
+                ${actionTd('Flush/Replace', clutchIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(clutchIdx === 2)} Correct Level</td>
+                ${actionTd('Good', clutchIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Air<br>Cond.<br>Filter</td>
+                <td style="${T}">${cb(airIdx === 0)} Clogged</td>
+                ${actionTd('Replace', airIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(airIdx === 1)} Light Dirt</td>
+                ${actionTd('Clean', airIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(airIdx === 2)} Good</td>
+                ${actionTd('Good', airIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Ttop};font-weight:900;font-size:8px;text-align:center;" rowspan="3">Brake<br>Pad</td>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm</td>
+                ${posTd('BRAKE PAD::Brake Pad')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm</td>
+                ${posTd('BRAKE PAD::Brake Pad')}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm</td>
+                ${posTd('BRAKE PAD::Brake Pad')}
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- PLUS INSPECT — asymmetric: left has Steering System(9) + Exhaust(6)=15 rows; right has AC(12) + Air/Fuel(9)=21 rows -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">PLUS INSPECT</div>
+      <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+        <tr>
+          <!-- LEFT: STEERING SYSTEM + EXHAUST SYSTEM -->
+          <td style="width:50%;padding:0;vertical-align:top;border:none;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:24%;"><col style="width:50%;"><col style="width:26%;"></colgroup>
+              <tr>
+                <td style="${Tp};text-align:center;font-weight:700;"></td>
+                <td style="${Tp};text-align:center;font-weight:700;">Condition</td>
+                <td style="${Tp};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Steering<br>Rack</td>
+                <td style="${Tp}">${cb(steerRackIdx === 0)} No Play / No Leak</td>
+                ${colorTd('Good', 'green', steerRackIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(steerRackIdx === 1)} Minor Leak</td>
+                ${colorTd('Monitor', 'yellow', steerRackIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(steerRackIdx === 2)} Heavy Leak / Excessive Play</td>
+                ${colorTd('Replace', 'red', steerRackIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Tie Rod<br>Ends</td>
+                <td style="${Tp}">${cb(tieRodIdx === 0)} Tight</td>
+                ${colorTd('Good', 'green', tieRodIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(tieRodIdx === 1)} Minor Play</td>
+                ${colorTd('Monitor', 'yellow', tieRodIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(tieRodIdx === 2)} Excessive Play</td>
+                ${colorTd('Replace', 'red', tieRodIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">PS<br>Pump</td>
+                <td style="${Tp}">${cb(psPumpIdx === 0)} Quiet / No Leak</td>
+                ${colorTd('Good', 'green', psPumpIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(psPumpIdx === 1)} Whining / Minor Leak</td>
+                ${colorTd('Check', 'yellow', psPumpIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(psPumpIdx === 2)} Failed / Heavy Leak</td>
+                ${colorTd('Replace', 'red', psPumpIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Exhaust<br>Pipe</td>
+                <td style="${Tp}">${cb(exhaustPipeIdx === 0)} No Leaks / Intact</td>
+                ${colorTd('Good', 'green', exhaustPipeIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(exhaustPipeIdx === 1)} Minor Rust</td>
+                ${colorTd('Monitor', 'yellow', exhaustPipeIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(exhaustPipeIdx === 2)} Holes / Heavy Rust</td>
+                ${colorTd('Replace', 'red', exhaustPipeIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Muffler</td>
+                <td style="${Tp}">${cb(mufflerIdx === 0)} Good</td>
+                ${colorTd('Good', 'green', mufflerIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(mufflerIdx === 1)} Louder than Normal</td>
+                ${colorTd('Check', 'yellow', mufflerIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(mufflerIdx === 2)} Damaged / Leaking</td>
+                ${colorTd('Replace', 'red', mufflerIdx === 2)}
+              </tr>
+            </table>
+          </td>
+          <!-- RIGHT: AIR CONDITIONING + AIR FILTER & FUEL SYSTEM -->
+          <td style="width:50%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <colgroup><col style="width:24%;"><col style="width:50%;"><col style="width:26%;"></colgroup>
+              <tr>
+                <td style="${Tp};text-align:center;font-weight:700;"></td>
+                <td style="${Tp};text-align:center;font-weight:700;">Condition</td>
+                <td style="${Tp};text-align:center;font-weight:700;">Action</td>
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">A/C<br>Cooling</td>
+                <td style="${Tp}">${cb(acCoolingIdx === 0)} Cold</td>
+                ${colorTd('Good', 'green', acCoolingIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acCoolingIdx === 1)} Not Cold Enough</td>
+                ${colorTd('Recharge', 'yellow', acCoolingIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acCoolingIdx === 2)} Not Working</td>
+                ${colorTd('Diagnose &amp; Repair', 'red', acCoolingIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">A/C<br>Compress.</td>
+                <td style="${Tp}">${cb(acCompressorIdx === 0)} Engaging / Quiet</td>
+                ${colorTd('Good', 'green', acCompressorIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acCompressorIdx === 1)} Noisy</td>
+                ${colorTd('Check', 'yellow', acCompressorIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acCompressorIdx === 2)} Not Engaging</td>
+                ${colorTd('Repair / Replace', 'red', acCompressorIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Cabin<br>Filter</td>
+                <td style="${Tp}">${cb(cabinFilterIdx === 0)} Clean</td>
+                ${colorTd('Good', 'green', cabinFilterIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(cabinFilterIdx === 1)} Dirty</td>
+                ${colorTd('Clean', 'yellow', cabinFilterIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(cabinFilterIdx === 2)} Clogged</td>
+                ${colorTd('Replace', 'red', cabinFilterIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">A/C<br>Belt</td>
+                <td style="${Tp}">${cb(acBeltIdx === 0)} Good</td>
+                ${colorTd('Good', 'green', acBeltIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acBeltIdx === 1)} Cracked</td>
+                ${colorTd('Monitor', 'yellow', acBeltIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(acBeltIdx === 2)} Frayed / Damaged</td>
+                ${colorTd('Replace', 'red', acBeltIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Air<br>Filter</td>
+                <td style="${Tp}">${cb(airFilterIdx === 0)} Clean</td>
+                ${colorTd('Good', 'green', airFilterIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(airFilterIdx === 1)} Dirty</td>
+                ${colorTd('Clean', 'yellow', airFilterIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(airFilterIdx === 2)} Clogged</td>
+                ${colorTd('Replace', 'red', airFilterIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Fuel<br>Filter</td>
+                <td style="${Tp}">${cb(fuelFilterIdx === 0)} Good</td>
+                ${colorTd('Good', 'green', fuelFilterIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(fuelFilterIdx === 1)} Due for Replacement</td>
+                ${colorTd('Plan Repl.', 'yellow', fuelFilterIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(fuelFilterIdx === 2)} Clogged</td>
+                ${colorTd('Replace', 'red', fuelFilterIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${Tp};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Spark<br>Plugs</td>
+                <td style="${Tp}">${cb(sparkPlugsIdx === 0)} Good</td>
+                ${colorTd('Good', 'green', sparkPlugsIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(sparkPlugsIdx === 1)} Worn</td>
+                ${colorTd('Plan Repl.', 'yellow', sparkPlugsIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(sparkPlugsIdx === 2)} Fouled / Damaged</td>
+                ${colorTd('Replace', 'red', sparkPlugsIdx === 2)}
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TEST -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST</div>
+      <table style="table-layout:fixed;">
+        <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
+        <tr>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>LIGHT</strong><br><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>SIGNAL LIGHT</strong><br><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WIPER</strong><br><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TECHNICIAN'S COMMENT -->
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="min-height:32px;padding:3px 6px;font-size:8px;">${inspection.techComment || ''}</div>
+    </div>
+
+    <!-- Footnotes -->
+    <div style="margin-bottom:4px;font-size:7px;line-height:1.3;">
+      <div>**Indicate measurements</div>
+      <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
+      <div>2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
+      <div>3. It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
+    </div>
+
+    <!-- Signatures -->
+    <table style="margin-top:28px;">
+      <tr>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;width:5%;"></td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Technician</td>
+        <td style="border:none;width:5%;"></td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Store Manager</td>
+      </tr>
+    </table>
+
+    </div>
+    </body></html>`;
+  };
+
   const downloadSummary = async () => {
     const html = inspection.packageType === 'express'
       ? buildExpressFormHTML()
-      : buildQuickFormHTML();
+      : inspection.packageType === 'plus'
+        ? buildPlusFormHTML()
+        : buildQuickFormHTML();
 
     const container = document.createElement('div');
     container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
