@@ -4209,6 +4209,21 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         return `<span style="color:#ccc;">${p}</span>`;
       }).join('&nbsp;');
     };
+    // Grid cell: each position shown in its own color — no gray
+    const posGridCell = (key, label) => {
+      const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
+      const bgvs = { green: '#DCFCE7', yellow: '#FEF3C7', red: '#FEE2E2' };
+      const pos = getPos(key);
+      const cells = ['FL','FR','RL','RR'].map(p => {
+        const pd = pos[p];
+        if (!pd) return `<td style="border:0.5px solid #ddd;text-align:center;font-size:7px;padding:2px 1px;color:#aaa;">—</td>`;
+        const bg = bgvs[pd.color] || '#fff';
+        const col = cvs[pd.color] || '#000';
+        return `<td style="border:0.5px solid #ddd;text-align:center;font-size:7px;padding:2px 1px;background:${bg};color:${col};font-weight:700;line-height:1.3;">${p}<br>${pd.condition}<br><span style="font-size:6px;">${pd.action}</span></td>`;
+      }).join('');
+      const titleRow = label ? `<tr><td colspan="4" style="border:none;padding:1px 3px;font-size:7px;font-weight:700;color:#555;border-bottom:0.5px solid #eee;">${label}</td></tr>` : '';
+      return `<td colspan="2" style="padding:1px;border:0.5px solid #bbb;vertical-align:top;"><table style="border-collapse:collapse;width:100%;table-layout:fixed;">${titleRow}<tr>${cells}</tr></table></td>`;
+    };
 
     const battVIdx = getIdx('BATTERY::Battery Voltage');
     const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
@@ -4434,31 +4449,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
                 ${actionTd('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
               </tr>
-              <!-- TIRES: Tread Depth (3) + Bulges/Side Wall Crack (3) = 6 rows -->
+              <!-- TIRES: 2 grid rows, each position shows its own color -->
               <tr>
-                <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="6">Tires</td>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 0)}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Tread Depth', 0))}
+                <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="2">Tires</td>
+                ${posGridCell('TIRES::Tread Depth', 'Tread Depth')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 1)}</span></td>
-                ${actionTd('Observe', anyAtCond('TIRES::Tread Depth', 1))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Tread Depth', 2)}</span></td>
-                ${actionTd('Good', anyAtCond('TIRES::Tread Depth', 2))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack', 0)}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Bulges / Side Wall Crack', 0))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} Side Wall Crack<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack', 1)}</span></td>
-                ${actionTd('Replace', anyAtCond('TIRES::Bulges / Side Wall Crack', 1))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 2))} No Issue<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('TIRES::Bulges / Side Wall Crack', 2)}</span></td>
-                ${actionTd('Good', anyAtCond('TIRES::Bulges / Side Wall Crack', 2))}
+                ${posGridCell('TIRES::Bulges / Side Wall Crack', 'Bulges / Side Wall Crack')}
               </tr>
             </table>
           </td>
@@ -4513,19 +4510,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T}">${cb(airIdx === 2)} Good</td>
                 ${actionTd('Good', airIdx === 2)}
               </tr>
-              <!-- BRAKE PAD (3 rows with positions) -->
+              <!-- BRAKE PAD: 1 grid row, each position shows its own color -->
               <tr>
-                <td style="${Ttop};font-weight:900;font-size:10px;text-align:center;" rowspan="3">Brake<br>Pad</td>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 0)}</span></td>
-                ${actionTd('Replace', anyAtCond('BRAKE PAD::Brake Pad', 0))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 1)}</span></td>
-                ${actionTd('Observe', anyAtCond('BRAKE PAD::Brake Pad', 1))}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm<br><span style="font-size:9px;margin-left:14px;">${posDotsAtCond('BRAKE PAD::Brake Pad', 2)}</span></td>
-                ${actionTd('Good', anyAtCond('BRAKE PAD::Brake Pad', 2))}
+                <td style="${T};font-weight:900;font-size:8.5px;text-align:center;">Brake<br>Pad</td>
+                ${posGridCell('BRAKE PAD::Brake Pad', null)}
               </tr>
             </table>
           </td>
