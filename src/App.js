@@ -146,6 +146,13 @@ const INSPECTION_DATA = {
           ],
         },
         {
+          name: 'Starting Power (CCA)',
+          conditions: [
+            { label: '>80%', color: 'green', action: 'Good' },
+            { label: '<80%', color: 'red', action: 'Replace' },
+          ],
+        },
+        {
           name: 'Terminal Condition',
           conditions: [
             { label: 'Clean / Tight', color: 'green', action: 'Good' },
@@ -230,6 +237,13 @@ const INSPECTION_DATA = {
             { label: 'Empty', color: 'red', action: 'Refill' },
           ],
         },
+        {
+          name: 'Clutch Fluid',
+          conditions: [
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          ],
+        },
       ],
     },
     {
@@ -265,6 +279,44 @@ const INSPECTION_DATA = {
             { label: 'Good', color: 'green', action: 'Good' },
             { label: 'Streaking', color: 'yellow', action: 'Monitor' },
             { label: 'Worn / Cracked', color: 'red', action: 'Replace' },
+          ],
+        },
+      ],
+    },
+    {
+      category: 'TIRES',
+      items: [
+        {
+          name: 'Bulges',
+          conditions: [
+            { label: 'No Issue', color: 'green', action: 'Good' },
+            { label: 'Issue Found', color: 'red', action: 'Replace' },
+          ],
+          hasPosition: true,
+          positions: ['FL', 'FR', 'RL', 'RR'],
+        },
+        {
+          name: 'Side Wall Cracks',
+          conditions: [
+            { label: 'No Issue', color: 'green', action: 'Good' },
+            { label: 'Issue Found', color: 'red', action: 'Replace' },
+          ],
+          hasPosition: true,
+          positions: ['FL', 'FR', 'RL', 'RR'],
+        },
+        {
+          name: 'Tread <1.7mm',
+          conditions: [
+            { label: 'No Issue', color: 'green', action: 'Good' },
+            { label: 'Issue Found', color: 'red', action: 'Replace' },
+          ],
+          hasPosition: true,
+          positions: ['FL', 'FR', 'RL', 'RR'],
+        },
+        {
+          name: 'No Damage',
+          conditions: [
+            { label: 'No Damage', color: 'green', action: 'Good' },
           ],
         },
       ],
@@ -3953,8 +4005,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const coolantIdx = getIdx('UNDER THE HOOD::Coolant Level');
     const brakeIdx = getIdx('UNDER THE HOOD::Brake Fluid Level');
     const psIdx = getIdx('UNDER THE HOOD::Power Steering Fluid');
+    const clutchIdx = getIdx('UNDER THE HOOD::Clutch Fluid');
+    const battCCAIdx = getIdx('BATTERY TEST::Starting Power (CCA)');
+    const noDamageIdx = getIdx('TIRES::No Damage');
     const isLow = (i) => i === 1 || i === 2;
     const isFull = (i) => i === 0;
+
+    const getTirePos = (name) => findings[`TIRES::${name}`]?.positions || {};
+    const hasTireIssue = (name) => Object.values(getTirePos(name)).some(p => p.conditionIdx === 1);
+    const tirePosDots = (name) => ['FL', 'FR', 'RL', 'RR'].map(p =>
+      getTirePos(name)[p]?.conditionIdx === 1 ? `<strong>${p}</strong>` : p
+    ).join('&nbsp;');
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -3996,7 +4057,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}">${cb(cd.transmission === 'Manual')} Manual</td>
           <td style="${T}">${cb(cd.transmission === 'A/T')} A/T</td>
           <td style="${T}">${cb(cd.transmission === 'CVT')} CVT</td>
-          <td style="${T}">${cb(cd.fuelType === 'Gas')} Gas &nbsp;&nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp;&nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
+          <td style="${T};white-space:nowrap;">${cb(cd.fuelType === 'Gas')} Gas &nbsp; ${cb(cd.fuelType === 'Diesel')} Diesel &nbsp; ${cb(cd.fuelType === 'EV/HEV')} EV/HEV</td>
         </tr>
       </table>
     </div>
@@ -4058,25 +4119,25 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
           <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
           <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TIRES</td>
-          <td style="${Ttop}">${cb(false)} Bulges<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
+          <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Bulges')}</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
           <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
           ${actionTd('Good', battVIdx === 0)}
-          <td style="${Ttop}">${cb(false)} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
+          <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Side Wall Cracks')}</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
           <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
           ${actionTd('Recharge', battVIdx === 1)}
-          <td style="${Ttop}">${cb(false)} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">FL&nbsp;FR&nbsp;RL&nbsp;RR</span></td>
+          <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Tread <1.7mm')}</span></td>
           <td style="${T}">Replace</td>
         </tr>
         <tr>
           <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
           ${actionTd('Replace', battVIdx === 2)}
-          <td style="${T}">${cb(false)} No Damage</td>
+          <td style="${T}">${cb(noDamageIdx === 0)} No Damage</td>
           <td style="${T}">Good</td>
         </tr>
         <tr>
@@ -4085,12 +4146,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}" rowspan="3"></td>
         </tr>
         <tr>
-          <td style="${T}">${cb(false)} &gt;80%</td>
-          <td style="${T}">Good</td>
+          <td style="${T}">${cb(battCCAIdx === 0)} &gt;80%</td>
+          ${actionTd('Good', battCCAIdx === 0)}
         </tr>
         <tr>
-          <td style="${T}">${cb(false)} &lt;80%</td>
-          <td style="${T}">Replace</td>
+          <td style="${T}">${cb(battCCAIdx === 1)} &lt;80%</td>
+          ${actionTd('Replace', battCCAIdx === 1)}
         </tr>
       </table>
     </div>
@@ -4127,14 +4188,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}">${cb(isLow(psIdx))} Low Level</td>
           ${actionTd('Top Up', isLow(psIdx))}
           <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="2">Clutch Fuid</td>
-          <td style="${T}">${cb(false)} Low Level</td>
-          <td style="${T}">Top Up</td>
+          <td style="${T}">${cb(clutchIdx === 1)} Low Level</td>
+          ${actionTd('Top Up', clutchIdx === 1)}
         </tr>
         <tr>
           <td style="${T}">${cb(isFull(psIdx))} Correct Level</td>
           ${actionTd('Good', isFull(psIdx))}
-          <td style="${T}">${cb(false)} Correct Level</td>
-          <td style="${T}">Good</td>
+          <td style="${T}">${cb(clutchIdx === 0)} Correct Level</td>
+          ${actionTd('Good', clutchIdx === 0)}
         </tr>
       </table>
     </div>
