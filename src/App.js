@@ -256,17 +256,17 @@ const INSPECTION_DATA = {
         {
           name: 'Belt Condition',
           conditions: [
-            { label: 'Good', color: 'green', action: 'Good' },
-            { label: 'Minor Damages', color: 'yellow', action: 'Adjust' },
-            { label: 'Cracked: Side Wall', color: 'red', action: 'Replace' },
+            { label: 'Cracked', color: 'red', action: 'Replace' },
+            { label: 'Side Wall', color: 'red', action: 'Replace' },
+            { label: 'Loose', color: 'yellow', action: 'Adjust' },
+            { label: 'No Damage', color: 'green', action: 'Good' },
           ],
         },
         {
           name: 'Belt Deflection',
           conditions: [
-            { label: 'Correct Tension', color: 'green', action: 'Good' },
             { label: '<1/2 inch Deflection', color: 'yellow', action: 'Adjust' },
-            { label: '>1/4 inch Deflection', color: 'yellow', action: 'Adjust' },
+            { label: 'Correct Tension', color: 'green', action: 'Good' },
           ],
         },
       ],
@@ -279,7 +279,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace' },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           ],
         },
         {
@@ -287,7 +287,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace' },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           ],
         },
         {
@@ -295,7 +295,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace' },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           ],
         },
         {
@@ -303,6 +303,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           ],
         },
       ],
@@ -2493,7 +2494,10 @@ function InspectionScreen({
     if (item.hasPosition) {
       return finding?.positions && item.positions.every((p) => finding.positions[p]);
     }
-    return !!finding;
+    if (!finding) return false;
+    const selectedCond = item.conditions[finding.conditionIdx];
+    if (selectedCond?.subOptions?.length && !finding.subOption) return false;
+    return true;
   });
 
   const handleNext = () => {
@@ -2518,6 +2522,14 @@ function InspectionScreen({
       return { ...prev, [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color } };
     });
     setAttempted(false);
+  };
+
+  const selectSubOption = (itemName, subOption) => {
+    const key = getKey(cat.category, itemName);
+    setFindings((prev) => {
+      if (!prev[key]) return prev;
+      return { ...prev, [key]: { ...prev[key], subOption } };
+    });
   };
 
   const selectPositionCondition = (itemName, pos, condIdx) => {
@@ -2785,38 +2797,70 @@ function InspectionScreen({
                     return (
                       <div
                         key={ci}
-                        onClick={() => selectCondition(item.name, ci)}
                         style={{
-                          padding: '14px 18px', cursor: 'pointer', display: 'flex',
-                          alignItems: 'center', justifyContent: 'space-between',
                           borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
                           background: selected ? bgColorMap[cond.color] : 'transparent',
                           transition: 'background 0.15s',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                            border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
-                            background: selected ? colorMap[cond.color] : BRAND.white,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: BRAND.white, fontSize: 14, fontWeight: 700,
-                          }}>
-                            {selected && '✓'}
+                        <div
+                          onClick={() => selectCondition(item.name, ci)}
+                          style={{
+                            padding: '14px 18px', cursor: 'pointer', display: 'flex',
+                            alignItems: 'center', justifyContent: 'space-between',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                              border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
+                              background: selected ? colorMap[cond.color] : BRAND.white,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              color: BRAND.white, fontSize: 14, fontWeight: 700,
+                            }}>
+                              {selected && '✓'}
+                            </div>
+                            <span style={{ fontSize: 15, fontWeight: selected ? 700 : 400, color: BRAND.black }}>
+                              {cond.label}
+                            </span>
                           </div>
-                          <span style={{ fontSize: 15, fontWeight: selected ? 700 : 400, color: BRAND.black }}>
-                            {cond.label}
-                          </span>
+                          <div style={{
+                            padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
+                            background: selected ? colorMap[cond.color] : BRAND.grayLight,
+                            color: selected ? BRAND.white : BRAND.gray,
+                            minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
+                            textTransform: 'uppercase', letterSpacing: 0.5,
+                          }}>
+                            {cond.action}
+                          </div>
                         </div>
-                        <div style={{
-                          padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
-                          background: selected ? colorMap[cond.color] : BRAND.grayLight,
-                          color: selected ? BRAND.white : BRAND.gray,
-                          minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
-                          textTransform: 'uppercase', letterSpacing: 0.5,
-                        }}>
-                          {cond.action}
-                        </div>
+                        {selected && cond.subOptions?.length > 0 && (
+                          <div style={{ padding: '0 18px 14px 58px' }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: BRAND.gray, marginBottom: 8 }}>
+                              Type of contamination:
+                            </div>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              {cond.subOptions.map((opt) => {
+                                const picked = finding?.subOption === opt;
+                                return (
+                                  <button
+                                    key={opt}
+                                    onClick={(e) => { e.stopPropagation(); selectSubOption(item.name, opt); }}
+                                    style={{
+                                      padding: '6px 16px', borderRadius: 20, cursor: 'pointer',
+                                      border: `2px solid ${picked ? colorMap[cond.color] : BRAND.grayBorder}`,
+                                      background: picked ? colorMap[cond.color] : BRAND.white,
+                                      color: picked ? BRAND.white : BRAND.black,
+                                      fontWeight: 700, fontSize: 13,
+                                    }}
+                                  >
+                                    {opt}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -4082,6 +4126,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
+    const getSubOpt = (key) => findings[key]?.subOption || '';
+    const contaminatedTd = (key, condIdx) => {
+      const selected = getIdx(key) === condIdx;
+      const sub = getSubOpt(key);
+      const opts = ['Oil', 'Sludge', 'Rust', 'Debris'];
+      const subLine = opts.map(o => selected && o === sub ? `<u>${o}</u>` : o).join('&nbsp;&nbsp;');
+      return `<td style="${T}">${cb(selected)} Contaminated${selected ? `<br><span style="font-size:9px;padding-left:14px;">${subLine}</span>` : ''}</td>`;
+    };
     const getPos = (key) => findings[key]?.positions || {};
     const anyAtCond = (key, condIdx) =>
       ['FL','FR','RL','RR'].some(p => getPos(key)[p]?.conditionIdx === condIdx);
@@ -4238,28 +4290,28 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${T};font-weight:900;font-size:11px;text-align:center;" rowspan="6">BELT</td>
-                <td style="${T}">${cb(beltCondIdx === 2)} Cracked: Side Wall</td>
-                ${actionTd('Replace', beltCondIdx === 2)}
+                <td style="${T}">${cb(beltCondIdx === 0)} Cracked</td>
+                ${actionTd('Replace', beltCondIdx === 0)}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltCondIdx === 1)} Minor Damages</td>
-                ${actionTd('Adjust', beltCondIdx === 1)}
+                <td style="${T}">${cb(beltCondIdx === 1)} Side Wall</td>
+                ${actionTd('Replace', beltCondIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltDeflIdx === 1)} &lt;1/2 inch Deflection</td>
-                ${actionTd('Adjust', beltDeflIdx === 1)}
+                <td style="${T}">${cb(beltCondIdx === 2)} Loose</td>
+                ${actionTd('Adjust', beltCondIdx === 2)}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltDeflIdx === 2)} &gt;1/4 inch Deflection</td>
-                ${actionTd('Adjust', beltDeflIdx === 2)}
+                <td style="${T}">${cb(beltCondIdx === 3)} No Damage</td>
+                ${actionTd('Good', beltCondIdx === 3)}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltCondIdx === 0)} Good</td>
-                ${actionTd('Good', beltCondIdx === 0)}
+                <td style="${T}">${cb(beltDeflIdx === 0)} &lt;1/2 inch Deflection</td>
+                ${actionTd('Adjust', beltDeflIdx === 0)}
               </tr>
               <tr>
-                <td style="${T}">${cb(beltDeflIdx === 0)} Correct Tension</td>
-                ${actionTd('Good', beltDeflIdx === 0)}
+                <td style="${T}">${cb(beltDeflIdx === 1)} Correct Tension</td>
+                ${actionTd('Good', beltDeflIdx === 1)}
               </tr>
             </table>
           </td>
@@ -4288,7 +4340,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', coolantIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(coolantIdx === 2)} Contaminated</td>
+                ${contaminatedTd('FLUIDS::Coolant Level', 2)}
                 ${actionTd('Flush/Replace', coolantIdx === 2)}
               </tr>
               <tr>
@@ -4302,7 +4354,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', psIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(psIdx === 2)} Contaminated</td>
+                ${contaminatedTd('FLUIDS::Power Steering Fluid', 2)}
                 ${actionTd('Flush/Replace', psIdx === 2)}
               </tr>
               <tr>
@@ -4363,7 +4415,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Top Up', brakeFluidIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(brakeFluidIdx === 2)} Contaminated</td>
+                ${contaminatedTd('FLUIDS::Brake Fluid Level', 2)}
                 ${actionTd('Flush/Replace', brakeFluidIdx === 2)}
               </tr>
               <tr>
@@ -4372,9 +4424,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <!-- CLUTCH FLUID -->
               <tr>
-                <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="2">Clutch<br>Fluid</td>
+                <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="3">Clutch<br>Fluid</td>
                 <td style="${T}">${cb(clutchIdx === 1)} Low Level</td>
                 ${actionTd('Top Up', clutchIdx === 1)}
+              </tr>
+              <tr>
+                ${contaminatedTd('FLUIDS::Clutch Fluid', 2)}
+                ${actionTd('Flush/Replace', clutchIdx === 2)}
               </tr>
               <tr>
                 <td style="${T}">${cb(clutchIdx === 0)} Correct Level</td>
@@ -4383,12 +4439,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- AIR CONDITIONER -->
               <tr>
                 <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="3">Air<br>Cond.</td>
-                <td style="${T}">${cb(airIdx === 1)} Light Dirt</td>
-                ${actionTd('Clean', airIdx === 1)}
-              </tr>
-              <tr>
                 <td style="${T}">${cb(airIdx === 2)} Clogged</td>
                 ${actionTd('Replace', airIdx === 2)}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(airIdx === 1)} Light Dirt</td>
+                ${actionTd('Clean', airIdx === 1)}
               </tr>
               <tr>
                 <td style="${T}">${cb(airIdx === 0)} Good</td>
