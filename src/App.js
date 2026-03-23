@@ -421,129 +421,397 @@ const INSPECTION_DATA = {
   plus: [], // will be set below
 };
 
-// Premium Plus = Express + extra categories
+// Plus Inspection = Full-system inspection based on Plus Inspection Form
 INSPECTION_DATA.plus = [
-  ...INSPECTION_DATA.express,
+  // ── MEASURE ──
   {
-    category: 'STEERING SYSTEM',
+    category: 'BATTERY',
+    sectionLabel: 'MEASURE',
     items: [
       {
-        name: 'Steering Rack',
+        name: 'Voltage Power',
         conditions: [
-          { label: 'No Play / No Leak', color: 'green', action: 'Good' },
-          { label: 'Minor Leak', color: 'yellow', action: 'Monitor' },
-          {
-            label: 'Heavy Leak / Excessive Play',
-            color: 'red',
-            action: 'Replace',
-          },
+          { label: '12.6V to 12.8V', color: 'green', action: 'Good' },
+          { label: '12.2V to 12.6V', color: 'yellow', action: 'Recharge' },
+          { label: 'Below 12.2V', color: 'red', action: 'Replace' },
         ],
       },
       {
-        name: 'Tie Rod Ends',
+        name: 'Starting Power (CCA)',
         conditions: [
-          { label: 'Tight', color: 'green', action: 'Good' },
-          { label: 'Minor Play', color: 'yellow', action: 'Monitor' },
-          { label: 'Excessive Play', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'Power Steering Pump',
-        conditions: [
-          { label: 'Quiet / No Leak', color: 'green', action: 'Good' },
-          { label: 'Whining / Minor Leak', color: 'yellow', action: 'Check' },
-          { label: 'Failed / Heavy Leak', color: 'red', action: 'Replace' },
+          { label: '>80%', color: 'green', action: 'Good' },
+          { label: '<80%', color: 'red', action: 'Replace' },
         ],
       },
     ],
   },
   {
-    category: 'EXHAUST SYSTEM',
+    category: 'BELT',
     items: [
       {
-        name: 'Exhaust Pipe',
+        name: 'Belt Condition',
+        multiSelect: true,
         conditions: [
-          { label: 'No Leaks / Intact', color: 'green', action: 'Good' },
-          { label: 'Minor Rust', color: 'yellow', action: 'Monitor' },
-          { label: 'Holes / Heavy Rust', color: 'red', action: 'Replace' },
+          { label: 'Cracked', color: 'red', action: 'Replace' },
+          { label: 'Side Wall', color: 'red', action: 'Replace' },
+          { label: 'Loose', color: 'yellow', action: 'Adjust' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
       {
-        name: 'Muffler',
+        name: 'Belt Deflection',
         conditions: [
-          { label: 'Good', color: 'green', action: 'Good' },
-          { label: 'Louder than Normal', color: 'yellow', action: 'Check' },
-          { label: 'Damaged / Leaking', color: 'red', action: 'Replace' },
+          { label: '<1/2 inch Deflection', color: 'green', action: 'Good' },
+          { label: '>1/2 inch Deflection', color: 'yellow', action: 'Adjust' },
+        ],
+      },
+    ],
+  },
+  // ── INSPECT ──
+  {
+    category: 'COOLANT',
+    sectionLabel: 'INSPECT',
+    items: [
+      {
+        name: 'Coolant',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
     ],
   },
   {
-    category: 'AIR CONDITIONING',
+    category: 'POWER STEERING FLUID',
     items: [
       {
-        name: 'A/C Cooling Performance',
+        name: 'Power Steering Fluid',
         conditions: [
-          { label: 'Cold', color: 'green', action: 'Good' },
-          { label: 'Not Cold Enough', color: 'yellow', action: 'Recharge' },
-          { label: 'Not Working', color: 'red', action: 'Diagnose & Repair' },
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
+    ],
+  },
+  {
+    category: 'STEERING LINKAGE',
+    items: [
       {
-        name: 'A/C Compressor',
+        name: 'Steering Linkage',
+        multiSelect: true,
         conditions: [
-          { label: 'Engaging / Quiet', color: 'green', action: 'Good' },
-          { label: 'Noisy', color: 'yellow', action: 'Check' },
-          { label: 'Not Engaging', color: 'red', action: 'Repair / Replace' },
+          { label: 'Boot Damage', color: 'red', action: 'Replace' },
+          { label: 'Tire Rod Loose', color: 'red', action: 'Replace' },
+          { label: 'Steering Loose', color: 'yellow', action: 'Replace' },
+          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
+    ],
+  },
+  {
+    category: 'ENGINE SUPPORT',
+    items: [
       {
-        name: 'Cabin Filter',
+        name: 'Engine Support',
         conditions: [
+          { label: 'Crack', color: 'red', action: 'Replace' },
+          { label: 'Sagging', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'FUEL TANK CAP / LINES CONNECTION',
+    items: [
+      {
+        name: 'Fuel Tank Cap / Lines Connection',
+        conditions: [
+          { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
+          { label: 'Fuel Line Leak', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'BRAKE PEDAL FREEPLAY',
+    items: [
+      {
+        name: 'Brake Pedal FreePlay',
+        conditions: [
+          { label: '1mm – 5mm', color: 'green', action: 'Good' },
+          { label: '>5mm', color: 'yellow', action: 'Check & Adjust' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'TIRES',
+    items: [
+      {
+        name: 'Tread Depth',
+        conditions: [
+          { label: '>3.2 mm', color: 'green', action: 'Good' },
+          { label: '3.2 – 1.7 mm', color: 'yellow', action: 'Observe' },
+          { label: '<1.7 mm', color: 'red', action: 'Replace' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+      {
+        name: 'Bulges / Side Wall Crack',
+        conditions: [
+          { label: 'Bulges', color: 'red', action: 'Replace' },
+          { label: 'Side Wall Crack', color: 'red', action: 'Replace' },
+          { label: 'No Issue', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  {
+    category: 'BRAKE FLUID',
+    items: [
+      {
+        name: 'Brake Fluid',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'CLUTCH FLUID',
+    items: [
+      {
+        name: 'Clutch Fluid',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'AIR CLEANER',
+    items: [
+      {
+        name: 'Air Cleaner',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
           { label: 'Clean', color: 'green', action: 'Good' },
-          { label: 'Dirty', color: 'yellow', action: 'Clean' },
-          { label: 'Clogged', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'A/C Belt',
-        conditions: [
-          { label: 'Good', color: 'green', action: 'Good' },
-          { label: 'Cracked', color: 'yellow', action: 'Monitor' },
-          { label: 'Frayed / Damaged', color: 'red', action: 'Replace' },
         ],
       },
     ],
   },
   {
-    category: 'AIR FILTER & FUEL SYSTEM',
+    category: 'TRANSMISSION M/T, AT, CVT, OIL',
     items: [
       {
-        name: 'Air Filter',
+        name: 'Transmission Oil',
         conditions: [
-          { label: 'Clean', color: 'green', action: 'Good' },
-          { label: 'Dirty', color: 'yellow', action: 'Clean' },
-          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Contaminated', color: 'red', action: 'Replace' },
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'BALL JOINT',
+    items: [
+      {
+        name: 'Ball Joint',
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'Boot Torn', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR'],
+      },
+    ],
+  },
+  {
+    category: 'CLUTCH PEDAL',
+    items: [
+      {
+        name: 'Clutch Pedal',
+        conditions: [
+          { label: '10mm – 20mm', color: 'green', action: 'Good' },
+          { label: '>20mm', color: 'yellow', action: 'Check' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'BRAKE PAD / SHOE',
+    items: [
+      {
+        name: 'Brake Pad / Shoe',
+        conditions: [
+          { label: '>6 mm', color: 'green', action: 'Good' },
+          { label: '3 – 6 mm', color: 'yellow', action: 'Observe' },
+          { label: '<3 mm', color: 'red', action: 'Replace' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+      {
+        name: 'Rotor / Disc Worn',
+        conditions: [
+          { label: 'Worn', color: 'yellow', action: 'Reface' },
+          { label: 'Good', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  {
+    category: 'FRONT & REAR SUSPENSION',
+    items: [
+      {
+        name: 'Front & Rear Suspension',
+        multiSelect: true,
+        conditions: [
+          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
+          { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
+          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
+          { label: 'Squeaking', color: 'red', action: 'Replace' },
+          { label: 'Torn Bushing', color: 'red', action: 'Replace' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'SUSPENSION ARM',
+    items: [
+      {
+        name: 'Suspension Arm',
+        conditions: [
+          { label: 'Bent / Damage', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
+      },
+    ],
+  },
+  {
+    category: 'FOR LEAKS',
+    items: [
+      {
+        name: 'Leaks',
+        multiSelect: true,
+        conditions: [
+          { label: 'Brake Line', color: 'red', action: 'Replace' },
+          { label: 'Transmission', color: 'red', action: 'Replace' },
+          { label: 'Transfer Case', color: 'red', action: 'Replace' },
+          { label: 'Differential', color: 'red', action: 'Replace' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'EXHAUST PIPE MOUNTING',
+    items: [
+      {
+        name: 'Exhaust Pipe Mounting',
+        conditions: [
+          { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
+          { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'COOLING SYSTEM HOSE',
+    items: [
+      {
+        name: 'Cooling System Hose',
+        conditions: [
+          { label: 'Crack / Leak / Swelling', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'RADIATOR HOSE',
+    items: [
+      {
+        name: 'Radiator Hose',
+        conditions: [
+          { label: 'Crack / Leak / Swelling', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'DRIVE SHAFT',
+    items: [
+      {
+        name: 'Drive Shaft',
+        conditions: [
+          { label: 'Broken', color: 'red', action: 'Replace' },
+          { label: 'Leaking', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  {
+    category: 'DRIVE SHAFT BOOT',
+    items: [
+      {
+        name: 'Drive Shaft Boot',
+        conditions: [
+          { label: 'Broken', color: 'red', action: 'Replace' },
+          { label: 'Leaking', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  // ── TEST ──
+  {
+    category: 'TEST',
+    sectionLabel: 'TEST',
+    items: [
+      {
+        name: 'Light',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
       {
-        name: 'Fuel Filter',
+        name: 'Horn',
         conditions: [
-          { label: 'Good', color: 'green', action: 'Good' },
-          {
-            label: 'Due for Replacement',
-            color: 'yellow',
-            action: 'Plan Replacement',
-          },
-          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
       {
-        name: 'Spark Plugs',
+        name: 'Washer',
         conditions: [
-          { label: 'Good', color: 'green', action: 'Good' },
-          { label: 'Worn', color: 'yellow', action: 'Plan Replacement' },
-          { label: 'Fouled / Damaged', color: 'red', action: 'Replace' },
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
     ],
@@ -1426,7 +1694,7 @@ function TopBar({ user, onLogout, onDashboard, onManage, onReport, packageType }
             Rapidé
           </div>
           {packageType && (() => {
-            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PLUS' };
             const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.red };
             const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: '#FEE2E2' };
             return (
@@ -1874,8 +2142,8 @@ function PackageSelectionScreen({ onSelect }) {
     },
     {
       id: 'plus',
-      label: 'PREMIUM PLUS',
-      desc: 'Full-system detailed inspection',
+      label: 'PLUS',
+      desc: 'Full-system inspection: measure, inspect & test',
       color: BRAND.red,
     },
   ];
@@ -2023,7 +2291,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
         const packages = [
           { key: 'quick', label: 'Quick', color: BRAND.green, bg: BRAND.greenBg },
           { key: 'express', label: 'Express', color: '#B45309', bg: BRAND.yellowStatusBg },
-          { key: 'plus', label: 'Premium Plus', color: BRAND.red, bg: BRAND.redBg },
+          { key: 'plus', label: 'Plus', color: BRAND.red, bg: BRAND.redBg },
         ];
         return (
           <div style={{ marginBottom: 20 }}>
@@ -3113,7 +3381,7 @@ const REPORT_COLUMNS = [
   { key: 'fuel',         label: 'Fuel Type',       get: (ins) => ins.customerData?.fuelType || '' },
   { key: 'km',           label: 'KM Reading',      get: (ins) => ins.customerData?.kmReading || '' },
   { key: 'location',     label: 'Location',        get: (ins) => [ins.customerData?.barangay, ins.customerData?.city].filter(Boolean).join(', ') },
-  { key: 'package',      label: 'Package',         get: (ins) => ({ quick: 'Quick', express: 'Express', plus: 'Premium Plus' }[ins.packageType] || ins.packageType || '') },
+  { key: 'package',      label: 'Package',         get: (ins) => ({ quick: 'Quick', express: 'Express', plus: 'Plus' }[ins.packageType] || ins.packageType || '') },
   { key: 'technician',   label: 'Technician',      get: (ins) => ins.technicianName || '' },
   { key: 'status',       label: 'Status',          get: (ins) => ({ draft: 'Draft', in_progress: 'In Progress', finished: 'Finished', submitted: 'Finished', reviewed: 'Finished' }[ins.status] || ins.status || '') },
   { key: 'good',         label: 'Good Count',      get: (ins) => { const v = []; Object.values(ins.findings || {}).forEach((f) => { if (f.positions) Object.values(f.positions).forEach((p) => v.push(p)); else v.push(f); }); return v.filter((f) => f.color === 'green').length; } },
@@ -3277,7 +3545,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
             <option value="">All Packages</option>
             <option value="quick">Quick</option>
             <option value="express">Express</option>
-            <option value="plus">Premium Plus</option>
+            <option value="plus">Plus</option>
           </select>
           <select value={filterTech} onChange={(e) => setFilterTech(e.target.value)} style={filterSelectStyle}>
             <option value="">All Technicians</option>
@@ -3376,7 +3644,7 @@ function AdminDashboard({
     return true;
   });
 
-  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PLUS' };
   const pkgColor = {
     quick: BRAND.green,
     express: BRAND.yellowStatus,
@@ -3462,7 +3730,7 @@ function AdminDashboard({
           <option value="">All Packages</option>
           <option value="quick">Quick</option>
           <option value="express">Express</option>
-          <option value="plus">Premium Plus</option>
+          <option value="plus">Plus</option>
         </select>
         <select
           value={filterTech}
@@ -3729,7 +3997,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   const buildSummaryHTML = () => {
     const findings = inspection.findings || {};
     const categories = INSPECTION_DATA[inspection.packageType] || [];
-    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PLUS' };
 
     const badge = (pf) => {
       if (!pf) return '—';
@@ -4646,7 +4914,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   const printInspectionForm = () => {
     const printWindow = window.open('', '_blank');
     const categories = INSPECTION_DATA[inspection.packageType] || [];
-    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PLUS' };
 
     let checklistHTML = '';
     categories.forEach((cat) => {
