@@ -4088,12 +4088,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </head><body>
       <div>${formBody}</div>
       ${photosBody ? `<div class="photos-page">${photosBody}</div>` : ''}
+      <script>
+        window.addEventListener('load', function() { window.print(); });
+      </script>
     </body></html>`;
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(combined);
     printWindow.document.close();
-    printWindow.print();
   };
 
   const buildQuickFormHTML = () => {
