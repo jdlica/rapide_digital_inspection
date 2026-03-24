@@ -59,6 +59,79 @@ button {
   gap: 18px;
 }
 
+/* ── Responsive breakpoints ───────────────────────────── */
+
+/* Small mobile (≤ 480px) */
+@media (max-width: 480px) {
+  /* Login card */
+  .login-card {
+    padding: 32px 20px !important;
+  }
+
+  /* Package selection */
+  .pkg-button {
+    min-height: 80px !important;
+    padding: 16px 20px !important;
+  }
+
+  /* Summary counts — stack on tiny phones */
+  .summary-counts {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+  .summary-counts > div {
+    padding: 12px 8px !important;
+  }
+  .summary-count-number {
+    font-size: 22px !important;
+  }
+
+  /* Dashboard filters — full width each */
+  .dashboard-filters {
+    flex-direction: column !important;
+  }
+  .dashboard-filters input,
+  .dashboard-filters select {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  /* Header info grid tighter on tiny phones */
+  .header-info-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Inspection nav buttons side by side */
+  .inspection-nav {
+    flex-direction: row !important;
+    gap: 10px !important;
+  }
+
+  /* Tech comment textarea smaller on phone */
+  .tech-comment-textarea {
+    min-height: 140px !important;
+  }
+
+  /* Table: hide less critical columns */
+  .dashboard-table .col-date,
+  .dashboard-table .col-technician {
+    display: none !important;
+  }
+
+  /* Modals tighter */
+  .modal-overlay {
+    padding: 12px !important;
+  }
+  .modal-inner {
+    padding: 24px 16px !important;
+  }
+
+  /* TopBar logo smaller */
+  .topbar-logo {
+    font-size: 20px !important;
+  }
+}
+
 /* Tablet: 2-column grid */
 @media (min-width: 600px) {
   .form-screen {
@@ -80,5 +153,130 @@ button {
 
   .form-card {
     padding: 24px 28px;
+  }
+}
+
+/* ── Dashboard table responsive ───────────────────────── */
+
+.dashboard-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+  border: 2px solid #d1d5db;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 560px; /* ensures table scrolls rather than breaks */
+}
+
+@media (max-width: 640px) {
+  .dashboard-table {
+    font-size: 12px;
+    min-width: 400px;
+  }
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 10px 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-table {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ── Inspection screen ────────────────────────────────── */
+
+.inspection-option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .inspection-option-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Summary screen ───────────────────────────────────── */
+
+.summary-screen {
+  padding: 16px 12px;
+}
+
+@media (min-width: 600px) {
+  .summary-screen {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .summary-screen {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 48px;
+  }
+}
+
+/* ── Utility ──────────────────────────────────────────── */
+
+/* Prevent text overflow in table cells */
+.dashboard-table td {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .dashboard-table td {
+    white-space: normal;
+    max-width: none;
+  }
+}
+
+/* Action buttons in table — always inline */
+.dashboard-table .action-cell {
+  white-space: nowrap;
+}
+
+/* ── iOS safe area insets ─────────────────────────────── */
+
+/* Fixed bottom nav bar — respect home bar on iPhone */
+.inspection-bottom-nav {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* Smooth momentum scrolling on iOS */
+.dashboard-table-wrap,
+.form-screen,
+.summary-screen {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Touch target minimums ────────────────────────────── */
+
+/* Buttons and interactive elements at least 44px tall on mobile */
+@media (max-width: 768px) {
+  button,
+  select,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"] {
+    min-height: 44px;
+  }
+}
+
+/* ── Prevent layout shift on iOS rotate ───────────────── */
+@media (orientation: landscape) and (max-height: 600px) {
+  .form-screen {
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 }

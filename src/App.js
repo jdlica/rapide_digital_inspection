@@ -1298,6 +1298,7 @@ function LoginScreen({ onLogin }) {
       }}
     >
       <div
+        className="login-card"
         style={{
           background: BRAND.white,
           borderRadius: 24,
@@ -3055,6 +3056,7 @@ function InspectionScreen({
       </div>
 
       <div
+        className="inspection-bottom-nav"
         style={{
           position: 'fixed',
           bottom: 0,
@@ -3592,6 +3594,7 @@ function AdminDashboard({
 
       {/* Filters */}
       <div
+        className="dashboard-filters"
         style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}
       >
         <input
@@ -3665,29 +3668,25 @@ function AdminDashboard({
       </div>
 
       {/* Table */}
-      <div
-        style={{
-          overflowX: 'auto',
-          borderRadius: 14,
-          border: `2px solid ${BRAND.grayBorder}`,
-        }}
-      >
+      <div className="dashboard-table-wrap">
         <table
+          className="dashboard-table"
           style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}
         >
           <thead>
             <tr style={{ background: BRAND.black }}>
               {[
-                'RIF #',
-                'Date',
-                'Customer',
-                'Technician',
-                'Package',
-                'Status',
-                'Actions',
-              ].map((h) => (
+                { label: 'RIF #', cls: '' },
+                { label: 'Date', cls: 'col-date' },
+                { label: 'Customer', cls: '' },
+                { label: 'Technician', cls: 'col-technician' },
+                { label: 'Package', cls: '' },
+                { label: 'Status', cls: '' },
+                { label: 'Actions', cls: '' },
+              ].map(({ label, cls }) => (
                 <th
-                  key={h}
+                  key={label}
+                  className={cls}
                   style={{
                     padding: '14px 16px',
                     textAlign: 'left',
@@ -3698,7 +3697,7 @@ function AdminDashboard({
                     letterSpacing: 1,
                   }}
                 >
-                  {h}
+                  {label}
                 </th>
               ))}
             </tr>
@@ -3738,11 +3737,11 @@ function AdminDashboard({
                   >
                     {ins.rif}
                   </td>
-                  <td style={{ padding: '14px 16px' }}>{ins.date}</td>
+                  <td className="col-date" style={{ padding: '14px 16px' }}>{ins.date}</td>
                   <td style={{ padding: '14px 16px', fontWeight: 600 }}>
                     {ins.customerName}
                   </td>
-                  <td style={{ padding: '14px 16px' }}>{ins.technicianName}</td>
+                  <td className="col-technician" style={{ padding: '14px 16px' }}>{ins.technicianName}</td>
                   <td style={{ padding: '14px 16px' }}>
                     <span
                       style={{
@@ -3775,7 +3774,7 @@ function AdminDashboard({
                       {statusLabel[ins.status] || ins.status}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 16px' }}>
+                  <td className="action-cell" style={{ padding: '14px 16px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {isResumable ? (
                         <button
@@ -5687,7 +5686,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             {inspection.rif}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <PrimaryButton
             onClick={printInspection}
             variant="dark"
@@ -5707,6 +5706,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
       {/* Header Info */}
       <div
+        className="header-info-grid"
         style={{
           background: BRAND.white,
           borderRadius: 14,
@@ -5714,7 +5714,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           border: `2px solid ${BRAND.grayBorder}`,
           marginBottom: 16,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
           gap: 12,
           fontSize: 14,
         }}
@@ -5754,6 +5754,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
       {/* Summary counts */}
       <div
+        className="summary-counts"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -5769,7 +5770,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: 32, fontWeight: 900, color: BRAND.green }}>
+          <div className="summary-count-number" style={{ fontSize: 32, fontWeight: 900, color: BRAND.green }}>
             {greenCount}
           </div>
           <div style={{ fontSize: 12, fontWeight: 700, color: BRAND.green }}>
@@ -5785,6 +5786,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           }}
         >
           <div
+            className="summary-count-number"
             style={{ fontSize: 32, fontWeight: 900, color: BRAND.yellowStatus }}
           >
             {yellowCount}
@@ -5803,7 +5805,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: 32, fontWeight: 900, color: BRAND.red }}>
+          <div className="summary-count-number" style={{ fontSize: 32, fontWeight: 900, color: BRAND.red }}>
             {redCount}
           </div>
           <div style={{ fontSize: 12, fontWeight: 700, color: BRAND.red }}>
