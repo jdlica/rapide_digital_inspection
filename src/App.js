@@ -2517,6 +2517,7 @@ function InspectionScreen({
   const [attempted, setAttempted] = useState(false);
   const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
   const fileInputRefs = useRef({});
+  const uploadInputRefs = useRef({});
 
   const handlePhotoCapture = (key, e) => {
     const file = e.target.files?.[0];
@@ -2770,6 +2771,7 @@ function InspectionScreen({
                     )}
                     <button
                       onClick={() => fileInputRefs.current[key]?.click()}
+                      title="Take photo"
                       style={{
                         background: cardBorder,
                         border: 'none',
@@ -2788,11 +2790,40 @@ function InspectionScreen({
                         <circle cx="12" cy="13" r="4"/>
                       </svg>
                     </button>
+                    <button
+                      onClick={() => uploadInputRefs.current[key]?.click()}
+                      title="Upload photo"
+                      style={{
+                        background: '#6B7280',
+                        border: 'none',
+                        borderRadius: 8,
+                        width: 36,
+                        height: 36,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                    </button>
                     <input
                       ref={(el) => { fileInputRefs.current[key] = el; }}
                       type="file"
                       accept="image/*"
                       capture="environment"
+                      style={{ display: 'none' }}
+                      onChange={(e) => handlePhotoCapture(key, e)}
+                    />
+                    <input
+                      ref={(el) => { uploadInputRefs.current[key] = el; }}
+                      type="file"
+                      accept="image/*"
                       style={{ display: 'none' }}
                       onChange={(e) => handlePhotoCapture(key, e)}
                     />
@@ -5346,6 +5377,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       container.innerHTML = bodyMatch ? bodyMatch[1] : '';
       container.querySelectorAll('script').forEach((s) => s.remove());
       document.body.appendChild(container);
+      // Wait for all images to fully load before capturing
+      const imgs = Array.from(container.querySelectorAll('img'));
+      await Promise.all(imgs.map((img) =>
+        img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
+      ));
       try {
         return await html2canvas(container, { scale: 3, useCORS: true, allowTaint: true, logging: false, width: 794 });
       } finally {
