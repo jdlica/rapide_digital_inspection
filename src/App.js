@@ -23,6 +23,8 @@ const BRAND = {
   yellowPale: '#FFFBE6',
   black: '#1A1A1A',
   red: '#E31E24',
+  premium: '#4338CA',
+  premiumBg: '#EEF2FF',
   green: '#22C55E',
   greenBg: '#DCFCE7',
   yellowStatus: '#F59E0B',
@@ -1462,8 +1464,8 @@ function TopBar({ user, onLogout, onDashboard, onManage, onReport, packageType }
           </div>
           {packageType && (() => {
             const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
-            const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.red };
-            const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: '#FEE2E2' };
+            const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.premium };
+            const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: BRAND.premiumBg };
             return (
               <span style={{
                 padding: '3px 10px',
@@ -1911,7 +1913,7 @@ function PackageSelectionScreen({ onSelect }) {
       id: 'plus',
       label: 'PREMIUM PLUS',
       desc: 'Full-system detailed inspection',
-      color: BRAND.red,
+      color: BRAND.premium,
     },
   ];
   return (
@@ -2058,7 +2060,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
         const packages = [
           { key: 'quick', label: 'Quick', color: BRAND.green, bg: BRAND.greenBg },
           { key: 'express', label: 'Express', color: '#B45309', bg: BRAND.yellowStatusBg },
-          { key: 'plus', label: 'Premium', color: BRAND.red, bg: BRAND.redBg },
+          { key: 'plus', label: 'Premium', color: BRAND.premium, bg: BRAND.premiumBg },
         ];
         return (
           <div style={{ marginBottom: 20 }}>
@@ -3415,7 +3417,7 @@ function AdminDashboard({
   const pkgColor = {
     quick: BRAND.green,
     express: BRAND.yellowStatus,
-    plus: BRAND.red,
+    plus: BRAND.premium,
   };
 
   const statusLabel = { draft: 'Draft', in_progress: 'In Progress', finished: 'Finished', submitted: 'Finished', reviewed: 'Finished' };
