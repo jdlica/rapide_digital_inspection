@@ -648,7 +648,7 @@ function SearchableDropdown({
   }, []);
 
   useEffect(() => {
-    if (inlineCustom) setTimeout(() => inlineInputRef.current?.focus(), 30);
+    // Do not auto-focus — avoids triggering keyboard on touch devices
   }, [inlineCustom]);
 
   const filtered = options.filter((o) =>
@@ -735,7 +735,6 @@ function SearchableDropdown({
           {!inlineCustom && (
             <div style={{ padding: 8, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
               <input
-                autoFocus
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -912,7 +911,7 @@ function MultiSelectDropdown({
   }, []);
 
   useEffect(() => {
-    if (othersMode) setTimeout(() => othersInputRef.current?.focus(), 30);
+    // Do not auto-focus — avoids triggering keyboard on touch devices
   }, [othersMode]);
 
   const filtered = options.filter((o) =>
@@ -1023,7 +1022,6 @@ function MultiSelectDropdown({
             }}
           >
             <input
-              autoFocus
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
