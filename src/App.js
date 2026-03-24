@@ -2767,10 +2767,7 @@ function InspectionScreen({
 
           const showCamera = (
             (!item.hasPosition && !item.multiSelect && finding && (finding.color === 'yellow' || finding.color === 'red')) ||
-            (item.multiSelect && (worstMultiColor === 'yellow' || worstMultiColor === 'red')) ||
-            (item.hasPosition && finding?.positions && item.positions.some(
-              (p) => finding.positions[p]?.color === 'yellow' || finding.positions[p]?.color === 'red'
-            ))
+            (!item.hasPosition && item.multiSelect && (worstMultiColor === 'yellow' || worstMultiColor === 'red'))
           );
 
           return (
