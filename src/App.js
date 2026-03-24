@@ -3098,26 +3098,84 @@ function InspectionScreen({
 
       {/* Camera modal */}
       {cameraModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#000', display: 'flex', flexDirection: 'column' }}>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            style={{ flex: 1, width: '100%', objectFit: 'cover' }}
-          />
-          <div style={{ padding: '20px 24px', display: 'flex', gap: 12, background: '#111', paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 3000,
+          background: '#000',
+          display: 'flex', flexDirection: 'column',
+          height: '100%', maxHeight: '-webkit-fill-available',
+        }}>
+          {/* Top bar with close button — always visible */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px',
+            background: 'rgba(0,0,0,0.7)',
+            flexShrink: 0,
+          }}>
+            <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>Take Photo</span>
             <button
               onClick={closeCamera}
-              style={{ flex: 1, padding: '16px 0', borderRadius: 14, background: '#333', color: '#fff', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
+              style={{
+                background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 8,
+                color: '#fff', fontSize: 14, fontWeight: 700,
+                padding: '8px 16px', cursor: 'pointer',
+              }}
+            >
+              ✕ Close
+            </button>
+          </div>
+
+          {/* Video feed */}
+          <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+
+          {/* Bottom capture bar — always visible */}
+          <div style={{
+            flexShrink: 0,
+            padding: '20px 24px',
+            paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+            background: '#111',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+          }}>
+            <button
+              onClick={closeCamera}
+              style={{
+                flex: 1, padding: '16px 0', borderRadius: 14,
+                background: '#333', color: '#fff', border: 'none',
+                fontSize: 16, fontWeight: 700, cursor: 'pointer',
+                maxWidth: 140,
+              }}
             >
               Cancel
             </button>
             <button
               onClick={capturePhoto}
-              style={{ flex: 2, padding: '16px 0', borderRadius: 14, background: BRAND.yellow, color: BRAND.black, border: 'none', fontSize: 16, fontWeight: 800, cursor: 'pointer' }}
+              style={{
+                flex: 2, padding: '18px 0', borderRadius: 14,
+                background: BRAND.yellow, color: BRAND.black,
+                border: 'none', fontSize: 17, fontWeight: 900,
+                cursor: 'pointer', maxWidth: 220,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
             >
-              📷 Capture
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              Capture
             </button>
           </div>
         </div>
