@@ -3394,6 +3394,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
   const [filterPkg, setFilterPkg] = useState('');
   const [filterTech, setFilterTech] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [exportFormat, setExportFormat] = useState('pdf'); // 'pdf' | 'excel'
   const [downloading, setDownloading] = useState(false);
 
   const toggleCol = (key) => {
@@ -3411,56 +3412,103 @@ function ReportScreen({ inspections, technicians, onBack }) {
     return true;
   });
 
-  const buildReportHTML = () => {
-    const headerCells = activeCols.map((c) => `<th style="padding:7px 10px;background:#1A1A1A;color:#FFD100;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;">${c.label}</th>`).join('');
+  const dateStr = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // ── Shared print-quality HTML ────────────────────────────
+  const buildReportHTML = (forPrint = false) => {
+    const thStyle = forPrint
+      ? 'padding:6px 8px;background:#1A1A1A;color:#FFD100;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;'
+      : 'padding:7px 10px;background:#1A1A1A;color:#FFD100;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;';
+    const headerCells = activeCols.map((c) => `<th style="${thStyle}">${c.label}</th>`).join('');
     const rows = filteredData.map((ins, i) => {
-      const cells = activeCols.map((c) => `<td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-size:12px;color:#1A1A1A;">${c.get(ins)}</td>`).join('');
-      return `<tr style="background:${i % 2 === 0 ? '#fff' : '#F9FAFB'};">${cells}</tr>`;
+      const bg = i % 2 === 0 ? '#fff' : '#F9FAFB';
+      const cells = activeCols.map((c) => {
+        const val = String(c.get(ins));
+        // Color-code status and counts for print readability
+        let extra = '';
+        if (c.key === 'status') {
+          const color = { Draft: '#6B7280', 'In Progress': '#D97706', Finished: '#16A34A' }[val] || '#1A1A1A';
+          extra = `color:${color};font-weight:700;`;
+        }
+        if (c.key === 'good') extra = 'color:#16A34A;font-weight:700;';
+        if (c.key === 'warning') extra = 'color:#D97706;font-weight:700;';
+        if (c.key === 'critical') extra = 'color:#DC2626;font-weight:700;';
+        return `<td style="padding:${forPrint ? '5px 8px' : '6px 10px'};border-bottom:1px solid #E5E7EB;font-size:${forPrint ? '10px' : '12px'};color:#1A1A1A;${extra}">${val}</td>`;
+      }).join('');
+      return `<tr style="background:${bg};">${cells}</tr>`;
     }).join('');
-    return `<!DOCTYPE html><html><head><title>Rapide Report</title>
-      <style>@media print{body{margin:0}@page{size:A4 landscape;margin:10mm}}body{font-family:Arial,sans-serif;margin:20px;color:#1A1A1A;}</style>
-    </head><body>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-        <div style="background:#FFD100;padding:10px 18px;border-radius:8px;">
-          <div style="font-family:'Arial Black',sans-serif;font-size:24px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
-        </div>
-        <div>
-          <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">Inspection Report</div>
-          <div style="font-size:12px;color:#6B7280;margin-top:2px;">Generated ${new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' })} &bull; ${filteredData.length} record${filteredData.length !== 1 ? 's' : ''}</div>
-        </div>
-      </div>
-      <div style="overflow:auto;">
-        <table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;">
+
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Rapide Inspection Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #1A1A1A; background: #fff; }
+    @media print {
+      body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page { size: A4 landscape; margin: 8mm 10mm; }
+      .no-print { display: none !important; }
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; }
+      thead { display: table-header-group; }
+    }
+  </style>
+</head>
+<body style="padding:${forPrint ? '0' : '20px'}">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:12px;border-bottom:3px solid #FFD100;">
+    <div style="background:#FFD100;padding:8px 16px;border-radius:6px;flex-shrink:0;">
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
+    </div>
+    <div>
+      <div style="font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">Inspection Report</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;">Generated ${dateStr} &bull; ${filteredData.length} record${filteredData.length !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="no-print" style="margin-left:auto;">
+      <button onclick="window.print()" style="padding:8px 20px;background:#1A1A1A;color:#FFD100;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer;">Print</button>
+    </div>
+  </div>
+  ${filteredData.length === 0
+    ? '<p style="text-align:center;color:#9CA3AF;padding:40px;">No records match the selected filters.</p>'
+    : `<div style="overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
           <thead><tr>${headerCells}</tr></thead>
           <tbody>${rows}</tbody>
         </table>
-      </div>
-      ${filteredData.length === 0 ? '<p style="text-align:center;color:#9CA3AF;padding:40px;">No records match the selected filters.</p>' : ''}
-    </body></html>`;
+      </div>`
+  }
+  <div style="margin-top:16px;font-size:10px;color:#9CA3AF;text-align:right;border-top:1px solid #E5E7EB;padding-top:8px;">
+    Rapidé Auto Service Experts &bull; Digital Inspection System
+  </div>
+</body>
+</html>`;
   };
 
+  // ── Print ────────────────────────────────────────────────
   const handlePrint = () => {
     const w = window.open('', '_blank');
-    w.document.write(buildReportHTML());
+    w.document.write(buildReportHTML(true));
     w.document.close();
-    w.print();
+    setTimeout(() => { w.focus(); w.print(); }, 400);
   };
 
-  const handleDownload = async () => {
+  // ── Export PDF ───────────────────────────────────────────
+  const handleExportPDF = async () => {
     setDownloading(true);
-    const html = buildReportHTML();
     const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:1100px;background:white;padding:20px;font-family:Arial,sans-serif;box-sizing:border-box;';
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:1100px;background:white;padding:24px;font-family:Arial,sans-serif;box-sizing:border-box;';
+    const html = buildReportHTML(false);
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
     container.innerHTML = bodyMatch ? bodyMatch[1] : '';
-    container.querySelectorAll('script').forEach((s) => s.remove());
+    container.querySelectorAll('.no-print').forEach((el) => el.remove());
     document.body.appendChild(container);
     try {
       const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false, width: 1100 });
-      const pdf = new jsPDF('l', 'mm', 'a4'); // landscape
+      const pdf = new jsPDF('l', 'mm', 'a4');
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 10;
+      const margin = 8;
       const contentW = pageW - margin * 2;
       const imgHeightMm = (canvas.height * contentW) / canvas.width;
       let srcY = 0, remaining = imgHeightMm, first = true;
@@ -3472,7 +3520,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
         const sc = document.createElement('canvas');
         sc.width = canvas.width; sc.height = slicePx;
         sc.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
-        pdf.addImage(sc.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
+        pdf.addImage(sc.toDataURL('image/jpeg', 0.93), 'JPEG', margin, margin, contentW, sliceMm);
         srcY += slicePx; remaining -= sliceMm;
       }
       pdf.save(`Rapide-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -3482,16 +3530,45 @@ function ReportScreen({ inspections, technicians, onBack }) {
     }
   };
 
+  // ── Export Excel (CSV) ───────────────────────────────────
+  const handleExportExcel = () => {
+    const headers = activeCols.map((c) => `"${c.label.replace(/"/g, '""')}"`).join(',');
+    const rows = filteredData.map((ins) =>
+      activeCols.map((c) => {
+        const val = String(c.get(ins)).replace(/"/g, '""');
+        return `"${val}"`;
+      }).join(',')
+    );
+    const csv = [headers, ...rows].join('\r\n');
+    // BOM (\ufeff) ensures Excel opens UTF-8 correctly
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rapide-Report-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = () => {
+    if (exportFormat === 'pdf') handleExportPDF();
+    else handleExportExcel();
+  };
+
   const filterSelectStyle = {
     minHeight: 40, padding: '8px 12px', border: `2px solid ${BRAND.grayBorder}`,
     borderRadius: 10, fontSize: 13, background: BRAND.white, flex: 1,
   };
 
+  const disabled = activeCols.length === 0 || filteredData.length === 0;
+
   return (
     <div className="form-screen" style={{ paddingBottom: 40 }}>
       <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>Report Generation</h2>
       <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 24 }}>
-        Choose columns and filters, then download or print your custom report.
+        Choose columns, filters, and export format.
       </p>
 
       {/* Column selector */}
@@ -3508,23 +3585,8 @@ function ReportScreen({ inspections, technicians, onBack }) {
           {REPORT_COLUMNS.map((col) => {
             const checked = selectedCols.includes(col.key);
             return (
-              <label
-                key={col.key}
-                onClick={() => toggleCol(col.key)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-                  borderRadius: 8, cursor: 'pointer',
-                  border: `2px solid ${checked ? BRAND.yellow : BRAND.grayBorder}`,
-                  background: checked ? BRAND.yellowPale : BRAND.white,
-                  transition: 'all 0.15s',
-                }}
-              >
-                <div style={{
-                  width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-                  border: `2px solid ${checked ? BRAND.black : BRAND.grayBorder}`,
-                  background: checked ? BRAND.black : BRAND.white,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
+              <label key={col.key} onClick={() => toggleCol(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, cursor: 'pointer', border: `2px solid ${checked ? BRAND.yellow : BRAND.grayBorder}`, background: checked ? BRAND.yellowPale : BRAND.white, transition: 'all 0.15s' }}>
+                <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, border: `2px solid ${checked ? BRAND.black : BRAND.grayBorder}`, background: checked ? BRAND.black : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {checked && <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#FFD100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </div>
                 <span style={{ fontSize: 13, fontWeight: checked ? 700 : 500, color: BRAND.black }}>{col.label}</span>
@@ -3554,6 +3616,47 @@ function ReportScreen({ inspections, technicians, onBack }) {
             <option value="in_progress">In Progress</option>
             <option value="finished">Finished</option>
           </select>
+        </div>
+      </div>
+
+      {/* Export Format */}
+      <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, padding: '20px', marginBottom: 16 }}>
+        <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 800 }}>Export Format</h3>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {[
+            { key: 'pdf', label: 'PDF', icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+              </svg>
+            ), desc: 'Download as PDF file' },
+            { key: 'excel', label: 'Excel', icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/>
+              </svg>
+            ), desc: 'Download as .csv (opens in Excel)' },
+          ].map((fmt) => {
+            const sel = exportFormat === fmt.key;
+            return (
+              <button
+                key={fmt.key}
+                onClick={() => setExportFormat(fmt.key)}
+                style={{
+                  flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
+                  border: `2px solid ${sel ? BRAND.black : BRAND.grayBorder}`,
+                  background: sel ? BRAND.black : BRAND.white,
+                  color: sel ? BRAND.yellow : BRAND.black,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  transition: 'all 0.15s',
+                }}
+              >
+                {fmt.icon}
+                <span style={{ fontSize: 14, fontWeight: 800, letterSpacing: 0.5 }}>{fmt.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 500, color: sel ? '#ccc' : BRAND.gray }}>{fmt.desc}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -3592,7 +3695,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
                 ))}
                 {filteredData.length > 10 && (
                   <tr><td colSpan={activeCols.length} style={{ padding: '10px 12px', textAlign: 'center', color: BRAND.gray, fontSize: 12, fontStyle: 'italic' }}>
-                    Showing 10 of {filteredData.length} records. All records will be included in the export.
+                    Showing 10 of {filteredData.length} records — all records included in export.
                   </td></tr>
                 )}
               </tbody>
@@ -3602,13 +3705,25 @@ function ReportScreen({ inspections, technicians, onBack }) {
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
         <PrimaryButton onClick={onBack} variant="secondary">← Back</PrimaryButton>
-        <PrimaryButton onClick={handlePrint} variant="outline" disabled={activeCols.length === 0 || filteredData.length === 0}>
-          Print Report
+        <PrimaryButton onClick={handlePrint} variant="secondary" disabled={disabled}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Print
         </PrimaryButton>
-        <PrimaryButton onClick={handleDownload} variant="dark" disabled={activeCols.length === 0 || filteredData.length === 0 || downloading}>
-          {downloading ? 'Generating...' : 'Download PDF'}
+        <PrimaryButton onClick={handleExport} disabled={disabled || downloading}>
+          {downloading ? 'Generating...' : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export {exportFormat === 'pdf' ? 'PDF' : 'Excel'}
+            </>
+          )}
         </PrimaryButton>
       </div>
     </div>
