@@ -3931,6 +3931,62 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     printWindow.print();
   };
 
+  const buildFormPhotosPageHTML = (findings, categories) => {
+    const photos = [];
+    categories.forEach((cat) => {
+      cat.items.forEach((item) => {
+        const key = `${cat.category}::${item.name}`;
+        const f = findings[key];
+        if (f?.photo) {
+          photos.push({
+            category: cat.category,
+            name: item.name,
+            photo: f.photo,
+            color: f.color,
+            action: f.action,
+          });
+        }
+      });
+    });
+    if (photos.length === 0) return '';
+
+    // Group photos by category for organized display
+    const grouped = {};
+    photos.forEach((p) => {
+      if (!grouped[p.category]) grouped[p.category] = [];
+      grouped[p.category].push(p);
+    });
+
+    let cardsHTML = '';
+    Object.entries(grouped).forEach(([category, items]) => {
+      cardsHTML += `<div style="margin-bottom:16px;">
+        <div style="background:#1A1A1A;color:#FFD100;padding:6px 12px;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;border-radius:4px;margin-bottom:8px;">${category}</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">`;
+      items.forEach((p) => {
+        const actionColor = p.color === 'green' ? '#16A34A' : p.color === 'yellow' ? '#D97706' : '#DC2626';
+        const actionBg = p.color === 'green' ? '#DCFCE7' : p.color === 'yellow' ? '#FEF3C7' : '#FEE2E2';
+        cardsHTML += `
+          <div style="border:1px solid #D1D5DB;border-radius:6px;overflow:hidden;break-inside:avoid;">
+            <img src="${p.photo}" style="width:100%;height:180px;object-fit:cover;display:block;" />
+            <div style="padding:8px 10px;background:#F9FAFB;">
+              <div style="font-size:12px;font-weight:800;color:#1A1A1A;margin-bottom:4px;">${p.name}</div>
+              <span style="display:inline-block;padding:2px 10px;border-radius:4px;background:${actionBg};color:${actionColor};font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">${p.action || ''}</span>
+            </div>
+          </div>`;
+      });
+      cardsHTML += `</div></div>`;
+    });
+
+    return `
+    <div style="page-break-before:always;padding-top:16px;font-family:Arial,sans-serif;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:#1A1A1A;">Inspection Photo Documentation</div>
+        <div style="font-size:10px;color:#6B7280;margin-top:4px;">Visual record of inspected components &mdash; ${inspection.rif} &mdash; ${inspection.date}</div>
+      </div>
+      ${cardsHTML}
+    </div>`;
+  };
+
   const buildQuickFormHTML = () => {
     const findings = inspection.findings || {};
     const cd = inspection.customerData || {};
@@ -4193,6 +4249,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </table>
 
     </div>
+    ${buildFormPhotosPageHTML(findings, INSPECTION_DATA['quick'] || [])}
     </body></html>`;
   };
 
@@ -4616,6 +4673,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </table>
 
     </div>
+    ${buildFormPhotosPageHTML(findings, INSPECTION_DATA['express'] || [])}
     </body></html>`;
   };
 
@@ -5242,6 +5300,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </table>
 
     </div>
+    ${buildFormPhotosPageHTML(findings, INSPECTION_DATA['plus'] || [])}
     </body></html>`;
   };
 
