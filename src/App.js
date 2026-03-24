@@ -3622,7 +3622,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
       {/* Export Format */}
       <div style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${BRAND.grayBorder}`, padding: '20px', marginBottom: 16 }}>
         <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 800 }}>Export Format</h3>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {[
             { key: 'pdf', label: 'PDF', icon: (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -3643,7 +3643,7 @@ function ReportScreen({ inspections, technicians, onBack }) {
                 key={fmt.key}
                 onClick={() => setExportFormat(fmt.key)}
                 style={{
-                  flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
+                  flex: '1 1 140px', minWidth: 140, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
                   border: `2px solid ${sel ? BRAND.black : BRAND.grayBorder}`,
                   background: sel ? BRAND.black : BRAND.white,
                   color: sel ? BRAND.yellow : BRAND.black,
