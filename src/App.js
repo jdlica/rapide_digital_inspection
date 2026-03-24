@@ -1463,7 +1463,7 @@ function TopBar({ user, onLogout, onDashboard, onManage, onReport, packageType }
             Rapidé
           </div>
           {packageType && (() => {
-            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
             const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.premium };
             const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: BRAND.premiumBg };
             return (
@@ -1911,7 +1911,7 @@ function PackageSelectionScreen({ onSelect }) {
     },
     {
       id: 'plus',
-      label: 'PREMIUM PLUS',
+      label: 'PREMIUM',
       desc: 'Full-system detailed inspection',
       color: BRAND.premium,
     },
@@ -3413,7 +3413,7 @@ function AdminDashboard({
     return true;
   });
 
-  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
   const pkgColor = {
     quick: BRAND.green,
     express: BRAND.yellowStatus,
@@ -3766,7 +3766,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   const buildSummaryHTML = () => {
     const findings = inspection.findings || {};
     const categories = INSPECTION_DATA[inspection.packageType] || [];
-    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
 
     const badge = (pf) => {
       if (!pf) return '—';
@@ -5307,7 +5307,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   const printInspectionForm = () => {
     const printWindow = window.open('', '_blank');
     const categories = INSPECTION_DATA[inspection.packageType] || [];
-    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+    const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
 
     let checklistHTML = '';
     categories.forEach((cat) => {
