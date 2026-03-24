@@ -2011,7 +2011,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
     if (!data.title) e.title = true;
     if (!data.firstName) e.firstName = true;
     if (!data.lastName) e.lastName = true;
-    if (!data.mobileNo) e.mobileNo = true;
+    if (!data.mobileNo || data.mobileNo.replace(/\D/g, '').length !== 11) e.mobileNo = true;
     if (!data.email) e.email = true;
     if (data.fleetType === 'Fleet' && !data.company) e.company = true;
     if (!data.city) e.city = true;
@@ -2289,7 +2289,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
             required
             error={!!errors.mobileNo}
             value={data.mobileNo || ''}
-            onChange={(v) => update('mobileNo', v.replace(/\D/g, ''))}
+            onChange={(v) => update('mobileNo', v.replace(/\D/g, '').slice(0, 11))}
             placeholder="09XXXXXXXXX"
             type="tel"
           />
@@ -4766,7 +4766,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="font-family:Arial,sans-serif;font-size:8px;color:#000;background:#fff;width:794px;padding:12px;">
 
     <!-- TITLE -->
-    <div style="color:#000;text-align:center;padding:2px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">PLUS INSPECTION FORM</div>
+    <div style="color:#000;text-align:center;padding:2px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">PREMIUM PLUS INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
@@ -5480,12 +5480,6 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
   return (
     <div className="form-screen">
-      <button
-        onClick={onBack}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: BRAND.gray, fontSize: 14, fontWeight: 700, padding: '0 0 16px 0' }}
-      >
-        ← Back
-      </button>
       <div
         style={{
           display: 'flex',
