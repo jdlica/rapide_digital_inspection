@@ -2058,7 +2058,7 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
         const packages = [
           { key: 'quick', label: 'Quick', color: BRAND.green, bg: BRAND.greenBg },
           { key: 'express', label: 'Express', color: '#B45309', bg: BRAND.yellowStatusBg },
-          { key: 'plus', label: 'Premium Plus', color: BRAND.red, bg: BRAND.redBg },
+          { key: 'plus', label: 'Premium', color: BRAND.red, bg: BRAND.redBg },
         ];
         return (
           <div style={{ marginBottom: 20 }}>
@@ -3148,7 +3148,7 @@ const REPORT_COLUMNS = [
   { key: 'fuel',         label: 'Fuel Type',       get: (ins) => ins.customerData?.fuelType || '' },
   { key: 'km',           label: 'KM Reading',      get: (ins) => ins.customerData?.kmReading || '' },
   { key: 'location',     label: 'Location',        get: (ins) => [ins.customerData?.barangay, ins.customerData?.city].filter(Boolean).join(', ') },
-  { key: 'package',      label: 'Package',         get: (ins) => ({ quick: 'Quick', express: 'Express', plus: 'Premium Plus' }[ins.packageType] || ins.packageType || '') },
+  { key: 'package',      label: 'Package',         get: (ins) => ({ quick: 'Quick', express: 'Express', plus: 'Premium' }[ins.packageType] || ins.packageType || '') },
   { key: 'technician',   label: 'Technician',      get: (ins) => ins.technicianName || '' },
   { key: 'status',       label: 'Status',          get: (ins) => ({ draft: 'Draft', in_progress: 'In Progress', finished: 'Finished', submitted: 'Finished', reviewed: 'Finished' }[ins.status] || ins.status || '') },
   { key: 'good',         label: 'Good Count',      get: (ins) => { const v = []; Object.values(ins.findings || {}).forEach((f) => { if (f.positions) Object.values(f.positions).forEach((p) => v.push(p)); else v.push(f); }); return v.filter((f) => f.color === 'green').length; } },
@@ -4100,20 +4100,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="4">TIRES</td>
-                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Bulges')}</span></td>
-                ${actionTd('Replace', hasTireIssue('Bulges'))}
+                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges</td>
+                <td style="${T}"><span style="font-size:9px;">${tirePosDots('Bulges')}</span></td>
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Side Wall Cracks')}</span></td>
-                ${actionTd('Replace', hasTireIssue('Side Wall Cracks'))}
+                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks</td>
+                <td style="${T}"><span style="font-size:9px;">${tirePosDots('Side Wall Cracks')}</span></td>
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('Tread <1.7mm')}</span></td>
-                ${actionTd('Replace', hasTireIssue('Tread <1.7mm'))}
+                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm</td>
+                <td style="${T}"><span style="font-size:9px;">${tirePosDots('Tread <1.7mm')}</span></td>
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage<br><span style="font-size:9px;margin-left:14px;">${tirePosDots('No Damage')}</span></td>
-                ${hasTireIssue('No Damage') ? actionTd('Replace', true) : actionTd('Good', noDamageAllGood)}
+                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage</td>
+                <td style="${T}"><span style="font-size:9px;">${tirePosDots('No Damage')}</span></td>
               </tr>
             </table>
           </td>
@@ -5223,7 +5223,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Footnotes -->
     <div style="margin-bottom:4px;font-size:7px;line-height:1.3;">
       <div>**Indicate measurements</div>
-      <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
+      <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE PREMIUM INSPECTION FROM FINDINGS</strong></div>
       <div>2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
       <div>3. It is customer's responsibility to disclose all concerns of the vehicle prior to availing our services.</div>
     </div>
