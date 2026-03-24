@@ -5614,6 +5614,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
   return (
     <div className="form-screen">
+      <button
+        onClick={onBack}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: BRAND.gray, fontSize: 14, fontWeight: 700, padding: '0 0 16px 0' }}
+      >
+        ← Back to Dashboard
+      </button>
       <div
         style={{
           display: 'flex',
