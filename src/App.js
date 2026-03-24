@@ -3922,9 +3922,35 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   const printInspection = () => {
-    const html = buildSummaryHTML();
+    const formHTML = inspection.packageType === 'express'
+      ? buildExpressFormHTML()
+      : inspection.packageType === 'plus'
+        ? buildPlusFormHTML()
+        : buildQuickFormHTML();
+
+    const photosHTML = buildPhotosPageHTML();
+
+    // Extract body content from form HTML
+    const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
+    const photosBody = photosHTML
+      ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
+      : '';
+
+    const combined = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        table { border-collapse: collapse; width: 100%; }
+        @media print { body { margin: 0; } @page { size: A4 portrait; margin: 8mm; } }
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #000; background: #fff; }
+        .photos-page { page-break-before: always; }
+      </style>
+    </head><body>
+      <div>${formBody}</div>
+      ${photosBody ? `<div class="photos-page">${photosBody}</div>` : ''}
+    </body></html>`;
+
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(html);
+    printWindow.document.write(combined);
     printWindow.document.close();
     printWindow.print();
   };
@@ -5462,18 +5488,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <PrimaryButton
-            onClick={printInspectionForm}
-            variant="outline"
-            style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
-          >
-            Print Inspection
-          </PrimaryButton>
-          <PrimaryButton
             onClick={printInspection}
             variant="dark"
             style={{ fontSize: 13, padding: '10px 20px', minHeight: 42 }}
           >
-            Print Summary
+            Print Inspection
           </PrimaryButton>
           <PrimaryButton
             onClick={downloadSummary}
