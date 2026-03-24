@@ -5243,6 +5243,46 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </body></html>`;
   };
 
+  const buildPhotosPageHTML = () => {
+    const findings = inspection.findings || {};
+    const photos = [];
+    Object.entries(findings).forEach(([key, f]) => {
+      if (f?.photo) {
+        const idx = key.indexOf('::');
+        const category = idx !== -1 ? key.slice(0, idx) : key;
+        const name = idx !== -1 ? key.slice(idx + 2) : key;
+        photos.push({ category, name, photo: f.photo, color: f.color, action: f.action });
+      }
+    });
+    if (photos.length === 0) return null;
+
+    const photoCards = photos.map((p) => {
+      const textColor = p.color === 'red' ? '#DC2626' : p.color === 'yellow' ? '#D97706' : '#16A34A';
+      return `
+        <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;break-inside:avoid;">
+          <img src="${p.photo}" style="width:100%;height:180px;object-fit:cover;display:block;" />
+          <div style="padding:8px 10px;border-top:1px solid #eee;background:#fff;">
+            <div style="font-size:12px;font-weight:700;color:#1A1A1A;">${p.name}</div>
+            <div style="font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;">${p.category}</div>
+            ${p.action ? `<div style="font-size:11px;font-weight:700;color:${textColor};margin-top:4px;">${p.action}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    const cd = inspection.customerData || {};
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+      <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
+        <div style="text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:1.5px solid #1A1A1A;">
+          <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Inspection Photo Documentation</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">${inspection.rif || ''} &bull; ${inspection.date || ''} &bull; ${cd.make || ''} ${cd.model || ''} ${cd.year || ''} &bull; ${cd.plateNo || ''}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+          ${photoCards}
+        </div>
+      </div>
+    </body></html>`;
+  };
+
   const downloadSummary = async () => {
     const html = inspection.packageType === 'express'
       ? buildExpressFormHTML()
@@ -5250,24 +5290,23 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? buildPlusFormHTML()
         : buildQuickFormHTML();
 
-    const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    container.innerHTML = bodyMatch ? bodyMatch[1] : '';
-    container.querySelectorAll('script').forEach((s) => s.remove());
-    document.body.appendChild(container);
+    const photosHTML = buildPhotosPageHTML();
 
-    try {
-      const canvas = await html2canvas(container, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        width: 794,
-      });
+    const renderCanvas = async (htmlStr) => {
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
+      const bodyMatch = htmlStr.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+      container.innerHTML = bodyMatch ? bodyMatch[1] : '';
+      container.querySelectorAll('script').forEach((s) => s.remove());
+      document.body.appendChild(container);
+      try {
+        return await html2canvas(container, { scale: 3, useCORS: true, allowTaint: true, logging: false, width: 794 });
+      } finally {
+        document.body.removeChild(container);
+      }
+    };
 
-      // A4: 210mm × 297mm, 0.25 inch (6.35mm) margins
-      const pdf = new jsPDF('p', 'mm', 'a4');
+    const addCanvasToPdf = (pdf, canvas, addNewPageFirst) => {
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const margin = 6.35;
@@ -5276,11 +5315,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
       let srcY = 0;
       let remaining = imgHeightMm;
-      let isFirstPage = true;
+      let needNewPage = addNewPageFirst;
 
       while (remaining > 0) {
-        if (!isFirstPage) pdf.addPage();
-        isFirstPage = false;
+        if (needNewPage) pdf.addPage();
+        needNewPage = true;
 
         const sliceMm = Math.min(remaining, pageH - margin * 2);
         const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
@@ -5295,11 +5334,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         srcY += slicePx;
         remaining -= sliceMm;
       }
+    };
 
-      pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
-    } finally {
-      document.body.removeChild(container);
+    // A4: 210mm × 297mm, 0.25 inch (6.35mm) margins
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const formCanvas = await renderCanvas(html);
+    addCanvasToPdf(pdf, formCanvas, false);
+
+    if (photosHTML) {
+      const photosCanvas = await renderCanvas(photosHTML);
+      addCanvasToPdf(pdf, photosCanvas, true); // always starts on a new page
     }
+
+    pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
   };
 
   const printInspectionForm = () => {
