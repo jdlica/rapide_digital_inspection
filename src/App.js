@@ -3685,7 +3685,7 @@ function AdminDashboard({
                           View
                         </button>
                       )}
-                      <button
+                      {ins.status === 'draft' && <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (window.confirm(`Delete inspection ${ins.rif}? This cannot be undone.`)) {
@@ -3704,7 +3704,7 @@ function AdminDashboard({
                         }}
                       >
                         Delete
-                      </button>
+                      </button>}
                     </div>
                   </td>
                 </tr>
