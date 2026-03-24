@@ -1461,7 +1461,7 @@ function TopBar({ user, onLogout, onDashboard, onManage, onReport, packageType }
             Rapidé
           </div>
           {packageType && (() => {
-            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+            const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
             const pkgColor = { quick: BRAND.green, express: '#B45309', plus: BRAND.red };
             const pkgBg = { quick: '#DCFCE7', express: '#FEF3C7', plus: '#FEE2E2' };
             return (
@@ -1909,7 +1909,7 @@ function PackageSelectionScreen({ onSelect }) {
     },
     {
       id: 'plus',
-      label: 'PREMIUM PLUS',
+      label: 'PREMIUM',
       desc: 'Full-system detailed inspection',
       color: BRAND.red,
     },
@@ -3390,6 +3390,7 @@ function AdminDashboard({
   onView,
   onResume,
   onNewInspection,
+  onDelete,
   technicians,
 }) {
   const [search, setSearch] = useState('');
@@ -3411,7 +3412,7 @@ function AdminDashboard({
     return true;
   });
 
-  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
+  const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM' };
   const pkgColor = {
     quick: BRAND.green,
     express: BRAND.yellowStatus,
@@ -3497,7 +3498,7 @@ function AdminDashboard({
           <option value="">All Packages</option>
           <option value="quick">Quick</option>
           <option value="express">Express</option>
-          <option value="plus">Premium Plus</option>
+          <option value="plus">Premium</option>
         </select>
         <select
           value={filterTech}
@@ -3684,6 +3685,26 @@ function AdminDashboard({
                           View
                         </button>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm(`Delete inspection ${ins.rif}? This cannot be undone.`)) {
+                            onDelete(ins.rif);
+                          }
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 6,
+                          border: `1px solid #fca5a5`,
+                          background: '#fef2f2',
+                          color: '#DC2626',
+                          fontWeight: 700,
+                          fontSize: 12,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -4208,9 +4229,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Signatures -->
     <table style="margin-top:18px;">
       <tr>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:25%;">Technician</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:25%;"><strong>${inspection.technicianName || ''}</strong><br>Technician</td>
         <td style="border:none;width:5%;"></td>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:25%;">Store Manager</td>
       </tr>
@@ -4631,9 +4652,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Signatures -->
     <table style="margin-top:50px;">
       <tr>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Technician</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;"><strong>${inspection.technicianName || ''}</strong><br>Technician</td>
         <td style="border:none;width:5%;"></td>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Store Manager</td>
       </tr>
@@ -5257,9 +5278,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <!-- Signatures -->
     <table style="margin-top:28px;">
       <tr>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;">Client's Printed Name and Signature</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
-        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Technician</td>
+        <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;"><strong>${inspection.technicianName || ''}</strong><br>Technician</td>
         <td style="border:none;width:5%;"></td>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:25%;">Store Manager</td>
       </tr>
@@ -5459,6 +5480,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
   return (
     <div className="form-screen">
+      <button
+        onClick={onBack}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: BRAND.gray, fontSize: 14, fontWeight: 700, padding: '0 0 16px 0' }}
+      >
+        ← Back
+      </button>
       <div
         style={{
           display: 'flex',
@@ -6299,6 +6326,7 @@ function AppInner() {
           onView={(ins) => setViewingInspection(ins)}
           onResume={handleResume}
           onNewInspection={() => setScreen('packageSelect')}
+          onDelete={(rif) => setInspections((prev) => prev.filter((ins) => ins.rif !== rif))}
           technicians={technicians}
         />
       )}
