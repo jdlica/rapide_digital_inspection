@@ -3224,7 +3224,12 @@ function SubmitModal({ onCancel, onConfirm }) {
           boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
         }}
       >
-        <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#16A34A"/>
+            <path d="M7 12.5L10.5 16L17 9" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
         <h3
           style={{
             fontSize: 20,
