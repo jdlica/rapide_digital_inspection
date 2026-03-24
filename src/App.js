@@ -4399,23 +4399,32 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const getTirePos = (name) => findings[`TIRES::${name}`]?.positions || {};
     const hasTireIssue = (name) => Object.values(getTirePos(name)).some(p => p.conditionIdx === 1);
-    // Returns colored position badges for positions with conditionIdx===1 (issue)
-    const tireIssueBadges = (name) => {
+    // Returns ALL inspected positions with their actual condition colors
+    const tireAllPosBadges = (name) => {
+      const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getTirePos(name);
       return ['FL','FR','RL','RR'].flatMap(p => {
         const pd = pos[p];
-        if (!pd || pd.conditionIdx !== 1) return [];
-        return [`<strong style="color:#DC2626;">${p}</strong>`];
+        if (!pd) return [];
+        const col = cvs[pd.color] || '#000';
+        return [`<strong style="color:${col};">${p}</strong>`];
       }).join('&nbsp;');
     };
-    // Returns action word td for a tire item based on whether any issue exists
+    // Returns action word td — prefer issue action; fall back to good action
     const tireActionTd = (name) => {
+      const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getTirePos(name);
       const issuePos = ['FL','FR','RL','RR'].find(p => pos[p]?.conditionIdx === 1);
-      if (!issuePos) return `<td style="${T}"></td>`;
-      const pd = pos[issuePos];
-      const col = pd.color === 'green' ? '#16A34A' : pd.color === 'yellow' ? '#D97706' : '#DC2626';
-      return `<td style="${T};text-align:center;"><strong style="color:${col};">${pd.action}</strong></td>`;
+      if (issuePos) {
+        const pd = pos[issuePos];
+        return `<td style="${T};text-align:center;"><strong style="color:${cvs[pd.color]||'#DC2626'};">${pd.action}</strong></td>`;
+      }
+      const goodPos = ['FL','FR','RL','RR'].find(p => pos[p]?.conditionIdx === 0);
+      if (goodPos) {
+        const pd = pos[goodPos];
+        return `<td style="${T};text-align:center;"><strong style="color:${cvs[pd.color]||'#16A34A'};">${pd.action}</strong></td>`;
+      }
+      return `<td style="${T}"></td>`;
     };
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
@@ -4505,7 +4514,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- MEASURE -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT: TEST BATTERY -->
@@ -4557,19 +4566,19 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="4">TIRES</td>
-                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges <span style="font-size:9px;">${tireIssueBadges('Bulges')}</span></td>
+                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges <span style="font-size:9px;">${tireAllPosBadges('Bulges')}</span></td>
                 ${tireActionTd('Bulges')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks <span style="font-size:9px;">${tireIssueBadges('Side Wall Cracks')}</span></td>
+                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks <span style="font-size:9px;">${tireAllPosBadges('Side Wall Cracks')}</span></td>
                 ${tireActionTd('Side Wall Cracks')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm <span style="font-size:9px;">${tireIssueBadges('Tread <1.7mm')}</span></td>
+                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm <span style="font-size:9px;">${tireAllPosBadges('Tread <1.7mm')}</span></td>
                 ${tireActionTd('Tread <1.7mm')}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage <span style="font-size:9px;">${tireIssueBadges('No Damage')}</span></td>
+                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage <span style="font-size:9px;">${tireAllPosBadges('No Damage')}</span></td>
                 ${tireActionTd('No Damage')}
               </tr>
             </table>
@@ -4580,7 +4589,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- INSPECT -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:3px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"><col style="width:13%;"><col style="width:22%;"><col style="width:15%;"></colgroup>
         <tr>
@@ -4624,7 +4633,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TECHNICIAN'S COMMENT -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:11px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
       <div style="min-height:90px;padding:6px 8px;font-size:11px;">${inspection.techComment || ''}</div>
     </div>
 
@@ -4637,7 +4646,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:18px;">
+    <table style="margin-top:100px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:4px;font-size:9px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
@@ -4671,26 +4680,36 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     };
     const actionTd = (action, selected) =>
       `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
-    // Position items: badge positions matching condIdx beside the condition text
-    const condBadges = (key, condIdx) => {
+    // Show ALL inspected positions with their actual condition colors
+    const allPosBadges = (key) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
       return ['FL','FR','RL','RR'].flatMap(p => {
         const pd = pos[p];
-        if (!pd || pd.conditionIdx !== condIdx) return [];
+        if (!pd) return [];
         const col = cvs[pd.color] || '#000';
         return [`<span style="color:${col};font-weight:700;margin-left:3px;">${p}</span>`];
       }).join('');
     };
-    // Position items: action column shows action word for the matched condition
-    const actionWordTd = (key, condIdx) => {
+    // Always show action word — from matched position data, or from INSPECTION_DATA fallback
+    const alwaysActionTd = (key, condIdx) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
       const match = ['FL','FR','RL','RR'].find(p => pos[p]?.conditionIdx === condIdx);
-      if (!match) return `<td style="${T}"></td>`;
-      const pd = pos[match];
-      const col = cvs[pd.color] || '#000';
-      return `<td style="${T};text-align:center;"><strong style="color:${col};">${pd.action}</strong></td>`;
+      let action, col;
+      if (match) {
+        action = pos[match].action;
+        col = cvs[pos[match].color] || '#000';
+      } else {
+        const [catName, itemName] = key.split('::');
+        const cats = INSPECTION_DATA['express'] || [];
+        const cat = cats.find(c => c.category === catName);
+        const item = cat?.items.find(i => i.name === itemName);
+        const cond = item?.conditions[condIdx];
+        action = cond?.action || '';
+        col = cond ? (cvs[cond.color] || '#666') : '#666';
+      }
+      return `<td style="${T};text-align:center;"><strong style="color:${col};">${action}</strong></td>`;
     };
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
@@ -4810,7 +4829,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- MEASURE -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT: BATTERY (5 content rows) -->
@@ -4887,7 +4906,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- INSPECT -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT INSPECT -->
@@ -4948,24 +4967,24 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- TIRES: Tread Depth (3) + Bulges/Side Wall Crack (2) = 5 rows -->
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="5">Tires</td>
-                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm ${condBadges('TIRES::Tread Depth', 0)}</td>
-                ${actionWordTd('TIRES::Tread Depth', 0)}
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm ${allPosBadges('TIRES::Tread Depth')}</td>
+                ${alwaysActionTd('TIRES::Tread Depth', 0)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm ${condBadges('TIRES::Tread Depth', 1)}</td>
-                ${actionWordTd('TIRES::Tread Depth', 1)}
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm ${allPosBadges('TIRES::Tread Depth')}</td>
+                ${alwaysActionTd('TIRES::Tread Depth', 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm ${condBadges('TIRES::Tread Depth', 2)}</td>
-                ${actionWordTd('TIRES::Tread Depth', 2)}
+                <td style="${T}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm ${allPosBadges('TIRES::Tread Depth')}</td>
+                ${alwaysActionTd('TIRES::Tread Depth', 2)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${condBadges('TIRES::Bulges / Side Wall Crack', 0)}</td>
-                ${actionWordTd('TIRES::Bulges / Side Wall Crack', 0)}
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${allPosBadges('TIRES::Bulges / Side Wall Crack')}</td>
+                ${alwaysActionTd('TIRES::Bulges / Side Wall Crack', 0)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} No Issue ${condBadges('TIRES::Bulges / Side Wall Crack', 1)}</td>
-                ${actionWordTd('TIRES::Bulges / Side Wall Crack', 1)}
+                <td style="${T}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} No Issue ${allPosBadges('TIRES::Bulges / Side Wall Crack')}</td>
+                ${alwaysActionTd('TIRES::Bulges / Side Wall Crack', 1)}
               </tr>
             </table>
           </td>
@@ -5023,16 +5042,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- BRAKE PAD: 3 rows with positions -->
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="3">Brake<br>Pad</td>
-                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm ${condBadges('BRAKE PAD::Brake Pad', 0)}</td>
-                ${actionWordTd('BRAKE PAD::Brake Pad', 0)}
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm ${allPosBadges('BRAKE PAD::Brake Pad')}</td>
+                ${alwaysActionTd('BRAKE PAD::Brake Pad', 0)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm ${condBadges('BRAKE PAD::Brake Pad', 1)}</td>
-                ${actionWordTd('BRAKE PAD::Brake Pad', 1)}
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm ${allPosBadges('BRAKE PAD::Brake Pad')}</td>
+                ${alwaysActionTd('BRAKE PAD::Brake Pad', 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm ${condBadges('BRAKE PAD::Brake Pad', 2)}</td>
-                ${actionWordTd('BRAKE PAD::Brake Pad', 2)}
+                <td style="${T}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm ${allPosBadges('BRAKE PAD::Brake Pad')}</td>
+                ${alwaysActionTd('BRAKE PAD::Brake Pad', 2)}
               </tr>
             </table>
           </td>
@@ -5042,7 +5061,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TEST -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TEST</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TEST</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
@@ -5057,7 +5076,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TECHNICIAN'S COMMENT -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
       <div style="min-height:44px;padding:4px 6px;font-size:9px;">${inspection.techComment || ''}</div>
     </div>
 
@@ -5070,7 +5089,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:50px;">
+    <table style="margin-top:100px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
@@ -5126,24 +5145,36 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const getPos = (key) => findings[key]?.positions || {};
     const anyAtCond = (key, condIdx) =>
       ['FL','FR','RL','RR'].some(p => getPos(key)[p]?.conditionIdx === condIdx);
-    const condBadges = (key, condIdx, positions) => {
+    // Show ALL inspected positions with their actual condition colors
+    const allPosBadgesPos = (key, positions) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
       return positions.flatMap(p => {
         const pd = pos[p];
-        if (!pd || pd.conditionIdx !== condIdx) return [];
+        if (!pd) return [];
         const col = cvs[pd.color] || '#000';
         return [`<span style="color:${col};font-weight:700;margin-left:2px;">${p}</span>`];
       }).join('');
     };
-    const actionWordTdSmall = (key, condIdx, positions) => {
+    const alwaysActionTdSmall = (key, condIdx, positions) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
       const match = positions.find(p => pos[p]?.conditionIdx === condIdx);
-      if (!match) return `<td style="${Tp}"></td>`;
-      const pd = pos[match];
-      const col = cvs[pd.color] || '#000';
-      return `<td style="${Tp};text-align:center;"><strong style="color:${col};">${pd.action}</strong></td>`;
+      let action, col;
+      if (match) {
+        action = pos[match].action;
+        col = cvs[pos[match].color] || '#000';
+      } else {
+        const [catName, itemName] = key.split('::');
+        const cats = INSPECTION_DATA['plus'] || [];
+        const cat = cats.find(c => c.category === catName);
+        const item = cat?.items.find(i => i.name === itemName);
+        const cond = item?.conditions[condIdx];
+        action = cond?.action || '';
+        col = cond ? (cvs[cond.color] || '#666') : '#666';
+      }
+      if (!action) return `<td style="${Tp}"></td>`;
+      return `<td style="${Tp};text-align:center;"><strong style="color:${col};">${action}</strong></td>`;
     };
     const anyAtCondPos = (key, condIdx, positions) =>
       positions.some(p => getPos(key)[p]?.conditionIdx === condIdx);
@@ -5251,7 +5282,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- MEASURE: Battery (left) + Belt (right) -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <td style="width:50%;padding:0;vertical-align:top;border:none;">
@@ -5326,7 +5357,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- INSPECT: 3 equal columns -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- COL 1: Coolant, PS Fluid, Steering Linkage, Engine Support, Fuel/Lines, Brake Pedal -->
@@ -5582,7 +5613,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TIRES + BRAKE PAD/SHOE + DRIVE SHAFT BOOT -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TIRES &amp; BRAKES</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TIRES &amp; BRAKES</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT: Tread Depth + Bulges/Side Wall -->
@@ -5596,24 +5627,24 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="5">Tires</td>
-                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm ${condBadges('TIRES::Tread Depth', 0, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('TIRES::Tread Depth', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Tread Depth', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm ${condBadges('TIRES::Tread Depth', 1, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('TIRES::Tread Depth', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Tread Depth', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm ${condBadges('TIRES::Tread Depth', 2, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('TIRES::Tread Depth', 2, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Tread Depth', 2, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${condBadges('TIRES::Bulges / Side Wall Crack', 0, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('TIRES::Bulges / Side Wall Crack', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${allPosBadgesPos('TIRES::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Bulges / Side Wall Crack', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} No Issue ${condBadges('TIRES::Bulges / Side Wall Crack', 1, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('TIRES::Bulges / Side Wall Crack', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} No Issue ${allPosBadgesPos('TIRES::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Bulges / Side Wall Crack', 1, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -5628,16 +5659,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Brake<br>Pad/Shoe</td>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm ${condBadges('BRAKE PAD::Brake Pad', 0, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('BRAKE PAD::Brake Pad', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm ${condBadges('BRAKE PAD::Brake Pad', 1, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('BRAKE PAD::Brake Pad', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm ${condBadges('BRAKE PAD::Brake Pad', 2, ['FL','FR','RL','RR'])}</td>
-                ${actionWordTdSmall('BRAKE PAD::Brake Pad', 2, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 2, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -5652,12 +5683,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Drive<br>Shaft<br>Boot</td>
-                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR']))} Cracked / Torn ${condBadges('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR'])}</td>
-                ${actionWordTdSmall('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR'])}
+                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR']))} Cracked / Torn ${allPosBadgesPos('DRIVE SHAFT::Drive Shaft Boot', ['FL','FR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR']))} Good ${condBadges('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR'])}</td>
-                ${actionWordTdSmall('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR'])}
+                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR']))} Good ${allPosBadgesPos('DRIVE SHAFT::Drive Shaft Boot', ['FL','FR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR'])}
               </tr>
             </table>
           </td>
@@ -5667,7 +5698,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TEST -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
@@ -5682,7 +5713,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- TECHNICIAN'S COMMENT -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#555;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
       <div style="min-height:32px;padding:3px 6px;font-size:8px;">${inspection.techComment || ''}</div>
     </div>
 
@@ -5695,7 +5726,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:28px;">
+    <table style="margin-top:100px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
