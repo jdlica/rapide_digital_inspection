@@ -2518,6 +2518,8 @@ function InspectionScreen({
   const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
   const fileInputRefs = useRef({});
   const uploadInputRefs = useRef({});
+  const posFileInputRefs = useRef({});
+  const posUploadInputRefs = useRef({});
 
   const handlePhotoCapture = (key, e) => {
     const file = e.target.files?.[0];
@@ -2532,6 +2534,32 @@ function InspectionScreen({
     reader.readAsDataURL(file);
     e.target.value = '';
   };
+
+  const handlePositionPhotoCapture = (key, pos, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFindings((prev) => {
+        const existing = prev[key] || {};
+        const existingPositions = existing.positions || {};
+        const existingPos = existingPositions[pos] || {};
+        return {
+          ...prev,
+          [key]: {
+            ...existing,
+            positions: {
+              ...existingPositions,
+              [pos]: { ...existingPos, photo: ev.target.result },
+            },
+          },
+        };
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
   const cat = categories[currentCategoryIdx];
   const isFirst = currentCategoryIdx === 0;
   const isLast = currentCategoryIdx === categories.length - 1;
@@ -2838,21 +2866,51 @@ function InspectionScreen({
                     {item.positions.map((pos) => {
                       const pf = finding?.positions?.[pos];
                       const isActive = activePosition?.itemName === item.name && activePosition?.pos === pos;
+                      const needsPhoto = pf?.color === 'red' || pf?.color === 'yellow';
+                      const posRefKey = `${key}::${pos}`;
                       return (
-                        <button
-                          key={pos}
-                          onClick={() => setActivePosition(isActive ? null : { itemName: item.name, pos })}
-                          style={{
-                            flex: 1, borderRadius: 10, padding: '10px 6px', cursor: 'pointer',
-                            border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
-                            background: pf ? bgColorMap[pf.color] : BRAND.white,
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                            transition: 'all 0.15s',
-                            boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
-                          }}
-                        >
-                          <span style={{ fontWeight: 900, fontSize: 18, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
-                        </button>
+                        <div key={pos} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div
+                            onClick={() => setActivePosition(isActive ? null : { itemName: item.name, pos })}
+                            style={{
+                              borderRadius: 10, padding: '10px 6px', cursor: 'pointer',
+                              border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
+                              background: pf ? bgColorMap[pf.color] : BRAND.white,
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                              transition: 'all 0.15s',
+                              boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
+                            }}
+                          >
+                            <span style={{ fontWeight: 900, fontSize: 18, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
+                            {pf?.photo && (
+                              <img src={pf.photo} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: 'cover' }} />
+                            )}
+                          </div>
+                          {needsPhoto && (
+                            <div style={{ display: 'flex', gap: 3 }}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); posFileInputRefs.current[posRefKey]?.click(); }}
+                                title="Take photo"
+                                style={{ flex: 1, borderRadius: 6, border: 'none', background: colorMap[pf.color], padding: '4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                                </svg>
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); posUploadInputRefs.current[posRefKey]?.click(); }}
+                                title="Upload photo"
+                                style={{ flex: 1, borderRadius: 6, border: 'none', background: '#6B7280', padding: '4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                              </button>
+                              <input ref={(el) => { posFileInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
+                              <input ref={(el) => { posUploadInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -5325,10 +5383,19 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const findings = inspection.findings || {};
     const photos = [];
     Object.entries(findings).forEach(([key, f]) => {
+      const idx = key.indexOf('::');
+      const category = idx !== -1 ? key.slice(0, idx) : key;
+      const name = idx !== -1 ? key.slice(idx + 2) : key;
+      // Per-position photos
+      if (f?.positions) {
+        Object.entries(f.positions).forEach(([pos, pf]) => {
+          if (pf?.photo) {
+            photos.push({ category, name: `${name} (${pos})`, photo: pf.photo, color: pf.color, action: pf.action });
+          }
+        });
+      }
+      // Non-position photo
       if (f?.photo) {
-        const idx = key.indexOf('::');
-        const category = idx !== -1 ? key.slice(0, idx) : key;
-        const name = idx !== -1 ? key.slice(idx + 2) : key;
         photos.push({ category, name, photo: f.photo, color: f.color, action: f.action });
       }
     });
