@@ -1993,8 +1993,9 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onChangePackage, brands, models, municipalities, barangays, fleets, onFillDemo }) {
+function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipalities, barangays, fleets, technicians }) {
   const [errors, setErrors] = useState({});
+  const [attempted, setAttempted] = useState(false);
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
   const availableBarangays = data.city ? [...(barangays[data.city] || []), 'Others'] : [];
 
@@ -2015,12 +2016,14 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
     if (data.fleetType === 'Fleet' && !data.company) e.company = true;
     if (!data.city) e.city = true;
     if (!data.barangay) e.barangay = true;
+    if (!data.suggestedTechnicianId) e.suggestedTechnicianId = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleNext = () => {
-    if (validate()) onNext();
+  const handleSave = () => {
+    setAttempted(true);
+    if (validate()) onSave();
   };
   const update = (k, v) => {
     setData({ ...data, [k]: v });
@@ -2029,71 +2032,12 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
 
   return (
     <div className="form-screen">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>
-            Customer & Vehicle Details
-          </h2>
-          <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
-            Fill in vehicle and customer information
-          </p>
-        </div>
-        {onFillDemo && (
-          <button
-            onClick={onFillDemo}
-            style={{
-              fontSize: 11, fontWeight: 700, padding: '4px 12px', marginTop: 4,
-              borderRadius: 8, border: `1px solid ${BRAND.grayBorder}`,
-              background: BRAND.grayLight, color: BRAND.gray, cursor: 'pointer',
-            }}
-          >
-            Fill Demo
-          </button>
-        )}
-      </div>
-
-      {/* Package switcher */}
-      {(() => {
-        const packages = [
-          { key: 'quick', label: 'Quick', color: BRAND.green, bg: BRAND.greenBg },
-          { key: 'express', label: 'Express', color: '#B45309', bg: BRAND.yellowStatusBg },
-          { key: 'plus', label: 'Premium', color: BRAND.red, bg: BRAND.redBg },
-        ];
-        return (
-          <div style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: BRAND.gray, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Package
-            </p>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {packages.map((pkg) => {
-                const selected = packageType === pkg.key;
-                return (
-                  <button
-                    key={pkg.key}
-                    onClick={() => onChangePackage(pkg.key)}
-                    style={{
-                      flex: 1,
-                      padding: '10px 6px',
-                      borderRadius: 10,
-                      border: `2px solid ${selected ? pkg.color : BRAND.grayBorder}`,
-                      background: selected ? pkg.bg : BRAND.white,
-                      color: selected ? pkg.color : BRAND.gray,
-                      fontWeight: 800,
-                      fontSize: 12,
-                      cursor: 'pointer',
-                      textTransform: 'uppercase',
-                      letterSpacing: 0.4,
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {pkg.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })()}
+      <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>
+        Customer & Vehicle Details
+      </h2>
+      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
+        Fill in vehicle and customer information
+      </p>
 
       {/* Vehicle Section */}
       <div className="form-card">
@@ -2328,7 +2272,30 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
         </div>
       </div>
 
-      {Object.keys(errors).length > 0 && (
+      {/* Suggested Technician */}
+      <div className="form-card">
+        <h3 style={{ fontSize: 16, fontWeight: 800, color: BRAND.black, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ background: BRAND.yellow, width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
+            🔧
+          </span>
+          Suggested Technician
+        </h3>
+        <SearchableDropdown
+          label="Suggest a Technician"
+          required
+          error={attempted && !!errors.suggestedTechnicianId}
+          options={technicians.filter((t) => t.active).map((t) => t.name)}
+          value={data.suggestedTechnicianName || ''}
+          onChange={(v) => {
+            const tech = technicians.find((t) => t.name === v);
+            setData({ ...data, suggestedTechnicianId: tech?.id, suggestedTechnicianName: v });
+            setErrors({ ...errors, suggestedTechnicianId: false });
+          }}
+          placeholder="Select technician..."
+        />
+      </div>
+
+      {attempted && Object.keys(errors).filter(k => errors[k]).length > 0 && (
         <div
           style={{
             background: BRAND.redBg,
@@ -2344,11 +2311,8 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
         </div>
       )}
 
-      <div
-        style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 20 }}
-      >
-        <PrimaryButton onClick={onBack} variant="secondary">← Back</PrimaryButton>
-        <PrimaryButton onClick={handleNext}>Next →</PrimaryButton>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 20 }}>
+        <PrimaryButton onClick={handleSave}>Save →</PrimaryButton>
       </div>
     </div>
   );
@@ -2357,11 +2321,14 @@ function CustomerVehicleScreen({ data, setData, onNext, onBack, packageType, onC
 function ServiceQuestionsScreen({
   data,
   setData,
-  onNext,
-  onBack,
+  onSave,
   technicians,
+  suggestedTechnicianId,
+  suggestedTechnicianName,
 }) {
   const [errors, setErrors] = useState({});
+  const [attempted, setAttempted] = useState(false);
+  const [useConfirmed, setUseConfirmed] = useState(true);
   const months = [
     'January',
     'February',
@@ -2383,15 +2350,24 @@ function ServiceQuestionsScreen({
     setErrors({ ...errors, [k]: false });
   };
 
-  const handleNext = () => {
+  const handleSave = () => {
+    setAttempted(true);
     const e = {};
     if (!data.lastPmsMonth) e.lastPmsMonth = true;
     if (!data.lastPmsYear) e.lastPmsYear = true;
     if (!data.replacedParts || data.replacedParts.length === 0) e.replacedParts = true;
     if (!data.currentProblems || data.currentProblems.length === 0) e.currentProblems = true;
-    if (!data.technicianId) e.technicianId = true;
+    // Technician must be confirmed (either suggested or another selected)
+    const confirmedId = useConfirmed ? suggestedTechnicianId : data.technicianId;
+    if (!confirmedId) e.technicianId = true;
     setErrors(e);
-    if (Object.keys(e).length === 0) onNext();
+    if (Object.keys(e).length === 0) {
+      // Commit the confirmed technician into serviceData before saving
+      if (useConfirmed) {
+        setData({ ...data, technicianId: suggestedTechnicianId, technicianName: suggestedTechnicianName });
+      }
+      onSave();
+    }
   };
 
   return (
@@ -2474,30 +2450,101 @@ function ServiceQuestionsScreen({
           allowOthers
         />
 
-        <SearchableDropdown
-          label="Assign Technician"
-          required
-          error={!!errors.technicianId}
-          options={technicians.filter((t) => t.active).map((t) => t.name)}
-          value={data.technicianName}
-          onChange={(v) => {
-            const tech = technicians.find((t) => t.name === v);
-            setData({ ...data, technicianId: tech?.id, technicianName: v });
-            setErrors({ ...errors, technicianId: false });
-          }}
-          placeholder="Select technician..."
-        />
       </div>
 
+      {/* Technician Confirmation */}
       <div
-        style={{
-          display: 'flex', justifyContent: 'center', gap: 16, paddingTop: 20,
-        }}
+        className="form-card"
+        style={{ border: `2px solid ${attempted && errors.technicianId ? BRAND.red : BRAND.grayBorder}` }}
       >
-        <PrimaryButton onClick={onBack} variant="secondary">
-          ← Back
-        </PrimaryButton>
-        <PrimaryButton onClick={handleNext}>Next →</PrimaryButton>
+        <h3 style={{ fontSize: 15, fontWeight: 800, color: BRAND.black, marginBottom: 16 }}>
+          Please confirm technician to be assigned
+        </h3>
+
+        {/* Option 1: confirm suggested technician */}
+        <label
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
+            borderRadius: 10, cursor: 'pointer', marginBottom: 10,
+            border: `2px solid ${useConfirmed ? BRAND.yellow : BRAND.grayBorder}`,
+            background: useConfirmed ? BRAND.yellowPale : BRAND.white,
+            transition: 'all 0.15s',
+          }}
+          onClick={() => {
+            setUseConfirmed(true);
+            setErrors({ ...errors, technicianId: false });
+          }}
+        >
+          <div style={{
+            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+            border: `2px solid ${useConfirmed ? BRAND.black : BRAND.grayBorder}`,
+            background: useConfirmed ? BRAND.black : BRAND.white,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {useConfirmed && <div style={{ width: 8, height: 8, borderRadius: '50%', background: BRAND.yellow }} />}
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: BRAND.black }}>
+              {suggestedTechnicianName || 'No technician suggested'}
+            </div>
+            <div style={{ fontSize: 12, color: BRAND.gray }}>Suggested technician</div>
+          </div>
+        </label>
+
+        {/* Option 2: assign another technician */}
+        <label
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
+            borderRadius: 10, cursor: 'pointer',
+            border: `2px solid ${!useConfirmed ? BRAND.yellow : BRAND.grayBorder}`,
+            background: !useConfirmed ? BRAND.yellowPale : BRAND.white,
+            transition: 'all 0.15s',
+          }}
+          onClick={() => setUseConfirmed(false)}
+        >
+          <div style={{
+            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+            border: `2px solid ${!useConfirmed ? BRAND.black : BRAND.grayBorder}`,
+            background: !useConfirmed ? BRAND.black : BRAND.white,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {!useConfirmed && <div style={{ width: 8, height: 8, borderRadius: '50%', background: BRAND.yellow }} />}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: BRAND.black, marginBottom: 8 }}>
+              Assign another technician
+            </div>
+            {!useConfirmed && (
+              <SearchableDropdown
+                error={attempted && !!errors.technicianId}
+                options={technicians.filter((t) => t.active).map((t) => t.name)}
+                value={data.technicianName}
+                onChange={(v) => {
+                  const tech = technicians.find((t) => t.name === v);
+                  setData({ ...data, technicianId: tech?.id, technicianName: v });
+                  setErrors({ ...errors, technicianId: false });
+                }}
+                placeholder="Select technician..."
+              />
+            )}
+          </div>
+        </label>
+
+        {attempted && errors.technicianId && (
+          <p style={{ color: BRAND.red, fontSize: 13, fontWeight: 700, margin: '10px 0 0' }}>
+            Please confirm a technician.
+          </p>
+        )}
+      </div>
+
+      {attempted && Object.keys(errors).filter(k => errors[k]).length > 0 && (
+        <div style={{ background: BRAND.redBg, color: BRAND.red, padding: '12px 16px', borderRadius: 10, fontSize: 14, marginBottom: 16, fontWeight: 600 }}>
+          Please fill in all required fields.
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 20 }}>
+        <PrimaryButton onClick={handleSave}>Save →</PrimaryButton>
       </div>
     </div>
   );
@@ -6274,7 +6321,7 @@ function AppInner() {
       packageType,
       date: new Date().toLocaleDateString('en-PH'),
       customerName: `${customerData.title || ''} ${customerData.firstName || ''} ${customerData.lastName || ''}`.trim(),
-      technicianName: serviceData.technicianName || '',
+      technicianName: serviceData.technicianName || customerData.suggestedTechnicianName || '',
       customerData: { ...customerData },
       serviceData: { ...serviceData },
       findings: { ...findings },
@@ -6308,26 +6355,61 @@ function AppInner() {
 
   const handleLogin = (u) => {
     setUser(u);
-    setScreen('packageSelect');
-  };
-  const handleLogout = () => {
-    setUser(null);
-    setScreen('login');
-  };
-
-  const handleChangePackage = (pkg) => {
-    setPackageType(pkg); // only changes package, preserves all form data
-  };
-
-  const handlePackageSelect = (pkg) => {
-    draftRifRef.current = null; // new inspection = new draft RIF
-    setPackageType(pkg);
+    draftRifRef.current = null;
+    setPackageType(null);
     setCustomerData({ date: new Date().toLocaleDateString('en-PH') });
     setServiceData({});
     setFindings({});
     setCurrentCatIdx(0);
     setTechComment('');
     setScreen('customerVehicle');
+  };
+  const handleLogout = () => {
+    setUser(null);
+    setScreen('login');
+  };
+
+  // Start a brand-new inspection (clears all state)
+  const handleNewInspection = () => {
+    draftRifRef.current = null;
+    setPackageType(null);
+    setCustomerData({ date: new Date().toLocaleDateString('en-PH') });
+    setServiceData({});
+    setFindings({});
+    setCurrentCatIdx(0);
+    setTechComment('');
+    setScreen('customerVehicle');
+  };
+
+  // Called after CustomerVehicle is saved — persist draft and show toast
+  const handleCustomerVehicleSave = () => {
+    saveCurrentDraft('serviceQuestions');
+    setSuccessToast('__customer_saved__');
+    setScreen('dashboard');
+  };
+
+  // Called after ServiceQuestions are saved — persist draft and return to dashboard
+  const handleServiceQuestionsSave = () => {
+    saveCurrentDraft('packageSelect');
+    setScreen('dashboard');
+  };
+
+  // Called when technician selects a package (resumed from 'packageSelect')
+  const handlePackageSelect = (pkg) => {
+    setPackageType(pkg);
+    setCurrentCatIdx(0);
+    // Update the in-progress record with the chosen package
+    const rif = draftRifRef.current;
+    if (rif) {
+      setInspections((prev) =>
+        prev.map((ins) =>
+          ins.rif === rif
+            ? { ...ins, packageType: pkg, status: 'in_progress', savedScreen: 'inspection', savedCatIdx: 0 }
+            : ins
+        )
+      );
+    }
+    setScreen('inspection');
   };
 
   const handleSubmitInspection = () => {
@@ -6339,7 +6421,7 @@ function AppInner() {
       customerName: `${customerData.title || ''} ${
         customerData.firstName || ''
       } ${customerData.lastName || ''}`.trim(),
-      technicianName: serviceData.technicianName || '',
+      technicianName: serviceData.technicianName || customerData.suggestedTechnicianName || '',
       customerData: { ...customerData },
       serviceData: { ...serviceData },
       findings: { ...findings },
@@ -6357,7 +6439,7 @@ function AppInner() {
     });
     draftRifRef.current = null;
     setShowSubmitModal(false);
-    setScreen('packageSelect');
+    setScreen('dashboard');
     setSuccessToast(rif);
     setTimeout(() => setSuccessToast(null), 4000);
   };
@@ -6434,20 +6516,33 @@ function AppInner() {
                 <path d="M7 12.5L10.5 16L17 9" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
-              Inspection Complete!
-            </div>
-            <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 6 }}>
-              The inspection has been saved to the dashboard.
-            </div>
-            <div style={{
-              display: 'inline-block', background: BRAND.grayLight,
-              borderRadius: 8, padding: '6px 16px', fontSize: 13,
-              fontWeight: 700, color: BRAND.black, marginBottom: 28,
-              fontFamily: 'monospace',
-            }}>
-              RIF: {successToast}
-            </div>
+            {successToast === '__customer_saved__' ? (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
+                  Customer Saved!
+                </div>
+                <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 28 }}>
+                  The inspection has been added to the dashboard. Resume it to fill in service questions.
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
+                  Inspection Complete!
+                </div>
+                <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 6 }}>
+                  The inspection has been saved to the dashboard.
+                </div>
+                <div style={{
+                  display: 'inline-block', background: BRAND.grayLight,
+                  borderRadius: 8, padding: '6px 16px', fontSize: 13,
+                  fontWeight: 700, color: BRAND.black, marginBottom: 28,
+                  fontFamily: 'monospace',
+                }}>
+                  RIF: {successToast}
+                </div>
+              </>
+            )}
             <button
               onClick={() => setSuccessToast(null)}
               style={{
@@ -6470,7 +6565,7 @@ function AppInner() {
           onLogout={handleLogout}
           packageType={['customerVehicle', 'serviceQuestions', 'inspection', 'techComment'].includes(screen) ? packageType : null}
           onDashboard={() => {
-            if (!['login', 'packageSelect', 'dashboard', 'manage'].includes(screen)) {
+            if (!['login', 'dashboard', 'manage', 'report'].includes(screen)) {
               saveCurrentDraft(screen);
             }
             setViewingInspection(null);
@@ -6489,16 +6584,13 @@ function AppInner() {
         <CustomerVehicleScreen
           data={customerData}
           setData={setCustomerData}
-          onNext={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
-          onBack={() => setScreen('packageSelect')}
-          packageType={packageType}
-          onChangePackage={handleChangePackage}
+          onSave={handleCustomerVehicleSave}
           brands={brands}
           models={models}
           municipalities={municipalities}
           barangays={barangays}
           fleets={fleets}
-          onFillDemo={() => { fillDemoData(); setCurrentCatIdx(0); setScreen('inspection'); }}
+          technicians={technicians}
         />
       )}
 
@@ -6506,13 +6598,10 @@ function AppInner() {
         <ServiceQuestionsScreen
           data={serviceData}
           setData={setServiceData}
-          onNext={() => {
-            setCurrentCatIdx(0);
-            saveCurrentDraft('inspection', 0);
-            setScreen('inspection');
-          }}
-          onBack={() => { saveCurrentDraft('customerVehicle'); setScreen('customerVehicle'); }}
+          onSave={handleServiceQuestionsSave}
           technicians={technicians}
+          suggestedTechnicianId={customerData.suggestedTechnicianId}
+          suggestedTechnicianName={customerData.suggestedTechnicianName}
         />
       )}
 
@@ -6580,7 +6669,7 @@ function AppInner() {
           inspections={inspections}
           onView={(ins) => setViewingInspection(ins)}
           onResume={handleResume}
-          onNewInspection={() => setScreen('packageSelect')}
+          onNewInspection={handleNewInspection}
           onDelete={(rif) => setInspections((prev) => prev.filter((ins) => ins.rif !== rif))}
           technicians={technicians}
         />
