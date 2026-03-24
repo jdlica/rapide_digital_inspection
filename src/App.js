@@ -3517,6 +3517,7 @@ function AdminDashboard({
   const [filterPkg, setFilterPkg] = useState('');
   const [filterTech, setFilterTech] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null); // { rif, customerName }
 
   const filtered = inspections.filter((ins) => {
     if (
@@ -3808,9 +3809,7 @@ function AdminDashboard({
                       {ins.status === 'draft' && <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (window.confirm(`Delete inspection ${ins.rif}? This cannot be undone.`)) {
-                            onDelete(ins.rif);
-                          }
+                          setDeleteTarget({ rif: ins.rif, customerName: ins.customerName });
                         }}
                         style={{
                           padding: '6px 12px',
@@ -3834,6 +3833,40 @@ function AdminDashboard({
         </table>
       </div>
 
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: '#fff', borderRadius: 20, padding: '36px 32px', maxWidth: 360, width: '100%', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+            <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="12" fill="#DC2626"/>
+                <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>Delete Inspection?</div>
+            <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 6 }}>
+              You are about to delete this draft inspection. This action cannot be undone.
+            </div>
+            <div style={{ display: 'inline-block', background: BRAND.grayLight, borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 700, color: BRAND.black, marginBottom: 28, fontFamily: 'monospace' }}>
+              RIF: {deleteTarget.rif}{deleteTarget.customerName ? ` · ${deleteTarget.customerName}` : ''}
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                style={{ flex: 1, padding: '13px 0', borderRadius: 12, background: BRAND.grayLight, color: BRAND.black, border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { onDelete(deleteTarget.rif); setDeleteTarget(null); }}
+                style={{ flex: 1, padding: '13px 0', borderRadius: 12, background: '#DC2626', color: '#fff', border: 'none', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -6313,32 +6346,55 @@ function AppInner() {
       {successToast && (
         <div
           style={{
-            position: 'fixed',
-            top: 24,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 9999,
-            background: '#16A34A',
-            color: '#fff',
-            padding: '14px 28px',
-            borderRadius: 10,
-            boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            fontWeight: 700,
-            fontSize: 14,
-            minWidth: 280,
-            maxWidth: 420,
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 24,
           }}
+          onClick={() => setSuccessToast(null)}
         >
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <circle cx="11" cy="11" r="11" fill="#fff" fillOpacity="0.2"/>
-            <path d="M6 11.5L9.5 15L16 8" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <div>
-            <div>Inspection saved to dashboard!</div>
-            <div style={{ fontWeight: 400, fontSize: 12, opacity: 0.85, marginTop: 2 }}>RIF: {successToast}</div>
+          <div
+            style={{
+              background: '#fff', borderRadius: 20, padding: '40px 36px',
+              maxWidth: 380, width: '100%', textAlign: 'center',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              width: 80, height: 80, borderRadius: '50%',
+              background: '#DCFCE7', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', margin: '0 auto 20px',
+            }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="12" fill="#16A34A"/>
+                <path d="M7 12.5L10.5 16L17 9" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
+              Inspection Complete!
+            </div>
+            <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 6 }}>
+              The inspection has been saved to the dashboard.
+            </div>
+            <div style={{
+              display: 'inline-block', background: BRAND.grayLight,
+              borderRadius: 8, padding: '6px 16px', fontSize: 13,
+              fontWeight: 700, color: BRAND.black, marginBottom: 28,
+              fontFamily: 'monospace',
+            }}>
+              RIF: {successToast}
+            </div>
+            <button
+              onClick={() => setSuccessToast(null)}
+              style={{
+                width: '100%', padding: '14px 0', borderRadius: 12,
+                background: '#16A34A', color: '#fff', border: 'none',
+                fontSize: 15, fontWeight: 800, cursor: 'pointer',
+              }}
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
