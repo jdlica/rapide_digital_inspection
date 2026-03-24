@@ -2518,8 +2518,52 @@ function InspectionScreen({
   const [activePosition, setActivePosition] = useState(null); // { itemName, pos }
   const fileInputRefs = useRef({});
   const uploadInputRefs = useRef({});
-  const posFileInputRefs = useRef({});
   const posUploadInputRefs = useRef({});
+  const [cameraModal, setCameraModal] = useState(null); // { key, pos } pos=null for item-level
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    if (!cameraModal) return;
+    let stopped = false;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+      .then((stream) => {
+        if (stopped) { stream.getTracks().forEach((t) => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.play(); }
+      })
+      .catch(() => setCameraModal(null));
+    return () => {
+      stopped = true;
+      if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null; }
+    };
+  }, [cameraModal]);
+
+  const closeCamera = () => {
+    if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null; }
+    setCameraModal(null);
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    if (cameraModal.pos !== null) {
+      setFindings((prev) => {
+        const existing = prev[cameraModal.key] || {};
+        const existingPositions = existing.positions || {};
+        const existingPos = existingPositions[cameraModal.pos] || {};
+        return { ...prev, [cameraModal.key]: { ...existing, positions: { ...existingPositions, [cameraModal.pos]: { ...existingPos, photo: dataUrl } } } };
+      });
+    } else {
+      setFindings((prev) => ({ ...prev, [cameraModal.key]: { ...(prev[cameraModal.key] || {}), photo: dataUrl } }));
+    }
+    closeCamera();
+  };
 
   const handlePhotoCapture = (key, e) => {
     const file = e.target.files?.[0];
@@ -2795,20 +2839,9 @@ function InspectionScreen({
                       />
                     )}
                     <button
-                      onClick={() => fileInputRefs.current[key]?.click()}
+                      onClick={() => setCameraModal({ key, pos: null })}
                       title="Take photo"
-                      style={{
-                        background: cardBorder,
-                        border: 'none',
-                        borderRadius: 8,
-                        width: 36,
-                        height: 36,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                      }}
+                      style={{ background: cardBorder, border: 'none', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
@@ -2818,18 +2851,7 @@ function InspectionScreen({
                     <button
                       onClick={() => uploadInputRefs.current[key]?.click()}
                       title="Upload photo"
-                      style={{
-                        background: '#6B7280',
-                        border: 'none',
-                        borderRadius: 8,
-                        width: 36,
-                        height: 36,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                      }}
+                      style={{ background: '#6B7280', border: 'none', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -2837,21 +2859,7 @@ function InspectionScreen({
                         <line x1="12" y1="3" x2="12" y2="15"/>
                       </svg>
                     </button>
-                    <input
-                      ref={(el) => { fileInputRefs.current[key] = el; }}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      style={{ display: 'none' }}
-                      onChange={(e) => handlePhotoCapture(key, e)}
-                    />
-                    <input
-                      ref={(el) => { uploadInputRefs.current[key] = el; }}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      onChange={(e) => handlePhotoCapture(key, e)}
-                    />
+                    <input ref={(el) => { uploadInputRefs.current[key] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePhotoCapture(key, e)} />
                   </div>
                 )}
               </div>
@@ -2886,7 +2894,7 @@ function InspectionScreen({
                           {needsPhoto && (
                             <div style={{ display: 'flex', gap: 3 }}>
                               <button
-                                onClick={(e) => { e.stopPropagation(); posFileInputRefs.current[posRefKey]?.click(); }}
+                                onClick={(e) => { e.stopPropagation(); setCameraModal({ key, pos }); }}
                                 title="Take photo"
                                 style={{ flex: 1, borderRadius: 6, border: 'none', background: colorMap[pf.color], padding: '4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                               >
@@ -2903,7 +2911,6 @@ function InspectionScreen({
                                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                 </svg>
                               </button>
-                              <input ref={(el) => { posFileInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
                               <input ref={(el) => { posUploadInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
                             </div>
                           )}
@@ -3086,6 +3093,33 @@ function InspectionScreen({
           </PrimaryButton>
         </div>
       </div>
+
+      {/* Camera modal */}
+      {cameraModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, background: '#000', display: 'flex', flexDirection: 'column' }}>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{ flex: 1, width: '100%', objectFit: 'cover' }}
+          />
+          <div style={{ padding: '20px 24px', display: 'flex', gap: 12, background: '#111', paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
+            <button
+              onClick={closeCamera}
+              style={{ flex: 1, padding: '16px 0', borderRadius: 14, background: '#333', color: '#fff', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={capturePhoto}
+              style={{ flex: 2, padding: '16px 0', borderRadius: 14, background: BRAND.yellow, color: BRAND.black, border: 'none', fontSize: 16, fontWeight: 800, cursor: 'pointer' }}
+            >
+              📷 Capture
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
