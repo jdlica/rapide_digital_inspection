@@ -601,10 +601,10 @@ INSPECTION_DATA.plus = [
       {
         name: 'Engine Support',
         multiSelect: true,
-        optional: true,
         conditions: [
           { label: 'Crack', color: 'red', action: 'Replace' },
           { label: 'Sagging', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -5769,13 +5769,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Engine<br>Support</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Engine<br>Support</td>
                 <td style="${Tp}">${cb(isSelected('ENGINE SUPPORT::Engine Support', 0))} Crack</td>
                 ${actionTp('Replace', isSelected('ENGINE SUPPORT::Engine Support', 0))}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(isSelected('ENGINE SUPPORT::Engine Support', 1))} Sagging</td>
                 ${actionTp('Replace', isSelected('ENGINE SUPPORT::Engine Support', 1))}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(isSelected('ENGINE SUPPORT::Engine Support', 2))} No Damage</td>
+                ${actionTp('Good', isSelected('ENGINE SUPPORT::Engine Support', 2))}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Fuel Tank<br>Cap/Lines</td>
@@ -6877,7 +6881,7 @@ function AppInner() {
       f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [] };
+      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
       f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [] };
       f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
       f['SUSPENSION ARM::Suspension Arm'] = { positions: {
