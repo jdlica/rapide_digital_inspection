@@ -420,9 +420,181 @@ const INSPECTION_DATA = {
   plus: [], // will be set below
 };
 
-// Premium Plus = Express + extra categories
+// Premium Plus — standalone (not spreading express)
 INSPECTION_DATA.plus = [
-  ...INSPECTION_DATA.express,
+  // ── BATTERY ─────────────────────────────────────────────────
+  {
+    category: 'BATTERY',
+    items: [
+      {
+        name: 'Battery Voltage',
+        conditions: [
+          { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
+          { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
+          { label: 'Below 12.2V', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Starting Power (CCA)',
+        conditions: [
+          { label: '>80%', color: 'green', action: 'Good' },
+          { label: '<80%', color: 'red', action: 'Replace' },
+        ],
+      },
+    ],
+  },
+  // ── BELT ────────────────────────────────────────────────────
+  {
+    category: 'BELT',
+    items: [
+      {
+        name: 'Belt Condition',
+        multiSelect: true,
+        conditions: [
+          { label: 'Cracked', color: 'red', action: 'Replace' },
+          { label: 'Side Wall', color: 'red', action: 'Replace' },
+          { label: 'Loose', color: 'yellow', action: 'Adjust' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+      {
+        name: 'Belt Deflection',
+        conditions: [
+          { label: '<1/2 inch Deflection', color: 'green', action: 'Good' },
+          { label: '>1/2 inch Deflection', color: 'yellow', action: 'Adjust' },
+        ],
+      },
+    ],
+  },
+  // ── COOLANT ─────────────────────────────────────────────────
+  {
+    category: 'COOLANT',
+    items: [
+      {
+        name: 'Coolant Level',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── BRAKE FLUID ─────────────────────────────────────────────
+  {
+    category: 'BRAKE FLUID',
+    items: [
+      {
+        name: 'Brake Fluid Level',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── POWER STEERING FLUID ───────────────────────────────────
+  {
+    category: 'POWER STEERING FLUID',
+    items: [
+      {
+        name: 'Power Steering Fluid',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── CLUTCH FLUID ────────────────────────────────────────────
+  {
+    category: 'CLUTCH FLUID',
+    items: [
+      {
+        name: 'Clutch Fluid',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── STEERING LINKAGE ────────────────────────────────────────
+  {
+    category: 'STEERING LINKAGE',
+    items: [
+      {
+        name: 'Steering Linkage',
+        multiSelect: true,
+        conditions: [
+          { label: 'Boot Damage', color: 'red', action: 'Replace' },
+          { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
+          { label: 'Steering Loose', color: 'red', action: 'Replace' },
+          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+    ],
+  },
+  // ── AIR CONDITIONER ────────────────────────────────────────
+  {
+    category: 'AIR CONDITIONER',
+    items: [
+      {
+        name: 'Air Cleaner',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clean', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── TIRES ───────────────────────────────────────────────────
+  {
+    category: 'TIRES',
+    items: [
+      {
+        name: 'Tread Depth',
+        conditions: [
+          { label: '<1.7 mm', color: 'red', action: 'Replace' },
+          { label: '3.2 – 1.7 mm', color: 'yellow', action: 'Observe' },
+          { label: '>3.2 mm', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+      {
+        name: 'Bulges / Side Wall Crack',
+        conditions: [
+          { label: 'Bulges / Side Wall Crack', color: 'red', action: 'Replace' },
+          { label: 'No Issue', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  // ── BRAKE PAD / SHOE ────────────────────────────────────────
+  {
+    category: 'BRAKE PAD / SHOE',
+    items: [
+      {
+        name: 'Brake Pad / Shoe',
+        conditions: [
+          { label: '<3 mm', color: 'red', action: 'Replace' },
+          { label: '3 – 6 mm', color: 'yellow', action: 'Observe' },
+          { label: '>6 mm', color: 'green', action: 'Good' },
+          { label: 'Rotor Disc Worn', color: 'red', action: 'Reface' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  // ── ENGINE SUPPORT ──────────────────────────────────────────
   {
     category: 'ENGINE SUPPORT',
     items: [
@@ -430,11 +602,13 @@ INSPECTION_DATA.plus = [
         name: 'Engine Support',
         conditions: [
           { label: 'Crack', color: 'red', action: 'Replace' },
+          { label: 'Sagging', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
       },
     ],
   },
+  // ── FUEL SYSTEM ────────────────────────────────────────────
   {
     category: 'FUEL SYSTEM',
     items: [
@@ -448,44 +622,50 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
+  // ── BRAKE PEDAL ────────────────────────────────────────────
   {
     category: 'BRAKE PEDAL',
     items: [
       {
         name: 'Brake Pedal Free Play',
         conditions: [
-          { label: '≤35mm', color: 'green', action: 'Good' },
-          { label: '>35mm', color: 'red', action: 'Adjust' },
+          { label: '1mm – 5mm', color: 'green', action: 'Good' },
+          { label: '>5mm', color: 'red', action: 'Check & Adjust' },
         ],
       },
     ],
   },
+  // ── SUSPENSION ARM ─────────────────────────────────────────
   {
-    category: 'SUSPENSION',
+    category: 'SUSPENSION ARM',
     items: [
       {
         name: 'Suspension Arm',
         conditions: [
-          { label: 'Two Bushings', color: 'red', action: 'Replace' },
-          { label: 'Short / Damage', color: 'red', action: 'Replace' },
+          { label: 'Torn Bushing', color: 'red', action: 'Replace' },
+          { label: 'Bent / Damage', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
       },
     ],
   },
+  // ── TRANSMISSION ───────────────────────────────────────────
   {
     category: 'TRANSMISSION',
     items: [
       {
         name: 'Transmission M/T, A/T, CVT Oil',
         conditions: [
+          { label: 'Contaminated', color: 'red', action: 'Replace' },
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated', color: 'red', action: 'Flush/Replace' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
     ],
   },
+  // ── BALL JOINT ─────────────────────────────────────────────
   {
     category: 'BALL JOINT',
     items: [
@@ -493,35 +673,46 @@ INSPECTION_DATA.plus = [
         name: 'Ball Joint',
         conditions: [
           { label: 'Loose', color: 'red', action: 'Replace' },
-          { label: 'Tight', color: 'green', action: 'Good' },
+          { label: 'Boot Torn', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
         ],
+        hasPosition: true,
+        positions: ['FL', 'FR'],
       },
     ],
   },
+  // ── CLUTCH PEDAL ───────────────────────────────────────────
   {
     category: 'CLUTCH PEDAL',
     items: [
       {
         name: 'Clutch Pedal',
         conditions: [
-          { label: '10 – 20mm', color: 'green', action: 'Good' },
-          { label: '>20mm', color: 'yellow', action: 'Adjust' },
+          { label: '10mm – 20mm', color: 'green', action: 'Good' },
+          { label: '>20mm', color: 'yellow', action: 'Check' },
         ],
       },
     ],
   },
+  // ── FRONT & REAR SUSPENSION ────────────────────────────────
   {
     category: 'FRONT & REAR SUSPENSION',
     items: [
       {
         name: 'Front & Rear Suspension',
         conditions: [
-          { label: 'Leaking', color: 'red', action: 'Replace' },
+          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
+          { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
+          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
+          { label: 'Squeaking', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
       },
     ],
   },
+  // ── FOR LEAKS ─────────────────────────────────────────────
   {
     category: 'FOR LEAKS',
     items: [
@@ -538,18 +729,21 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
+  // ── EXHAUST PIPE MOUNTING ──────────────────────────────────
   {
     category: 'EXHAUST PIPE MOUNTING',
     items: [
       {
         name: 'Exhaust Pipe Mounting',
         conditions: [
-          { label: 'Damaged / Loose', color: 'red', action: 'Replace' },
-          { label: 'Good', color: 'green', action: 'Good' },
+          { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
+          { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
         ],
       },
     ],
   },
+  // ── COOLING SYSTEM ────────────────────────────────────────
   {
     category: 'COOLING SYSTEM',
     items: [
@@ -569,17 +763,46 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
+  // ── DRIVE SHAFT BOOT ──────────────────────────────────────
   {
-    category: 'DRIVE SHAFT',
+    category: 'DRIVE SHAFT BOOT',
     items: [
       {
         name: 'Drive Shaft Boot',
         conditions: [
-          { label: 'Cracked / Torn', color: 'red', action: 'Replace' },
-          { label: 'Good', color: 'green', action: 'Good' },
+          { label: 'Broken', color: 'red', action: 'Replace' },
+          { label: 'Leaking', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['FL', 'FR'],
+        positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+    ],
+  },
+  // ── DRIVER CONTROL ────────────────────────────────────────
+  {
+    category: 'DRIVER CONTROL',
+    items: [
+      {
+        name: 'Light',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Horn',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Not Working', color: 'red', action: 'Repair' },
+        ],
+      },
+      {
+        name: 'Washer',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Not Working', color: 'red', action: 'Check' },
+        ],
       },
     ],
   },
@@ -5213,30 +5436,23 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const anyAtCondPos = (key, condIdx, positions) =>
       positions.some(p => getPos(key)[p]?.conditionIdx === condIdx);
 
-    // Express indices
+    // Indices
     const battVIdx = getIdx('BATTERY::Battery Voltage');
     const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
     const beltDeflIdx = getIdx('BELT::Belt Deflection');
-    const coolantIdx = getIdx('FLUIDS::Coolant Level');
-    const brakeFluidIdx = getIdx('FLUIDS::Brake Fluid Level');
-    const psIdx = getIdx('FLUIDS::Power Steering Fluid');
-    const clutchIdx = getIdx('FLUIDS::Clutch Fluid');
+    const coolantIdx = getIdx('COOLANT::Coolant Level');
+    const brakeFluidIdx = getIdx('BRAKE FLUID::Brake Fluid Level');
+    const psIdx = getIdx('POWER STEERING FLUID::Power Steering Fluid');
+    const clutchIdx = getIdx('CLUTCH FLUID::Clutch Fluid');
     const airIdx = getIdx('AIR CONDITIONER::Air Cleaner');
-    const lightIdx = getIdx('TEST::Light');
-    const signalIdx = getIdx('TEST::Signal Light');
-    const hornIdx = getIdx('TEST::Horn');
-    const wiperIdx = getIdx('TEST::Wiper');
-    const washerIdx = getIdx('TEST::Washer');
-
-    // Plus-specific indices
+    const lightIdx = getIdx('DRIVER CONTROL::Light');
+    const hornIdx = getIdx('DRIVER CONTROL::Horn');
+    const washerIdx = getIdx('DRIVER CONTROL::Washer');
     const engSupportIdx = getIdx('ENGINE SUPPORT::Engine Support');
     const fuelLinesIdx = getIdx('FUEL SYSTEM::Fuel Tank Cap / Lines Connection');
     const brakePedalIdx = getIdx('BRAKE PEDAL::Brake Pedal Free Play');
-    const suspArmIdx = getIdx('SUSPENSION::Suspension Arm');
     const transOilIdx = getIdx('TRANSMISSION::Transmission M/T, A/T, CVT Oil');
-    const ballJointIdx = getIdx('BALL JOINT::Ball Joint');
     const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
-    const frontRearSuspIdx = getIdx('FRONT & REAR SUSPENSION::Front & Rear Suspension');
     const exhaustMountIdx = getIdx('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting');
     const coolingSysIdx = getIdx('COOLING SYSTEM::Cooling System Hose');
     const radiatorHoseIdx = getIdx('COOLING SYSTEM::Radiator Hose');
@@ -5462,13 +5678,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Engine<br>Support</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Engine<br>Support</td>
                 <td style="${Tp}">${cb(engSupportIdx === 0)} Crack</td>
                 ${actionTp('Replace', engSupportIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(engSupportIdx === 1)} No Damage</td>
-                ${actionTp('Good', engSupportIdx === 1)}
+                <td style="${Tp}">${cb(engSupportIdx === 1)} Sagging</td>
+                ${actionTp('Replace', engSupportIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(engSupportIdx === 2)} No Damage</td>
+                ${actionTp('Good', engSupportIdx === 2)}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Fuel Tank<br>Cap/Lines</td>
@@ -5485,12 +5705,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
-                <td style="${Tp}">${cb(brakePedalIdx === 0)} ≤35mm</td>
+                <td style="${Tp}">${cb(brakePedalIdx === 0)} 1mm – 5mm</td>
                 ${actionTp('Good', brakePedalIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(brakePedalIdx === 1)} &gt;35mm</td>
-                ${actionTp('Adjust', brakePedalIdx === 1)}
+                <td style="${Tp}">${cb(brakePedalIdx === 1)} &gt;5mm</td>
+                ${actionTp('Check &amp; Adjust', brakePedalIdx === 1)}
               </tr>
             </table>
           </td>
@@ -5530,48 +5750,52 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', clutchIdx === 2)}
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Suspension<br>Arm</td>
-                <td style="${Tp}">${cb(suspArmIdx === 0)} Two Bushings</td>
-                ${actionTp('Replace', suspArmIdx === 0)}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Suspension<br>Arm</td>
+                <td style="${Tp}">${cb(anyAtCondPos('SUSPENSION ARM::Suspension Arm', 0, ['Left','Right']))} Torn Bushing ${allPosBadgesPos('SUSPENSION ARM::Suspension Arm', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('SUSPENSION ARM::Suspension Arm', 0, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(suspArmIdx === 1)} Short / Damage</td>
-                ${actionTp('Replace', suspArmIdx === 1)}
+                <td style="${Tp}">${cb(anyAtCondPos('SUSPENSION ARM::Suspension Arm', 1, ['Left','Right']))} Bent / Damage ${allPosBadgesPos('SUSPENSION ARM::Suspension Arm', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('SUSPENSION ARM::Suspension Arm', 1, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(suspArmIdx === 2)} No Damage</td>
-                ${actionTp('Good', suspArmIdx === 2)}
+                <td style="${Tp}">${cb(anyAtCondPos('SUSPENSION ARM::Suspension Arm', 2, ['Left','Right']))} No Damage ${allPosBadgesPos('SUSPENSION ARM::Suspension Arm', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('SUSPENSION ARM::Suspension Arm', 2, ['Left','Right'])}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Trans.<br>M/T,A/T<br>CVT Oil</td>
-                <td style="${Tp}">${cb(transOilIdx === 0)} Low Level</td>
-                ${actionTp('Top Up', transOilIdx === 0)}
+                <td style="${Tp}">${cb(transOilIdx === 0)} Contaminated</td>
+                ${actionTp('Replace', transOilIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(transOilIdx === 1)} Contaminated</td>
-                ${actionTp('Flush/Replace', transOilIdx === 1)}
+                <td style="${Tp}">${cb(transOilIdx === 1)} Low Level</td>
+                ${actionTp('Top Up', transOilIdx === 1)}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(transOilIdx === 2)} Correct Level</td>
                 ${actionTp('Good', transOilIdx === 2)}
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Ball<br>Joint</td>
-                <td style="${Tp}">${cb(ballJointIdx === 0)} Loose</td>
-                ${actionTp('Replace', ballJointIdx === 0)}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Ball<br>Joint</td>
+                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 0, ['FL','FR']))} Loose ${allPosBadgesPos('BALL JOINT::Ball Joint', ['FL','FR'])}</td>
+                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 0, ['FL','FR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(ballJointIdx === 1)} Tight</td>
-                ${actionTp('Good', ballJointIdx === 1)}
+                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 1, ['FL','FR']))} Boot Torn ${allPosBadgesPos('BALL JOINT::Ball Joint', ['FL','FR'])}</td>
+                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 1, ['FL','FR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 2, ['FL','FR']))} No Damage ${allPosBadgesPos('BALL JOINT::Ball Joint', ['FL','FR'])}</td>
+                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 2, ['FL','FR'])}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Clutch<br>Pedal</td>
-                <td style="${Tp}">${cb(clutchPedalIdx === 0)} 10 – 20mm</td>
+                <td style="${Tp}">${cb(clutchPedalIdx === 0)} 10mm – 20mm</td>
                 ${actionTp('Good', clutchPedalIdx === 0)}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(clutchPedalIdx === 1)} &gt;20mm</td>
-                ${actionTp('Adjust', clutchPedalIdx === 1)}
+                ${actionTp('Check', clutchPedalIdx === 1)}
               </tr>
             </table>
           </td>
@@ -5585,13 +5809,25 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Front &amp;<br>Rear Susp.</td>
-                <td style="${Tp}">${cb(frontRearSuspIdx === 0)} Leaking</td>
-                ${actionTp('Replace', frontRearSuspIdx === 0)}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="5">Front &amp;<br>Rear Susp.</td>
+                <td style="${Tp}">${cb(anyAtCond('FRONT & REAR SUSPENSION::Front & Rear Suspension', 0))} Excess Bounce 2-3x ${allPosBadgesPos('FRONT & REAR SUSPENSION::Front & Rear Suspension', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('FRONT & REAR SUSPENSION::Front & Rear Suspension', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(frontRearSuspIdx === 1)} No Damage</td>
-                ${actionTp('Good', frontRearSuspIdx === 1)}
+                <td style="${Tp}">${cb(anyAtCond('FRONT & REAR SUSPENSION::Front & Rear Suspension', 1))} Shock Absorber Oil Leak ${allPosBadgesPos('FRONT & REAR SUSPENSION::Front & Rear Suspension', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('FRONT & REAR SUSPENSION::Front & Rear Suspension', 1, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('FRONT & REAR SUSPENSION::Front & Rear Suspension', 2))} Uneven Tire Wear ${allPosBadgesPos('FRONT & REAR SUSPENSION::Front & Rear Suspension', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('FRONT & REAR SUSPENSION::Front & Rear Suspension', 2, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('FRONT & REAR SUSPENSION::Front & Rear Suspension', 3))} Squeaking ${allPosBadgesPos('FRONT & REAR SUSPENSION::Front & Rear Suspension', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('FRONT & REAR SUSPENSION::Front & Rear Suspension', 3, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('FRONT & REAR SUSPENSION::Front & Rear Suspension', 4))} No Damage ${allPosBadgesPos('FRONT & REAR SUSPENSION::Front & Rear Suspension', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('FRONT & REAR SUSPENSION::Front & Rear Suspension', 4, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="5">For<br>Leaks</td>
@@ -5615,13 +5851,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('FOR LEAKS::For Leaks', 4))}
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Exhaust<br>Pipe Mnt.</td>
-                <td style="${Tp}">${cb(exhaustMountIdx === 0)} Damaged / Loose</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Exhaust<br>Pipe Mnt.</td>
+                <td style="${Tp}">${cb(exhaustMountIdx === 0)} Exhaust Hanger Damage</td>
                 ${actionTp('Replace', exhaustMountIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(exhaustMountIdx === 1)} Good</td>
-                ${actionTp('Good', exhaustMountIdx === 1)}
+                <td style="${Tp}">${cb(exhaustMountIdx === 1)} Exhaust Gasket Leak</td>
+                ${actionTp('Check', exhaustMountIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(exhaustMountIdx === 2)} No Damage</td>
+                ${actionTp('Good', exhaustMountIdx === 2)}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Cooling<br>Sys. Hose</td>
@@ -5707,17 +5947,21 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Brake<br>Pad/Shoe</td>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 0))} &lt;3 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="4">Brake<br>Pad/Shoe</td>
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 0))} &lt;3 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 1))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 1))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD::Brake Pad', 2))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD::Brake Pad', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD::Brake Pad', 2, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 2))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 2, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 3))} Rotor Disc Worn ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 3, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -5731,13 +5975,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Drive<br>Shaft<br>Boot</td>
-                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR']))} Cracked / Torn ${allPosBadgesPos('DRIVE SHAFT::Drive Shaft Boot', ['FL','FR'])}</td>
-                ${alwaysActionTdSmall('DRIVE SHAFT::Drive Shaft Boot', 0, ['FL','FR'])}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Drive<br>Shaft<br>Boot</td>
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 0))} Broken ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR']))} Good ${allPosBadgesPos('DRIVE SHAFT::Drive Shaft Boot', ['FL','FR'])}</td>
-                ${alwaysActionTdSmall('DRIVE SHAFT::Drive Shaft Boot', 1, ['FL','FR'])}
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 1))} Leaking ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 1, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 2))} No Damage ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 2, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -5745,16 +5993,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
     </div>
 
-    <!-- TEST -->
+    <!-- DRIVER CONTROL -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST</div>
-      <table style="table-layout:fixed;">
-        <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">DRIVER CONTROL</div>
+      <table style="table-layout:fixed;width:100%;">
+        <colgroup><col style="width:33.33%;"><col style="width:33.33%;"><col style="width:33.33%;"></colgroup>
         <tr>
           <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>LIGHT</strong><br><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>SIGNAL LIGHT</strong><br><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
           <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WIPER</strong><br><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
           <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
         </tr>
       </table>
@@ -6504,10 +6750,10 @@ function AppInner() {
       f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
       f['BELT::Belt Condition'] = { conditionIdxs: [3] };
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
-      f['FLUIDS::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['FLUIDS::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['FLUIDS::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['FLUIDS::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['COOLANT::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['BRAKE FLUID::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['POWER STEERING FLUID::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['CLUTCH FLUID::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['TIRES::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
@@ -6522,32 +6768,43 @@ function AppInner() {
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
-      f['BRAKE PAD::Brake Pad'] = { positions: {
+      f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
         RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
         RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
-      f['TEST::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['TEST::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['TEST::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['TEST::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['TEST::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['ENGINE SUPPORT::Engine Support'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
       f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
-      f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '≤35mm', action: 'Good', color: 'green' };
-      f['SUSPENSION::Suspension Arm'] = { conditionIdx: 0, condition: 'Two Bushings', action: 'Replace', color: 'red' };
+      f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
+      f['SUSPENSION ARM::Suspension Arm'] = { positions: {
+        Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
+        Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
       f['TRANSMISSION::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['BALL JOINT::Ball Joint'] = { conditionIdx: 1, condition: 'Tight', action: 'Good', color: 'green' };
-      f['CLUTCH PEDAL::Clutch Pedal'] = { conditionIdx: 0, condition: '10 – 20mm', action: 'Good', color: 'green' };
-      f['FRONT & REAR SUSPENSION::Front & Rear Suspension'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['BALL JOINT::Ball Joint'] = { positions: {
+        FL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
+      f['CLUTCH PEDAL::Clutch Pedal'] = { conditionIdx: 0, condition: '10mm – 20mm', action: 'Good', color: 'green' };
+      f['FRONT & REAR SUSPENSION::Front & Rear Suspension'] = { positions: {
+        FL: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
       f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
-      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdx: 1, condition: 'Good', action: 'Good', color: 'green' };
+      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
       f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['COOLING SYSTEM::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
-      f['DRIVE SHAFT::Drive Shaft Boot'] = { positions: {
-        FL: { conditionIdx: 1, condition: 'Good', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 0, condition: 'Cracked / Torn', action: 'Replace', color: 'red' },
+      f['DRIVE SHAFT BOOT::Drive Shaft Boot'] = { positions: {
+        FL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
+        RL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
     }
     setFindings(f);
