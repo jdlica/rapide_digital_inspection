@@ -616,10 +616,10 @@ INSPECTION_DATA.plus = [
       {
         name: 'Fuel Tank Cap / Lines Connection',
         multiSelect: true,
-        optional: true,
         conditions: [
           { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
           { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -5782,13 +5782,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('ENGINE SUPPORT::Engine Support', 2))}
               </tr>
               <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Fuel Tank<br>Cap/Lines</td>
+                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Fuel Tank<br>Cap/Lines</td>
                 <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 0))} Crack / Brittle Seal</td>
                 ${actionTp('Replace', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 0))}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 1))} Fuel Lines Leak</td>
                 ${actionTp('Replace', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 1))}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 2))} No Damage</td>
+                ${actionTp('Good', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 2))}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
@@ -6882,7 +6886,7 @@ function AppInner() {
       f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
-      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [] };
+      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
       f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
       f['SUSPENSION ARM::Suspension Arm'] = { positions: {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
