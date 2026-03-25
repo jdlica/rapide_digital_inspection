@@ -142,7 +142,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
             { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
-            { label: 'Below 12.2V', color: 'red', action: 'Replace' },
+            { label: '<12.2V', color: 'red', action: 'Replace' },
           ],
         },
         {
@@ -238,7 +238,7 @@ const INSPECTION_DATA = {
           conditions: [
             { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
             { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
-            { label: 'Below 12.2V', color: 'red', action: 'Replace' },
+            { label: '<12.2V', color: 'red', action: 'Replace' },
           ],
         },
         {
@@ -279,7 +279,7 @@ const INSPECTION_DATA = {
           name: 'Coolant Level',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -295,7 +295,7 @@ const INSPECTION_DATA = {
           name: 'Power Steering Fluid',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -431,7 +431,7 @@ INSPECTION_DATA.plus = [
         conditions: [
           { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
           { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
-          { label: 'Below 12.2V', color: 'red', action: 'Replace' },
+          { label: '<12.2V', color: 'red', action: 'Replace' },
         ],
       },
       {
@@ -474,7 +474,7 @@ INSPECTION_DATA.plus = [
         name: 'Coolant Level',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -502,7 +502,7 @@ INSPECTION_DATA.plus = [
         name: 'Power Steering Fluid',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -2885,7 +2885,8 @@ function InspectionScreen({
     const key = getKey(cat.category, item.name);
     const finding = findings[key];
     if (item.hasPosition) {
-      return finding?.positions && item.positions.every((p) => finding.positions[p]);
+      return finding?.noDamage === true ||
+        (finding?.positions && item.positions.every((p) => finding.positions[p]));
     }
     if (!finding) return false;
     if (item.multiSelect) return (finding.conditionIdxs?.length || 0) > 0;
@@ -2951,25 +2952,47 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
-    const isToggleOff = findings[key]?.positions?.[pos]?.conditionIdx === condIdx;
     setFindings((prev) => {
       const existing = prev[key] || { positions: {} };
       if (existing.positions?.[pos]?.conditionIdx === condIdx) {
         const updatedPositions = { ...existing.positions };
         delete updatedPositions[pos];
-        return { ...prev, [key]: { ...existing, positions: updatedPositions } };
+        return { ...prev, [key]: { positions: updatedPositions, noDamage: false } };
       }
       return {
         ...prev,
         [key]: {
-          ...existing,
           positions: {
-            ...existing.positions,
+            ...(existing.positions || {}),
             [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
           },
+          noDamage: false,
         },
       };
     });
+    setAttempted(false);
+  };
+
+  const handleNoDamage = (itemName) => {
+    const key = getKey(cat.category, itemName);
+    const item = cat.items.find((i) => i.name === itemName);
+    const isCurrentlyNoDamage = !!findings[key]?.noDamage;
+    if (isCurrentlyNoDamage) {
+      setFindings((prev) => { const u = { ...prev }; delete u[key]; return u; });
+    } else {
+      const greenIdx = item.conditions.findIndex((c) => c.color === 'green');
+      const greenCond = greenIdx >= 0 ? item.conditions[greenIdx] : null;
+      setFindings((prev) => {
+        if (greenCond) {
+          const positions = {};
+          item.positions.forEach((p) => {
+            positions[p] = { conditionIdx: greenIdx, condition: greenCond.label, action: greenCond.action, color: greenCond.color };
+          });
+          return { ...prev, [key]: { positions, noDamage: true } };
+        }
+        return { ...prev, [key]: { noDamage: true } };
+      });
+    }
     setAttempted(false);
   };
 
@@ -3054,7 +3077,7 @@ function InspectionScreen({
 
           const unanswered = attempted && (
             item.hasPosition
-              ? !finding?.positions || !item.positions.every((p) => finding.positions[p])
+              ? !finding?.noDamage && (!finding?.positions || !item.positions.every((p) => finding.positions[p]))
               : item.multiSelect ? !(finding?.conditionIdxs?.length > 0) : !finding
           );
 
@@ -3069,7 +3092,9 @@ function InspectionScreen({
           // Card border: worst color among filled positions, or single finding color
           let cardBorder = BRAND.grayBorder;
           if (unanswered) cardBorder = BRAND.red;
-          else if (item.hasPosition && finding?.positions) {
+          else if (item.hasPosition && finding?.noDamage) {
+            cardBorder = colorMap.green;
+          } else if (item.hasPosition && finding?.positions) {
             const cols = item.positions.map((p) => finding.positions[p]?.color).filter(Boolean);
             if (cols.includes('red')) cardBorder = colorMap.red;
             else if (cols.includes('yellow')) cardBorder = colorMap.yellow;
@@ -3135,113 +3160,161 @@ function InspectionScreen({
                 )}
               </div>
 
-              {item.hasPosition ? (
-                <div>
-                  {/* Position buttons — colored when filled */}
-                  <div style={{ padding: '12px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', gap: 10 }}>
-                    {item.positions.map((pos) => {
-                      const pf = finding?.positions?.[pos];
-                      const isActive = activePosition?.itemName === item.name && activePosition?.pos === pos;
-                      const needsPhoto = pf?.color === 'red' || pf?.color === 'yellow';
-                      const posRefKey = `${key}::${pos}`;
-                      return (
-                        <div key={pos} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                          <div
-                            onClick={() => setActivePosition(isActive ? null : { itemName: item.name, pos })}
-                            style={{
-                              borderRadius: 10, padding: '10px 6px', cursor: 'pointer',
-                              border: `2px solid ${isActive ? BRAND.yellow : pf ? colorMap[pf.color] : BRAND.grayBorder}`,
-                              background: pf ? bgColorMap[pf.color] : BRAND.white,
-                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                              transition: 'all 0.15s',
-                              boxShadow: isActive ? `0 0 0 2px ${BRAND.yellow}` : 'none',
-                            }}
-                          >
-                            <span style={{ fontWeight: 900, fontSize: 18, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
-                            {pf?.photo && (
-                              <img src={pf.photo} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: 'cover' }} />
-                            )}
+              {item.hasPosition ? (() => {
+                const isNoDamage = !!finding?.noDamage;
+                const greenIdx = item.conditions.findIndex((c) => c.color === 'green');
+                const greenCond = greenIdx >= 0 ? item.conditions[greenIdx] : null;
+                const issueConditions = item.conditions
+                  .map((c, i) => ({ ...c, idx: i }))
+                  .filter((c) => c.color !== 'green');
+                // Group positions: FL/FR/RL/RR → Front + Rear; others → single group
+                const hasFrontRear = item.positions.includes('FL') && item.positions.includes('RL');
+                const groups = hasFrontRear
+                  ? [
+                      { label: 'Front', positions: item.positions.filter((p) => p === 'FL' || p === 'FR') },
+                      { label: 'Rear', positions: item.positions.filter((p) => p === 'RL' || p === 'RR') },
+                    ]
+                  : [{ label: null, positions: item.positions }];
+                return (
+                  <div>
+                    {groups.map((group) => (
+                      <div
+                        key={group.label || 'group'}
+                        style={{
+                          borderBottom: `1px solid ${BRAND.grayBorder}`,
+                          opacity: isNoDamage ? 0.35 : 1,
+                          pointerEvents: isNoDamage ? 'none' : 'auto',
+                          transition: 'opacity 0.2s',
+                        }}
+                      >
+                        {group.label && (
+                          <div style={{
+                            padding: '6px 14px',
+                            background: BRAND.grayLight,
+                            borderBottom: `1px solid ${BRAND.grayBorder}`,
+                            fontWeight: 800, fontSize: 11, color: BRAND.gray,
+                            textTransform: 'uppercase', letterSpacing: 1,
+                          }}>
+                            {group.label}
                           </div>
-                          {needsPhoto && (
-                            <div style={{ display: 'flex', gap: 3 }}>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setCameraModal({ key, pos }); }}
-                                title="Take photo"
-                                style={{ flex: 1, borderRadius: 6, border: 'none', background: colorMap[pf.color], padding: '4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        )}
+                        <div style={{ display: 'flex' }}>
+                          {group.positions.map((pos, pi) => {
+                            const pf = finding?.positions?.[pos];
+                            const posRefKey = `${key}::${pos}`;
+                            const needsPhoto = pf?.color === 'red' || pf?.color === 'yellow';
+                            return (
+                              <div
+                                key={pos}
+                                style={{
+                                  flex: 1,
+                                  borderRight: pi < group.positions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
+                                }}
                               >
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-                                </svg>
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); posUploadInputRefs.current[posRefKey]?.click(); }}
-                                title="Upload photo"
-                                style={{ flex: 1, borderRadius: 6, border: 'none', background: '#6B7280', padding: '4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              >
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                                </svg>
-                              </button>
-                              <input ref={(el) => { posUploadInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Condition picker — opens when a position is tapped */}
-                  {activePosition?.itemName === item.name && (
-                    <div>
-                      <div style={{ padding: '8px 18px', background: BRAND.yellowPale, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: BRAND.black }}>
-                          Set condition for <strong>{activePosition.pos}</strong>:
-                        </span>
-                      </div>
-                      {item.conditions.map((cond, ci) => {
-                        const posSelected = finding?.positions?.[activePosition.pos]?.conditionIdx === ci;
-                        return (
-                          <div
-                            key={ci}
-                            onClick={() => selectPositionCondition(item.name, activePosition.pos, ci)}
-                            style={{
-                              padding: '14px 18px', cursor: 'pointer', display: 'flex',
-                              alignItems: 'center', justifyContent: 'space-between',
-                              borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
-                              background: posSelected ? bgColorMap[cond.color] : 'transparent',
-                              transition: 'background 0.15s',
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-                              <div style={{
-                                width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                                border: `2px solid ${posSelected ? colorMap[cond.color] : BRAND.grayBorder}`,
-                                background: posSelected ? colorMap[cond.color] : BRAND.white,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color: BRAND.white, fontSize: 14, fontWeight: 700,
-                              }}>
-                                {posSelected && '✓'}
+                                {/* Position header */}
+                                <div style={{
+                                  padding: '8px 10px',
+                                  borderBottom: `1px solid ${BRAND.grayBorder}`,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                  background: pf ? bgColorMap[pf.color] : BRAND.white,
+                                }}>
+                                  <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.black }}>{pos}</span>
+                                  {pf && (
+                                    <span style={{ fontSize: 9, fontWeight: 800, color: colorMap[pf.color], textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                      {pf.action}
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Issue conditions */}
+                                {issueConditions.map((cond) => {
+                                  const isSelected = pf?.conditionIdx === cond.idx;
+                                  return (
+                                    <div
+                                      key={cond.idx}
+                                      onClick={() => selectPositionCondition(item.name, pos, cond.idx)}
+                                      style={{
+                                        padding: '9px 10px',
+                                        cursor: 'pointer',
+                                        background: isSelected ? bgColorMap[cond.color] : 'transparent',
+                                        borderBottom: `1px solid ${BRAND.grayBorder}`,
+                                        display: 'flex', alignItems: 'flex-start', gap: 7,
+                                        transition: 'background 0.15s',
+                                      }}
+                                    >
+                                      <div style={{
+                                        width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginTop: 1,
+                                        border: `2px solid ${isSelected ? colorMap[cond.color] : BRAND.grayBorder}`,
+                                        background: isSelected ? colorMap[cond.color] : BRAND.white,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: BRAND.white, fontSize: 10, fontWeight: 700,
+                                      }}>
+                                        {isSelected && '✓'}
+                                      </div>
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: 12, fontWeight: isSelected ? 700 : 500, color: isSelected ? colorMap[cond.color] : BRAND.black, lineHeight: 1.25 }}>
+                                          {cond.label}
+                                        </div>
+                                        <div style={{ fontSize: 10, color: colorMap[cond.color], fontWeight: 700 }}>
+                                          {cond.action}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                {/* Photo button */}
+                                {needsPhoto && (
+                                  <div style={{ padding: '5px 8px', display: 'flex', gap: 4, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                                    {pf?.photo && (
+                                      <img src={pf.photo} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover', cursor: 'pointer' }} onClick={() => window.open(pf.photo, '_blank')} />
+                                    )}
+                                    <button onClick={(e) => { e.stopPropagation(); setCameraModal({ key, pos }); }} style={{ flex: 1, borderRadius: 5, border: 'none', background: colorMap[pf.color], padding: '3px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); posUploadInputRefs.current[posRefKey]?.click(); }} style={{ flex: 1, borderRadius: 5, border: 'none', background: '#6B7280', padding: '3px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </button>
+                                    <input ref={(el) => { posUploadInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(key, pos, e)} />
+                                  </div>
+                                )}
                               </div>
-                              <span style={{ fontSize: 15, fontWeight: posSelected ? 700 : 400, color: BRAND.black }}>
-                                {cond.label}
-                              </span>
-                            </div>
-                            <div style={{
-                              padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
-                              background: posSelected ? colorMap[cond.color] : bgColorMap[cond.color],
-                              color: posSelected ? BRAND.white : colorMap[cond.color],
-                              minWidth: 80, textAlign: 'center', transition: 'all 0.15s',
-                              textTransform: 'uppercase', letterSpacing: 0.5,
-                            }}>
-                              {cond.action}
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                    {/* No Damage section */}
+                    <div
+                      onClick={() => handleNoDamage(item.name)}
+                      style={{
+                        padding: '13px 16px',
+                        cursor: 'pointer',
+                        background: isNoDamage ? bgColorMap.green : 'transparent',
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        transition: 'background 0.15s',
+                      }}
+                    >
+                      <div style={{
+                        width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                        border: `2px solid ${isNoDamage ? colorMap.green : BRAND.grayBorder}`,
+                        background: isNoDamage ? colorMap.green : BRAND.white,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: BRAND.white, fontSize: 13, fontWeight: 700,
+                        transition: 'all 0.15s',
+                      }}>
+                        {isNoDamage && '✓'}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: isNoDamage ? colorMap.green : BRAND.black }}>
+                          {greenCond ? greenCond.label : 'No Damage'}
+                        </div>
+                        <div style={{ fontSize: 11, color: colorMap.green, fontWeight: 600 }}>
+                          All positions — {greenCond ? greenCond.action : 'Good'}
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ) : (
+                  </div>
+                );
+              })() : (
                 /* Standard condition list for non-position items */
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {item.conditions.map((cond, ci) => {
@@ -4781,7 +4854,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
@@ -5108,7 +5181,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} Below 12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
@@ -5568,7 +5641,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} Below 12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
