@@ -601,10 +601,10 @@ INSPECTION_DATA.plus = [
       {
         name: 'Engine Support',
         multiSelect: true,
+        optional: true,
         conditions: [
           { label: 'Crack', color: 'red', action: 'Replace' },
           { label: 'Sagging', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -616,10 +616,10 @@ INSPECTION_DATA.plus = [
       {
         name: 'Fuel Tank Cap / Lines Connection',
         multiSelect: true,
+        optional: true,
         conditions: [
           { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
           { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -756,10 +756,10 @@ INSPECTION_DATA.plus = [
       {
         name: 'Exhaust Pipe Mounting',
         multiSelect: true,
+        optional: true,
         conditions: [
           { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
           { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -2903,6 +2903,7 @@ function InspectionScreen({
   const getKey = (catName, itemName) => `${catName}::${itemName}`;
 
   const allFilled = cat.items.every((item) => {
+    if (item.optional) return true;
     const key = getKey(cat.category, item.name);
     const finding = findings[key];
     if (item.hasPosition) {
@@ -3096,7 +3097,7 @@ function InspectionScreen({
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
 
-          const unanswered = attempted && (
+          const unanswered = !item.optional && attempted && (
             item.hasPosition
               ? !finding?.noDamage && (!finding?.positions || !item.positions.every((p) => finding.positions[p]))
               : item.multiSelect ? !(finding?.conditionIdxs?.length > 0) : !finding
@@ -5769,7 +5770,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Engine<br>Support</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Engine<br>Support</td>
                 <td style="${Tp}">${cb(isSelected('ENGINE SUPPORT::Engine Support', 0))} Crack</td>
                 ${actionTp('Replace', isSelected('ENGINE SUPPORT::Engine Support', 0))}
               </tr>
@@ -5778,21 +5779,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Replace', isSelected('ENGINE SUPPORT::Engine Support', 1))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(isSelected('ENGINE SUPPORT::Engine Support', 2))} No Damage</td>
-                ${actionTp('Good', isSelected('ENGINE SUPPORT::Engine Support', 2))}
-              </tr>
-              <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Fuel Tank<br>Cap/Lines</td>
+                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Fuel Tank<br>Cap/Lines</td>
                 <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 0))} Crack / Brittle Seal</td>
                 ${actionTp('Replace', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 0))}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 1))} Fuel Lines Leak</td>
                 ${actionTp('Replace', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 1))}
-              </tr>
-              <tr>
-                <td style="${Tp}">${cb(isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 2))} No Damage</td>
-                ${actionTp('Good', isSelected('FUEL SYSTEM::Fuel Tank Cap / Lines Connection', 2))}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
@@ -5963,17 +5956,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', isSelected('FOR LEAKS::For Leaks', 4))}
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Exhaust<br>Pipe Mnt.</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Exhaust<br>Pipe Mnt.</td>
                 <td style="${Tp}">${cb(isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 0))} Exhaust Hanger Damage</td>
                 ${actionTp('Replace', isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 0))}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 1))} Exhaust Gasket Leak</td>
                 ${actionTp('Check', isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 1))}
-              </tr>
-              <tr>
-                <td style="${Tp}">${cb(isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 2))} No Damage</td>
-                ${actionTp('Good', isSelected('EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting', 2))}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Cooling<br>Sys. Hose</td>
@@ -6889,8 +6878,8 @@ function AppInner() {
       f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
-      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
+      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [] };
+      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [] };
       f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
       f['SUSPENSION ARM::Suspension Arm'] = { positions: {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
@@ -6911,7 +6900,7 @@ function AppInner() {
         Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
-      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [2] };
+      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
       f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['COOLING SYSTEM::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
       f['DRIVE SHAFT BOOT::Drive Shaft Boot'] = { positions: {
