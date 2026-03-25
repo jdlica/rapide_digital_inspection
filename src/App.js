@@ -1595,13 +1595,17 @@ const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
 // ============================================================
 // MANAGE SCREEN
 // ============================================================
-function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, onAddTechnician, onEditTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
+function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, branches, onAddTechnician, onEditTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet, onAddBranch, onEditBranch }) {
   const [showAddTech, setShowAddTech] = useState(false);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
   const [showAddMunicipality, setShowAddMunicipality] = useState(false);
   const [showAddBarangay, setShowAddBarangay] = useState(false);
   const [showAddFleet, setShowAddFleet] = useState(false);
+  const [showAddBranch, setShowAddBranch] = useState(false);
+  const [editingBranch, setEditingBranch] = useState(null);
+  const [editBranchName, setEditBranchName] = useState('');
+  const [newBranchName, setNewBranchName] = useState('');
   const [editingTech, setEditingTech] = useState(null); // { id, name }
   const [editTechName, setEditTechName] = useState('');
   const [newTechName, setNewTechName] = useState('');
@@ -1644,8 +1648,37 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 24, fontWeight: 900, color: BRAND.black, margin: 0 }}>Manage</h2>
         <p style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}>
-          Technicians, Brands, Models, Locations & Fleet Customers
+          Branches, Technicians, Brands, Models, Locations & Fleet Customers
         </p>
+      </div>
+
+      {/* Branches */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Branches</h3>
+          <PrimaryButton
+            onClick={() => setShowAddBranch(true)}
+            style={{ fontSize: 13, padding: '7px 14px', minHeight: 36 }}
+          >
+            + Add
+          </PrimaryButton>
+        </div>
+        <div>
+          {(branches || []).map((b) => (
+            <span key={b.id} style={{ ...chipStyle, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {b.name}
+              <button
+                type="button"
+                onClick={() => { setEditingBranch(b); setEditBranchName(b.name); }}
+                title="Edit name"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 13, color: BRAND.gray, lineHeight: 1 }}
+              >✏️</button>
+            </span>
+          ))}
+          {(!branches || branches.length === 0) && (
+            <p style={{ color: BRAND.gray, fontSize: 14, margin: 0 }}>No branches configured.</p>
+          )}
+        </div>
       </div>
 
       {/* Technicians */}
@@ -1742,6 +1775,40 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
                   onEditTechnician(editingTech.id, editTechName.trim());
                   setEditingTech(null);
                   setEditTechName('');
+                }
+              }}>Save</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Branch Modal */}
+      {showAddBranch && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Add Branch</h3>
+            <TextInput label="Branch Name" required value={newBranchName} onChange={setNewBranchName} placeholder="e.g. Rapide Ayala" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setShowAddBranch(false); setNewBranchName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => { if (newBranchName.trim()) { onAddBranch(newBranchName.trim()); setNewBranchName(''); setShowAddBranch(false); } }}>Add</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Branch Modal */}
+      {editingBranch && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: BRAND.white, borderRadius: 16, padding: 32, maxWidth: 400, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Edit Branch</h3>
+            <TextInput label="Branch Name" required value={editBranchName} onChange={setEditBranchName} placeholder="Branch name" />
+            <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
+              <PrimaryButton onClick={() => { setEditingBranch(null); setEditBranchName(''); }} variant="secondary">Cancel</PrimaryButton>
+              <PrimaryButton onClick={() => {
+                if (editBranchName.trim()) {
+                  onEditBranch(editingBranch.id, editBranchName.trim());
+                  setEditingBranch(null);
+                  setEditBranchName('');
                 }
               }}>Save</PrimaryButton>
             </div>
@@ -1993,7 +2060,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipalities, barangays, fleets, technicians }) {
+function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipalities, barangays, fleets, branches }) {
   const [errors, setErrors] = useState({});
   const [attempted, setAttempted] = useState(false);
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
@@ -2016,7 +2083,6 @@ function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipa
     if (data.fleetType === 'Fleet' && !data.company) e.company = true;
     if (!data.city) e.city = true;
     if (!data.barangay) e.barangay = true;
-    if (!data.suggestedTechnicianId) e.suggestedTechnicianId = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -2269,30 +2335,33 @@ function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipa
             allowAdd={availableBarangays.length === 0}
             allowCustom
           />
+          {/* Branch field */}
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={{ fontWeight: 600, fontSize: 13, color: BRAND.black, marginBottom: 6, display: 'block' }}>
+              Branch
+            </label>
+            <select
+              disabled={!branches || branches.length <= 1}
+              value={data.branch || (branches && branches[0]?.name) || 'Rapide San Antonio'}
+              onChange={(e) => update('branch', e.target.value)}
+              style={{
+                width: '100%', minHeight: 44, padding: '8px 14px',
+                border: `2px solid ${BRAND.grayBorder}`, borderRadius: 10, fontSize: 14,
+                background: (!branches || branches.length <= 1) ? BRAND.grayLight : BRAND.white,
+                color: BRAND.black, fontWeight: 600, appearance: 'auto',
+              }}
+            >
+              {(branches || [{ id: 1, name: 'Rapide San Antonio' }]).map((b) => (
+                <option key={b.id} value={b.name}>{b.name}</option>
+              ))}
+            </select>
+            {(!branches || branches.length <= 1) && (
+              <p style={{ fontSize: 12, color: BRAND.gray, margin: '4px 0 0' }}>
+                Branch selection is available when multiple branches are configured in Manage.
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-
-      {/* Suggested Technician */}
-      <div className="form-card">
-        <h3 style={{ fontSize: 16, fontWeight: 800, color: BRAND.black, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ background: BRAND.yellow, width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
-            🔧
-          </span>
-          Suggested Technician
-        </h3>
-        <SearchableDropdown
-          label="Suggest a Technician"
-          required
-          error={attempted && !!errors.suggestedTechnicianId}
-          options={technicians.filter((t) => t.active).map((t) => t.name)}
-          value={data.suggestedTechnicianName || ''}
-          onChange={(v) => {
-            const tech = technicians.find((t) => t.name === v);
-            setData({ ...data, suggestedTechnicianId: tech?.id, suggestedTechnicianName: v });
-            setErrors({ ...errors, suggestedTechnicianId: false });
-          }}
-          placeholder="Select technician..."
-        />
       </div>
 
       {attempted && Object.keys(errors).filter(k => errors[k]).length > 0 && (
@@ -2323,12 +2392,9 @@ function ServiceQuestionsScreen({
   setData,
   onSave,
   technicians,
-  suggestedTechnicianId,
-  suggestedTechnicianName,
 }) {
   const [errors, setErrors] = useState({});
   const [attempted, setAttempted] = useState(false);
-  const [useConfirmed, setUseConfirmed] = useState(true);
   const months = [
     'January',
     'February',
@@ -2357,17 +2423,9 @@ function ServiceQuestionsScreen({
     if (!data.lastPmsYear) e.lastPmsYear = true;
     if (!data.replacedParts || data.replacedParts.length === 0) e.replacedParts = true;
     if (!data.currentProblems || data.currentProblems.length === 0) e.currentProblems = true;
-    // Technician must be confirmed (either suggested or another selected)
-    const confirmedId = useConfirmed ? suggestedTechnicianId : data.technicianId;
-    if (!confirmedId) e.technicianId = true;
+    if (!data.technicianId) e.technicianId = true;
     setErrors(e);
-    if (Object.keys(e).length === 0) {
-      // Commit the confirmed technician into serviceData before saving
-      if (useConfirmed) {
-        setData({ ...data, technicianId: suggestedTechnicianId, technicianName: suggestedTechnicianName });
-      }
-      onSave();
-    }
+    if (Object.keys(e).length === 0) onSave();
   };
 
   return (
@@ -2452,87 +2510,31 @@ function ServiceQuestionsScreen({
 
       </div>
 
-      {/* Technician Confirmation */}
+      {/* Assign Technician */}
       <div
         className="form-card"
         style={{ border: `2px solid ${attempted && errors.technicianId ? BRAND.red : BRAND.grayBorder}` }}
       >
-        <h3 style={{ fontSize: 15, fontWeight: 800, color: BRAND.black, marginBottom: 16 }}>
-          Please confirm technician to be assigned
+        <h3 style={{ fontSize: 15, fontWeight: 800, color: BRAND.black, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ background: BRAND.yellow, width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🔧</span>
+          Assign Technician
         </h3>
-
-        {/* Option 1: confirm suggested technician */}
-        <label
-          style={{
-            display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
-            borderRadius: 10, cursor: 'pointer', marginBottom: 10,
-            border: `2px solid ${useConfirmed ? BRAND.yellow : BRAND.grayBorder}`,
-            background: useConfirmed ? BRAND.yellowPale : BRAND.white,
-            transition: 'all 0.15s',
-          }}
-          onClick={() => {
-            setUseConfirmed(true);
+        <SearchableDropdown
+          label="Technician"
+          required
+          error={attempted && !!errors.technicianId}
+          options={technicians.filter((t) => t.active).map((t) => t.name)}
+          value={data.technicianName || ''}
+          onChange={(v) => {
+            const tech = technicians.find((t) => t.name === v);
+            setData({ ...data, technicianId: tech?.id, technicianName: v });
             setErrors({ ...errors, technicianId: false });
           }}
-        >
-          <div style={{
-            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-            border: `2px solid ${useConfirmed ? BRAND.black : BRAND.grayBorder}`,
-            background: useConfirmed ? BRAND.black : BRAND.white,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {useConfirmed && <div style={{ width: 8, height: 8, borderRadius: '50%', background: BRAND.yellow }} />}
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: BRAND.black }}>
-              {suggestedTechnicianName || 'No technician suggested'}
-            </div>
-            <div style={{ fontSize: 12, color: BRAND.gray }}>Suggested technician</div>
-          </div>
-        </label>
-
-        {/* Option 2: assign another technician */}
-        <label
-          style={{
-            display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
-            borderRadius: 10, cursor: 'pointer',
-            border: `2px solid ${!useConfirmed ? BRAND.yellow : BRAND.grayBorder}`,
-            background: !useConfirmed ? BRAND.yellowPale : BRAND.white,
-            transition: 'all 0.15s',
-          }}
-          onClick={() => setUseConfirmed(false)}
-        >
-          <div style={{
-            width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-            border: `2px solid ${!useConfirmed ? BRAND.black : BRAND.grayBorder}`,
-            background: !useConfirmed ? BRAND.black : BRAND.white,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {!useConfirmed && <div style={{ width: 8, height: 8, borderRadius: '50%', background: BRAND.yellow }} />}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: BRAND.black, marginBottom: 8 }}>
-              Assign another technician
-            </div>
-            {!useConfirmed && (
-              <SearchableDropdown
-                error={attempted && !!errors.technicianId}
-                options={technicians.filter((t) => t.active).map((t) => t.name)}
-                value={data.technicianName}
-                onChange={(v) => {
-                  const tech = technicians.find((t) => t.name === v);
-                  setData({ ...data, technicianId: tech?.id, technicianName: v });
-                  setErrors({ ...errors, technicianId: false });
-                }}
-                placeholder="Select technician..."
-              />
-            )}
-          </div>
-        </label>
-
+          placeholder="Select technician..."
+        />
         {attempted && errors.technicianId && (
           <p style={{ color: BRAND.red, fontSize: 13, fontWeight: 700, margin: '10px 0 0' }}>
-            Please confirm a technician.
+            Please assign a technician.
           </p>
         )}
       </div>
@@ -3747,7 +3749,7 @@ function AdminDashboard({
   const filtered = inspections.filter((ins) => {
     if (
       search &&
-      !(ins.rif + ' ' + ins.customerName + ' ' + ins.technicianName)
+      !(ins.rif + ' ' + ins.customerName + ' ' + ins.technicianName + ' ' + (ins.customerData?.plateNo || ''))
         .toLowerCase()
         .includes(search.toLowerCase())
     )
@@ -3816,7 +3818,7 @@ function AdminDashboard({
         style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}
       >
         <input
-          placeholder="Search RIF, customer, technician..."
+          placeholder="Search RIF, customer, technician, plate no..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -3897,6 +3899,7 @@ function AdminDashboard({
                 { label: 'RIF #', cls: '' },
                 { label: 'Date', cls: 'col-date' },
                 { label: 'Customer', cls: '' },
+                { label: 'Plate No', cls: 'col-plate' },
                 { label: 'Technician', cls: 'col-technician' },
                 { label: 'Package', cls: '' },
                 { label: 'Status', cls: '' },
@@ -3924,7 +3927,7 @@ function AdminDashboard({
             {filtered.length === 0 && (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   style={{
                     padding: 40,
                     textAlign: 'center',
@@ -3959,6 +3962,7 @@ function AdminDashboard({
                   <td style={{ padding: '14px 16px', fontWeight: 600 }}>
                     {ins.customerName}
                   </td>
+                  <td className="col-plate" style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 700 }}>{ins.customerData?.plateNo || '—'}</td>
                   <td className="col-technician" style={{ padding: '14px 16px' }}>{ins.technicianName}</td>
                   <td style={{ padding: '14px 16px' }}>
                     <span
@@ -4447,6 +4451,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
     <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
 
+    <!-- RAPIDE LOGO + BRANCH -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="background:#FFD100;padding:6px 14px;border-radius:6px;display:inline-block;">
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+        <div style="font-size:8px;font-weight:700;letter-spacing:2.5px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:800;font-size:13px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+        <div style="font-size:9px;color:#6B7280;margin-top:2px;">Branch</div>
+      </div>
+    </div>
+
     <!-- TITLE -->
     <div style="color:#000;text-align:center;padding:6px 0 4px;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">QUICK SAFETY INSPECTION FORM</div>
 
@@ -4489,6 +4505,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
           <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
           <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}" colspan="5"><strong>Branch:</strong> ${cd.branch || 'Rapide San Antonio'}</td>
         </tr>
       </table>
     </div>
@@ -4762,6 +4781,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
     <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:14px;">
 
+    <!-- RAPIDE LOGO + BRANCH -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+      <div style="background:#FFD100;padding:5px 12px;border-radius:5px;display:inline-block;">
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+        <div style="font-size:7px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:800;font-size:11px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+        <div style="font-size:8px;color:#6B7280;margin-top:1px;">Branch</div>
+      </div>
+    </div>
+
     <!-- TITLE -->
     <div style="color:#000;text-align:center;padding:3px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:5px;">EXPRESS INSPECTION FORM</div>
 
@@ -4804,6 +4835,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
           <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
           <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}" colspan="5"><strong>Branch:</strong> ${cd.branch || 'Rapide San Antonio'}</td>
         </tr>
       </table>
     </div>
@@ -5215,6 +5249,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
     <div style="font-family:Arial,sans-serif;font-size:8px;color:#000;background:#fff;width:794px;padding:12px;">
 
+    <!-- RAPIDE LOGO + BRANCH -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div style="background:#FFD100;padding:4px 10px;border-radius:5px;display:inline-block;">
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+        <div style="font-size:6px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:800;font-size:10px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+        <div style="font-size:7px;color:#6B7280;margin-top:1px;">Branch</div>
+      </div>
+    </div>
+
     <!-- TITLE -->
     <div style="color:#000;text-align:center;padding:2px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:4px;">PREMIUM PLUS INSPECTION FORM</div>
 
@@ -5257,6 +5303,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T}"><strong>Last Name:</strong> ${cd.lastName || ''}</td>
           <td style="${T}"><strong>Email:</strong> ${cd.email || ''}</td>
           <td style="${T}"><strong>Barangay:</strong> ${cd.barangay || ''}</td>
+        </tr>
+        <tr>
+          <td style="${T}" colspan="5"><strong>Branch:</strong> ${cd.branch || 'Rapide San Antonio'}</td>
         </tr>
       </table>
     </div>
@@ -5778,6 +5827,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const cd = inspection.customerData || {};
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
       <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="background:#FFD100;padding:8px 16px;border-radius:8px;display:inline-block;">
+            <div style="font-family:'Arial Black',Arial,sans-serif;font-size:24px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:2.5px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:800;font-size:13px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+            <div style="font-size:9px;color:#6B7280;margin-top:2px;">Branch</div>
+          </div>
+        </div>
         <div style="text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:1.5px solid #1A1A1A;">
           <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Inspection Photo Documentation</div>
           <div style="font-size:10px;color:#888;margin-top:4px;">${inspection.rif || ''} &bull; ${inspection.date || ''} &bull; ${cd.make || ''} ${cd.model || ''} ${cd.year || ''} &bull; ${cd.plateNo || ''}</div>
@@ -6388,6 +6447,7 @@ function AppInner() {
   const [barangays, setBarangays] = useState({ ..._barangaysByMunicipality });
   const [technicians, setTechnicians] = useState([]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
+  const [branches, setBranches] = useState([{ id: 1, name: 'Rapide San Antonio' }]);
 
   const fillDemoData = () => {
     setCustomerData({
@@ -6509,7 +6569,7 @@ function AppInner() {
       packageType,
       date: new Date().toLocaleDateString('en-PH'),
       customerName: `${customerData.title || ''} ${customerData.firstName || ''} ${customerData.lastName || ''}`.trim(),
-      technicianName: serviceData.technicianName || customerData.suggestedTechnicianName || '',
+      technicianName: serviceData.technicianName || '',
       customerData: { ...customerData },
       serviceData: { ...serviceData },
       findings: { ...findings },
@@ -6545,12 +6605,12 @@ function AppInner() {
     setUser(u);
     draftRifRef.current = null;
     setPackageType(null);
-    setCustomerData({ date: new Date().toLocaleDateString('en-PH') });
+    setCustomerData({ date: new Date().toLocaleDateString('en-PH'), branch: branches[0]?.name || 'Rapide San Antonio' });
     setServiceData({});
     setFindings({});
     setCurrentCatIdx(0);
     setTechComment('');
-    setScreen('customerVehicle');
+    setScreen('dashboard');
   };
   const handleLogout = () => {
     setUser(null);
@@ -6561,7 +6621,7 @@ function AppInner() {
   const handleNewInspection = () => {
     draftRifRef.current = null;
     setPackageType(null);
-    setCustomerData({ date: new Date().toLocaleDateString('en-PH') });
+    setCustomerData({ date: new Date().toLocaleDateString('en-PH'), branch: branches[0]?.name || 'Rapide San Antonio' });
     setServiceData({});
     setFindings({});
     setCurrentCatIdx(0);
@@ -6569,35 +6629,46 @@ function AppInner() {
     setScreen('customerVehicle');
   };
 
-  // Called after CustomerVehicle is saved — persist draft and show toast
+  // Called after CustomerVehicle is saved — go directly to service questions
   const handleCustomerVehicleSave = () => {
-    saveCurrentDraft('serviceQuestions');
-    setSuccessToast('__customer_saved__');
-    setScreen('dashboard');
+    setScreen('serviceQuestions');
   };
 
-  // Called after ServiceQuestions are saved — persist draft and return to dashboard
+  // Called after ServiceQuestions are saved — go directly to package selection
   const handleServiceQuestionsSave = () => {
-    saveCurrentDraft('packageSelect');
-    setScreen('dashboard');
+    setScreen('packageSelect');
   };
 
-  // Called when technician selects a package (resumed from 'packageSelect')
+  // Called when package is selected — save to dashboard and show success
   const handlePackageSelect = (pkg) => {
     setPackageType(pkg);
     setCurrentCatIdx(0);
-    // Update the in-progress record with the chosen package
-    const rif = draftRifRef.current;
-    if (rif) {
-      setInspections((prev) =>
-        prev.map((ins) =>
-          ins.rif === rif
-            ? { ...ins, packageType: pkg, status: 'in_progress', savedScreen: 'inspection', savedCatIdx: 0 }
-            : ins
-        )
-      );
-    }
-    setScreen('inspection');
+    const rif = getOrCreateDraftRif();
+    const newRecord = {
+      rif,
+      packageType: pkg,
+      date: new Date().toLocaleDateString('en-PH'),
+      customerName: `${customerData.title || ''} ${customerData.firstName || ''} ${customerData.lastName || ''}`.trim(),
+      technicianName: serviceData.technicianName || '',
+      customerData: { ...customerData },
+      serviceData: { ...serviceData },
+      findings: {},
+      techComment: '',
+      status: 'in_progress',
+      savedScreen: 'inspection',
+      savedCatIdx: 0,
+    };
+    setInspections((prev) => {
+      const idx = prev.findIndex((i) => i.rif === rif);
+      if (idx >= 0) {
+        const updated = [...prev];
+        updated[idx] = newRecord;
+        return updated;
+      }
+      return [newRecord, ...prev];
+    });
+    setScreen('dashboard');
+    setSuccessToast('__package_selected__');
   };
 
   const handleSubmitInspection = () => {
@@ -6609,7 +6680,7 @@ function AppInner() {
       customerName: `${customerData.title || ''} ${
         customerData.firstName || ''
       } ${customerData.lastName || ''}`.trim(),
-      technicianName: serviceData.technicianName || customerData.suggestedTechnicianName || '',
+      technicianName: serviceData.technicianName || '',
       customerData: { ...customerData },
       serviceData: { ...serviceData },
       findings: { ...findings },
@@ -6661,6 +6732,12 @@ function AppInner() {
   const handleAddFleet = (name) => {
     if (name.trim()) setFleets((prev) => [...new Set([...prev, name.trim()])].sort());
   };
+  const handleAddBranch = (name) => {
+    if (name.trim()) setBranches((prev) => [...prev, { id: Date.now(), name: name.trim() }]);
+  };
+  const handleEditBranch = (id, newName) => {
+    setBranches((prev) => prev.map((b) => b.id === id ? { ...b, name: newName } : b));
+  };
   const handleAddBarangay = (municipality, barangayName) => {
     setBarangays((prev) => ({
       ...prev,
@@ -6704,7 +6781,16 @@ function AppInner() {
                 <path d="M7 12.5L10.5 16L17 9" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            {successToast === '__customer_saved__' ? (
+            {successToast === '__package_selected__' ? (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
+                  Inspection Ready!
+                </div>
+                <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 28 }}>
+                  The inspection has been saved to the dashboard. Resume it to start filling in the inspection findings.
+                </div>
+              </>
+            ) : successToast === '__customer_saved__' ? (
               <>
                 <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
                   Customer Saved!
@@ -6778,7 +6864,7 @@ function AppInner() {
           municipalities={municipalities}
           barangays={barangays}
           fleets={fleets}
-          technicians={technicians}
+          branches={branches}
         />
       )}
 
@@ -6788,8 +6874,6 @@ function AppInner() {
           setData={setServiceData}
           onSave={handleServiceQuestionsSave}
           technicians={technicians}
-          suggestedTechnicianId={customerData.suggestedTechnicianId}
-          suggestedTechnicianName={customerData.suggestedTechnicianName}
         />
       )}
 
@@ -6834,6 +6918,7 @@ function AppInner() {
           municipalities={municipalities}
           barangays={barangays}
           fleets={fleets}
+          branches={branches}
           onAddTechnician={handleAddTechnician}
           onEditTechnician={handleEditTechnician}
           onAddBrand={handleAddBrand}
@@ -6841,6 +6926,8 @@ function AppInner() {
           onAddMunicipality={handleAddMunicipality}
           onAddBarangay={handleAddBarangay}
           onAddFleet={handleAddFleet}
+          onAddBranch={handleAddBranch}
+          onEditBranch={handleEditBranch}
         />
       )}
 
