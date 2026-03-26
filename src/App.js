@@ -634,15 +634,30 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── BRAKE PEDAL ────────────────────────────────────────────
+  // ── TEST DRIVER CONTROLS (cont.) ────────────────────────────
   {
-    category: 'BRAKE PEDAL',
+    category: 'TEST DRIVER CONTROLS',
     items: [
       {
-        name: 'Brake Pedal Free Play',
+        name: 'Clutch Pedal',
         conditions: [
-          { label: '1mm – 5mm', color: 'green', action: 'Good' },
-          { label: '>5mm', color: 'red', action: 'Check & Adjust' },
+          { label: '10 mm – 20 mm', color: 'green', action: 'Good' },
+          { label: '20 mm', color: 'yellow', action: 'Check' },
+        ],
+      },
+      {
+        name: 'Brake Pedal FreePlay',
+        conditions: [
+          { label: '1 mm - 5mm', color: 'green', action: 'Good' },
+          { label: '>5 mm', color: 'red', action: 'Check & Adjust' },
+        ],
+      },
+      {
+        name: 'Cabin Filter',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clean', color: 'green', action: 'Good' },
         ],
       },
     ],
@@ -676,19 +691,6 @@ INSPECTION_DATA.plus = [
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
-      },
-    ],
-  },
-  // ── CLUTCH PEDAL ───────────────────────────────────────────
-  {
-    category: 'CLUTCH PEDAL',
-    items: [
-      {
-        name: 'Clutch Pedal',
-        conditions: [
-          { label: '10mm – 20mm', color: 'green', action: 'Good' },
-          { label: '>20mm', color: 'yellow', action: 'Check' },
-        ],
       },
     ],
   },
@@ -5534,9 +5536,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const hornIdx = getIdx('TEST DRIVER CONTROLS::Horn');
     const wiperIdx = getIdx('TEST DRIVER CONTROLS::Wiper');
     const washerIdx = getIdx('TEST DRIVER CONTROLS::Washer');
-    const brakePedalIdx = getIdx('BRAKE PEDAL::Brake Pedal Free Play');
+    const brakePedalIdx = getIdx('TEST DRIVER CONTROLS::Brake Pedal FreePlay');
     const transOilIdx = getIdx('INSPECT ENGINE BAY::Transmission M/T, AT, CVT, OIL');
-    const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
+    const clutchPedalIdx = getIdx('TEST DRIVER CONTROLS::Clutch Pedal');
     const coolingSysIdx = getIdx('INSPECT ENGINE BAY::Cooling System Hose');
     const radiatorHoseIdx = getIdx('INSPECT ENGINE BAY::Radiator Hose');
 
@@ -5788,11 +5790,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
-                <td style="${Tp}">${cb(brakePedalIdx === 0)} 1mm – 5mm</td>
+                <td style="${Tp}">${cb(brakePedalIdx === 0)} 1 mm - 5mm</td>
                 ${actionTp('Good', brakePedalIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(brakePedalIdx === 1)} &gt;5mm</td>
+                <td style="${Tp}">${cb(brakePedalIdx === 1)} &gt;5 mm</td>
                 ${actionTp('Check &amp; Adjust', brakePedalIdx === 1)}
               </tr>
             </table>
@@ -5873,11 +5875,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Clutch<br>Pedal</td>
-                <td style="${Tp}">${cb(clutchPedalIdx === 0)} 10mm – 20mm</td>
+                <td style="${Tp}">${cb(clutchPedalIdx === 0)} 10 mm – 20 mm</td>
                 ${actionTp('Good', clutchPedalIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(clutchPedalIdx === 1)} &gt;20mm</td>
+                <td style="${Tp}">${cb(clutchPedalIdx === 1)} 20 mm</td>
                 ${actionTp('Check', clutchPedalIdx === 1)}
               </tr>
             </table>
@@ -6883,7 +6885,7 @@ function AppInner() {
       f['TEST DRIVER CONTROLS::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
       f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
-      f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Brake Pedal FreePlay'] = { conditionIdx: 0, condition: '1 mm - 5mm', action: 'Good', color: 'green' };
       f['SUSPENSION ARM::Suspension Arm'] = { positions: {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
@@ -6893,7 +6895,8 @@ function AppInner() {
         Left: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      f['CLUTCH PEDAL::Clutch Pedal'] = { conditionIdx: 0, condition: '10mm – 20mm', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Clutch Pedal'] = { conditionIdx: 0, condition: '10 mm – 20 mm', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
       f['FRONT SUSPENSION::Front Suspension'] = { positions: {
         Left: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
         Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
