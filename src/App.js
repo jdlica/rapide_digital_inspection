@@ -524,15 +524,23 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── POWER STEERING FLUID ───────────────────────────────────
+  // ── INSPECT ENGINE BAY (cont.) ──────────────────────────────
   {
-    category: 'POWER STEERING FLUID',
+    category: 'INSPECT ENGINE BAY',
     items: [
       {
         name: 'Power Steering Fluid',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Transmission M/T, AT, CVT, OIL',
+        conditions: [
+          { label: 'Contaminated', color: 'red', action: 'Replace' },
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -652,20 +660,6 @@ INSPECTION_DATA.plus = [
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
-      },
-    ],
-  },
-  // ── TRANSMISSION ───────────────────────────────────────────
-  {
-    category: 'TRANSMISSION',
-    items: [
-      {
-        name: 'Transmission M/T, A/T, CVT Oil',
-        conditions: [
-          { label: 'Contaminated', color: 'red', action: 'Replace' },
-          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Correct Level', color: 'green', action: 'Good' },
-        ],
       },
     ],
   },
@@ -5518,14 +5512,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const beltDeflIdx = getIdx('BELT::Belt Deflection');
     const coolantIdx = getIdx('INSPECT ENGINE BAY::Coolant');
     const brakeFluidIdx = getIdx('INSPECT ENGINE BAY::Brake Fluid');
-    const psIdx = getIdx('POWER STEERING FLUID::Power Steering Fluid');
+    const psIdx = getIdx('INSPECT ENGINE BAY::Power Steering Fluid');
     const clutchIdx = getIdx('INSPECT ENGINE BAY::Clutch Fluid');
     const airIdx = getIdx('INSPECT ENGINE BAY::Air Cleaner');
     const lightIdx = getIdx('DRIVER CONTROL::Light');
     const hornIdx = getIdx('DRIVER CONTROL::Horn');
     const washerIdx = getIdx('DRIVER CONTROL::Washer');
     const brakePedalIdx = getIdx('BRAKE PEDAL::Brake Pedal Free Play');
-    const transOilIdx = getIdx('TRANSMISSION::Transmission M/T, A/T, CVT Oil');
+    const transOilIdx = getIdx('INSPECT ENGINE BAY::Transmission M/T, AT, CVT, OIL');
     const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
     const coolingSysIdx = getIdx('INSPECT ENGINE BAY::Cooling System Hose');
     const radiatorHoseIdx = getIdx('INSPECT ENGINE BAY::Radiator Hose');
@@ -6842,7 +6836,7 @@ function AppInner() {
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Coolant'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Brake Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['POWER STEERING FLUID::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['TIRES::Tread Depth'] = { positions: {
@@ -6874,7 +6868,7 @@ function AppInner() {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      f['TRANSMISSION::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Transmission M/T, AT, CVT, OIL'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['BALL JOINT::Ball Joint'] = { positions: {
         Left: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
