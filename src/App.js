@@ -431,7 +431,7 @@ INSPECTION_DATA.plus = [
         conditions: [
           { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
           { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
-          { label: '<12.2V', color: 'red', action: 'Replace' },
+          { label: '12.2V', color: 'red', action: 'Replace' },
         ],
       },
       {
@@ -466,9 +466,9 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── COOLANT ─────────────────────────────────────────────────
+  // ── INSPECT ENGINE BAY ──────────────────────────────────────
   {
-    category: 'COOLANT',
+    category: 'INSPECT ENGINE BAY',
     items: [
       {
         name: 'Coolant Level',
@@ -5202,7 +5202,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
@@ -5534,7 +5534,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const battVIdx = getIdx('BATTERY::Battery Voltage');
     const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
     const beltDeflIdx = getIdx('BELT::Belt Deflection');
-    const coolantIdx = getIdx('COOLANT::Coolant Level');
+    const coolantIdx = getIdx('INSPECT ENGINE BAY::Coolant Level');
     const brakeFluidIdx = getIdx('BRAKE FLUID::Brake Fluid Level');
     const psIdx = getIdx('POWER STEERING FLUID::Power Steering Fluid');
     const clutchIdx = getIdx('CLUTCH FLUID::Clutch Fluid');
@@ -5659,7 +5659,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
@@ -6858,7 +6858,7 @@ function AppInner() {
       f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
       f['BELT::Belt Condition'] = { conditionIdxs: [3] };
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
-      f['COOLANT::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['BRAKE FLUID::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['POWER STEERING FLUID::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['CLUTCH FLUID::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
