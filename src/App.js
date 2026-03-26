@@ -539,7 +539,7 @@ INSPECTION_DATA.plus = [
       {
         name: 'Transmission M/T, AT, CVT, OIL',
         conditions: [
-          { label: 'Contaminated', color: 'red', action: 'Replace' },
+          { label: 'Contaminated', color: 'red', action: 'Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
