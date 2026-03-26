@@ -546,6 +546,47 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
+  // ── TEST DRIVER CONTROLS ────────────────────────────────────
+  {
+    category: 'TEST DRIVER CONTROLS',
+    items: [
+      {
+        name: 'Light',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Signal Light',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Horn',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Wiper',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Washer',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+    ],
+  },
   // ── STEERING LINKAGE ────────────────────────────────────────
   {
     category: 'STEERING LINKAGE',
@@ -722,47 +763,6 @@ INSPECTION_DATA.plus = [
         conditions: [
           { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
           { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
-        ],
-      },
-    ],
-  },
-  // ── TEST DRIVER CONTROLS ────────────────────────────────────
-  {
-    category: 'TEST DRIVER CONTROLS',
-    items: [
-      {
-        name: 'Light',
-        conditions: [
-          { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Busted', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'Signal Light',
-        conditions: [
-          { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Busted', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'Horn',
-        conditions: [
-          { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Busted', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'Wiper',
-        conditions: [
-          { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Busted', color: 'red', action: 'Replace' },
-        ],
-      },
-      {
-        name: 'Washer',
-        conditions: [
-          { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
     ],
