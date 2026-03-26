@@ -494,16 +494,32 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── BRAKE FLUID ─────────────────────────────────────────────
+  // ── INSPECT ENGINE BAY (cont.) ──────────────────────────────
   {
-    category: 'BRAKE FLUID',
+    category: 'INSPECT ENGINE BAY',
     items: [
       {
-        name: 'Brake Fluid Level',
+        name: 'Brake Fluid',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Clutch Fluid',
+        conditions: [
+          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
+          { label: 'Correct Level', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Air Cleaner',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clean', color: 'green', action: 'Good' },
         ],
       },
     ],
@@ -522,20 +538,6 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── CLUTCH FLUID ────────────────────────────────────────────
-  {
-    category: 'CLUTCH FLUID',
-    items: [
-      {
-        name: 'Clutch Fluid',
-        conditions: [
-          { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
-          { label: 'Correct Level', color: 'green', action: 'Good' },
-        ],
-      },
-    ],
-  },
   // ── STEERING LINKAGE ────────────────────────────────────────
   {
     category: 'STEERING LINKAGE',
@@ -548,20 +550,6 @@ INSPECTION_DATA.plus = [
           { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
           { label: 'Steering Loose', color: 'red', action: 'Replace' },
           { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── AIR CONDITIONER ────────────────────────────────────────
-  {
-    category: 'AIR CONDITIONER',
-    items: [
-      {
-        name: 'Air Cleaner',
-        conditions: [
-          { label: 'Clogged', color: 'red', action: 'Replace' },
-          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
-          { label: 'Clean', color: 'green', action: 'Good' },
         ],
       },
     ],
@@ -5529,10 +5517,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const battCCAIdx = getIdx('BATTERY::Starting Power (CCA)');
     const beltDeflIdx = getIdx('BELT::Belt Deflection');
     const coolantIdx = getIdx('INSPECT ENGINE BAY::Coolant');
-    const brakeFluidIdx = getIdx('BRAKE FLUID::Brake Fluid Level');
+    const brakeFluidIdx = getIdx('INSPECT ENGINE BAY::Brake Fluid');
     const psIdx = getIdx('POWER STEERING FLUID::Power Steering Fluid');
-    const clutchIdx = getIdx('CLUTCH FLUID::Clutch Fluid');
-    const airIdx = getIdx('AIR CONDITIONER::Air Cleaner');
+    const clutchIdx = getIdx('INSPECT ENGINE BAY::Clutch Fluid');
+    const airIdx = getIdx('INSPECT ENGINE BAY::Air Cleaner');
     const lightIdx = getIdx('DRIVER CONTROL::Light');
     const hornIdx = getIdx('DRIVER CONTROL::Horn');
     const washerIdx = getIdx('DRIVER CONTROL::Washer');
@@ -6853,9 +6841,9 @@ function AppInner() {
       f['BELT::Belt Condition'] = { conditionIdxs: [3] };
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Coolant'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['BRAKE FLUID::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Brake Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['POWER STEERING FLUID::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['CLUTCH FLUID::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['TIRES::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
@@ -6869,7 +6857,7 @@ function AppInner() {
         RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
-      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
       f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
