@@ -776,9 +776,9 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── DRIVER CONTROL ────────────────────────────────────────
+  // ── TEST DRIVER CONTROLS ────────────────────────────────────
   {
-    category: 'DRIVER CONTROL',
+    category: 'TEST DRIVER CONTROLS',
     items: [
       {
         name: 'Light',
@@ -788,17 +788,31 @@ INSPECTION_DATA.plus = [
         ],
       },
       {
+        name: 'Signal Light',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
         name: 'Horn',
         conditions: [
           { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Not Working', color: 'red', action: 'Repair' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Wiper',
+        conditions: [
+          { label: 'All Good', color: 'green', action: 'Good' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
       {
         name: 'Washer',
         conditions: [
           { label: 'All Good', color: 'green', action: 'Good' },
-          { label: 'Not Working', color: 'red', action: 'Check' },
+          { label: 'Busted', color: 'red', action: 'Replace' },
         ],
       },
     ],
@@ -5515,9 +5529,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const psIdx = getIdx('INSPECT ENGINE BAY::Power Steering Fluid');
     const clutchIdx = getIdx('INSPECT ENGINE BAY::Clutch Fluid');
     const airIdx = getIdx('INSPECT ENGINE BAY::Air Cleaner');
-    const lightIdx = getIdx('DRIVER CONTROL::Light');
-    const hornIdx = getIdx('DRIVER CONTROL::Horn');
-    const washerIdx = getIdx('DRIVER CONTROL::Washer');
+    const lightIdx = getIdx('TEST DRIVER CONTROLS::Light');
+    const signalLightIdx = getIdx('TEST DRIVER CONTROLS::Signal Light');
+    const hornIdx = getIdx('TEST DRIVER CONTROLS::Horn');
+    const wiperIdx = getIdx('TEST DRIVER CONTROLS::Wiper');
+    const washerIdx = getIdx('TEST DRIVER CONTROLS::Washer');
     const brakePedalIdx = getIdx('BRAKE PEDAL::Brake Pedal Free Play');
     const transOilIdx = getIdx('INSPECT ENGINE BAY::Transmission M/T, AT, CVT, OIL');
     const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
@@ -6077,15 +6093,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
     </div>
 
-    <!-- DRIVER CONTROL -->
+    <!-- TEST DRIVER CONTROLS -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">DRIVER CONTROL</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST DRIVER CONTROLS</div>
       <table style="table-layout:fixed;width:100%;">
-        <colgroup><col style="width:33.33%;"><col style="width:33.33%;"><col style="width:33.33%;"></colgroup>
+        <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
           <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>LIGHT</strong><br><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>SIGNAL LIGHT</strong><br><br>${cb(signalLightIdx === 0)} All Good &nbsp; ${cb(signalLightIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WIPER</strong><br><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding-top:5px;padding-bottom:5px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Busted</td>
         </tr>
       </table>
     </div>
@@ -6858,9 +6876,11 @@ function AppInner() {
         RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
         RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
-      f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
       f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
       f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
