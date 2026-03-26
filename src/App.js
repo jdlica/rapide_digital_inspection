@@ -310,21 +310,6 @@ const INSPECTION_DATA = {
       ],
     },
     {
-      category: 'STEERING LINKAGE',
-      items: [
-        {
-          name: 'Steering Linkage',
-          multiSelect: true,
-          conditions: [
-            { label: 'Boot Damage', color: 'red', action: 'Replace' },
-            { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
-            { label: 'Steering Loose', color: 'red', action: 'Replace' },
-            { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
-          ],
-        },
-      ],
-    },
-    {
       category: 'AIR CONDITIONER',
       items: [
         {
@@ -611,22 +596,6 @@ INSPECTION_DATA.plus = [
           { label: 'Clogged', color: 'red', action: 'Replace' },
           { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
           { label: 'Clean', color: 'green', action: 'Good' },
-        ],
-      },
-    ],
-  },
-  // ── STEERING LINKAGE ────────────────────────────────────────
-  {
-    category: 'STEERING LINKAGE',
-    items: [
-      {
-        name: 'Steering Linkage',
-        multiSelect: true,
-        conditions: [
-          { label: 'Boot Damage', color: 'red', action: 'Replace' },
-          { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
-          { label: 'Steering Loose', color: 'red', action: 'Replace' },
-          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -5250,24 +5219,6 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T}">${cb(psIdx === 2)} Correct Level</td>
                 ${actionTd('Good', psIdx === 2)}
               </tr>
-              <!-- STEERING LINKAGE -->
-              <tr>
-                <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
-                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 0))} Boot Damage</td>
-                ${actionTd('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 0))}
-              </tr>
-              <tr>
-                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 1))} Tie Rod Loose</td>
-                ${actionTd('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 1))}
-              </tr>
-              <tr>
-                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 2))} Steering Loose</td>
-                ${actionTd('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 2))}
-              </tr>
-              <tr>
-                <td style="${T}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
-                ${actionTd('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
-              </tr>
               <!-- TIRES: Tread Depth (3) + Bulges/Side Wall Crack (2) = 5 rows -->
               <tr>
                 <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="5">Tires</td>
@@ -5705,23 +5656,6 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr>
                 <td style="${Tp}">${cb(psIdx === 2)} Correct Level</td>
                 ${actionTp('Good', psIdx === 2)}
-              </tr>
-              <tr>
-                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 0))} Boot Damage</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 0))}
-              </tr>
-              <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 1))} Tie Rod Loose</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 1))}
-              </tr>
-              <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 2))} Steering Loose</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 2))}
-              </tr>
-              <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
-                ${actionTp('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Engine<br>Support</td>
@@ -6760,7 +6694,6 @@ function AppInner() {
       f['FLUIDS::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['FLUIDS::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['FLUIDS::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['TIRES::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
         FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
@@ -6794,7 +6727,6 @@ function AppInner() {
       f['INSPECT ENGINE BAY::Brake Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['INSPECT UNDER CHASSIS::Tires'] = { positions: {
         FL: { conditionIdx: 0, condition: '>3.2 mm', action: 'Good', color: 'green' },
         FR: { conditionIdx: 0, condition: '>3.2 mm', action: 'Good', color: 'green' },
