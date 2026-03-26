@@ -590,32 +590,46 @@ INSPECTION_DATA.plus = [
       },
       {
         name: 'Drive Shaft Boot',
+        multiSelect: true,
         conditions: [
           { label: 'Broken', color: 'red', action: 'Replace' },
           { label: 'Leaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
         name: 'Front & Rear Suspension',
+        multiSelect: true,
         conditions: [
           { label: 'Excess Bounce 2 - 3x', color: 'red', action: 'Replace' },
           { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
           { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
           { label: 'Squeaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
         name: 'Suspension Arm',
+        multiSelect: true,
         conditions: [
           { label: 'Torn Bushing', color: 'red', action: 'Replace' },
           { label: 'Bent/ Damage', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
+      },
+      {
+        name: 'Ball Joint',
+        multiSelect: true,
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'Boot Torn', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
@@ -2900,24 +2914,68 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
-    setFindings((prev) => {
-      const existing = prev[key] || { positions: {} };
-      if (existing.positions?.[pos]?.conditionIdx === condIdx) {
-        const updatedPositions = { ...existing.positions };
-        delete updatedPositions[pos];
-        return { ...prev, [key]: { positions: updatedPositions, noDamage: false } };
-      }
-      return {
-        ...prev,
-        [key]: {
-          positions: {
-            ...(existing.positions || {}),
-            [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
+
+    if (item.multiSelect) {
+      setFindings((prev) => {
+        const existing = prev[key] || { positions: {} };
+        const posData = existing.positions?.[pos] || {};
+        const existingIdxs = posData.conditionIdxs || [];
+
+        let nextIdxs;
+        if (existingIdxs.includes(condIdx)) {
+          nextIdxs = existingIdxs.filter((i) => i !== condIdx);
+        } else if (cond.exclusive) {
+          nextIdxs = [condIdx];
+        } else {
+          const exclusiveIdxs = item.conditions.map((c, i) => c.exclusive ? i : -1).filter((i) => i >= 0);
+          nextIdxs = [...existingIdxs.filter((i) => !exclusiveIdxs.includes(i)), condIdx];
+        }
+
+        if (nextIdxs.length === 0) {
+          const updatedPositions = { ...existing.positions };
+          delete updatedPositions[pos];
+          return { ...prev, [key]: { positions: updatedPositions, noDamage: false } };
+        }
+
+        const worstColor = nextIdxs.reduce((worst, idx) => {
+          const c = item.conditions[idx]?.color;
+          if (c === 'red') return 'red';
+          if (c === 'yellow' && worst !== 'red') return 'yellow';
+          return worst;
+        }, item.conditions[nextIdxs[0]]?.color || 'green');
+        const actions = nextIdxs.map((idx) => item.conditions[idx]?.action).filter(Boolean);
+
+        return {
+          ...prev,
+          [key]: {
+            positions: {
+              ...(existing.positions || {}),
+              [pos]: { conditionIdxs: nextIdxs, conditionIdx: nextIdxs[0], condition: item.conditions[nextIdxs[0]]?.label, action: actions.join(', '), color: worstColor },
+            },
+            noDamage: false,
           },
-          noDamage: false,
-        },
-      };
-    });
+        };
+      });
+    } else {
+      setFindings((prev) => {
+        const existing = prev[key] || { positions: {} };
+        if (existing.positions?.[pos]?.conditionIdx === condIdx) {
+          const updatedPositions = { ...existing.positions };
+          delete updatedPositions[pos];
+          return { ...prev, [key]: { positions: updatedPositions, noDamage: false } };
+        }
+        return {
+          ...prev,
+          [key]: {
+            positions: {
+              ...(existing.positions || {}),
+              [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
+            },
+            noDamage: false,
+          },
+        };
+      });
+    }
     setAttempted(false);
   };
 
@@ -3174,7 +3232,9 @@ function InspectionScreen({
                                 </div>
                                 {/* Issue conditions */}
                                 {issueConditions.map((cond) => {
-                                  const isSelected = pf?.conditionIdx === cond.idx;
+                                  const isSelected = item.multiSelect
+                                    ? (pf?.conditionIdxs || []).includes(cond.idx)
+                                    : pf?.conditionIdx === cond.idx;
                                   return (
                                     <div
                                       key={cond.idx}
