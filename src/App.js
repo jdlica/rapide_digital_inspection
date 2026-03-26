@@ -587,6 +587,34 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
+  // ── TEST DRIVER CONTROLS (cont.) ────────────────────────────
+  {
+    category: 'TEST DRIVER CONTROLS',
+    items: [
+      {
+        name: 'Clutch Pedal',
+        conditions: [
+          { label: '10 mm – 20 mm', color: 'green', action: 'Good' },
+          { label: '20 mm', color: 'yellow', action: 'Check' },
+        ],
+      },
+      {
+        name: 'Brake Pedal FreePlay',
+        conditions: [
+          { label: '1 mm - 5mm', color: 'green', action: 'Good' },
+          { label: '>5 mm', color: 'red', action: 'Check & Adjust' },
+        ],
+      },
+      {
+        name: 'Cabin Filter',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clean', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
   // ── STEERING LINKAGE ────────────────────────────────────────
   {
     category: 'STEERING LINKAGE',
@@ -703,34 +731,6 @@ INSPECTION_DATA.plus = [
           { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
           { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── TEST DRIVER CONTROLS (cont.) ────────────────────────────
-  {
-    category: 'TEST DRIVER CONTROLS',
-    items: [
-      {
-        name: 'Clutch Pedal',
-        conditions: [
-          { label: '10 mm – 20 mm', color: 'green', action: 'Good' },
-          { label: '20 mm', color: 'yellow', action: 'Check' },
-        ],
-      },
-      {
-        name: 'Brake Pedal FreePlay',
-        conditions: [
-          { label: '1 mm - 5mm', color: 'green', action: 'Good' },
-          { label: '>5 mm', color: 'red', action: 'Check & Adjust' },
-        ],
-      },
-      {
-        name: 'Cabin Filter',
-        conditions: [
-          { label: 'Clogged', color: 'red', action: 'Replace' },
-          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
-          { label: 'Clean', color: 'green', action: 'Good' },
         ],
       },
     ],
