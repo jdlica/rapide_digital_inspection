@@ -536,7 +536,7 @@ INSPECTION_DATA.plus = [
       {
         name: 'Transmission M/T, A/T, CVT Oil',
         conditions: [
-          { label: 'Contaminated', color: 'red', action: 'Replace' },
+          { label: 'Contaminated', color: 'red', action: 'Replace', subOptions: ['Dark', 'Burnt', 'Metal Particles', 'Milky'] },
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
@@ -590,24 +590,27 @@ INSPECTION_DATA.plus = [
     items: [
       {
         name: 'Clutch Pedal',
+        multiSelect: true,
         conditions: [
-          { label: '10mm – 20mm', color: 'green', action: 'Good' },
           { label: '>20mm', color: 'yellow', action: 'Check' },
+          { label: '10mm – 20mm', color: 'green', action: 'Good', exclusive: true },
         ],
       },
       {
         name: 'Brake Pedal Free Play',
+        multiSelect: true,
         conditions: [
-          { label: '1mm – 5mm', color: 'green', action: 'Good' },
           { label: '>5mm', color: 'red', action: 'Check & Adjust' },
+          { label: '1mm – 5mm', color: 'green', action: 'Good', exclusive: true },
         ],
       },
       {
         name: 'Cabin Filter',
+        multiSelect: true,
         conditions: [
-          { label: 'Clean', color: 'green', action: 'Good' },
           { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
           { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Clean', color: 'green', action: 'Good', exclusive: true },
         ],
       },
     ],
@@ -617,6 +620,7 @@ INSPECTION_DATA.plus = [
     category: 'INSPECT UNDER CHASSIS',
     items: [
       {
+        partLabel: 'TIRES',
         name: 'Tread Depth',
         conditions: [
           { label: '<1.7 mm', color: 'red', action: 'Replace' },
@@ -627,6 +631,7 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
+        partLabel: 'TIRES',
         name: 'Bulges / Side Wall Crack',
         conditions: [
           { label: 'Bulges / Side Wall Crack', color: 'red', action: 'Replace' },
@@ -636,6 +641,7 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
+        partLabel: 'BRAKE PAD / SHOE',
         name: 'Brake Pad / Shoe',
         conditions: [
           { label: '<3 mm', color: 'red', action: 'Replace' },
@@ -647,6 +653,7 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
+        partLabel: 'DRIVE SHAFT BOOT',
         name: 'Drive Shaft Boot',
         conditions: [
           { label: 'Broken', color: 'red', action: 'Replace' },
@@ -657,6 +664,7 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
+        partLabel: 'FRONT SUSPENSION',
         name: 'Front Suspension',
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
@@ -669,6 +677,7 @@ INSPECTION_DATA.plus = [
         positions: ['Left', 'Right'],
       },
       {
+        partLabel: 'REAR SUSPENSION',
         name: 'Rear Suspension',
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
@@ -681,6 +690,7 @@ INSPECTION_DATA.plus = [
         positions: ['Left', 'Right'],
       },
       {
+        partLabel: 'SUSPENSION ARM',
         name: 'Suspension Arm',
         conditions: [
           { label: 'Torn Bushing', color: 'red', action: 'Replace' },
@@ -3115,6 +3125,11 @@ function InspectionScreen({
               {/* Item name header */}
               <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
+                  {item.partLabel && (
+                    <div style={{ fontSize: 10, fontWeight: 800, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>
+                      {item.partLabel}
+                    </div>
+                  )}
                   <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{item.name}</div>
                   {item.instruction && (
                     <div style={{ fontSize: 12, color: BRAND.gray, fontWeight: 400, marginTop: 2, lineHeight: 1.3 }}>
@@ -5783,12 +5798,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
-                <td style="${Tp}">${cb(brakePedalIdx === 0)} 1mm – 5mm</td>
-                ${actionTp('Good', brakePedalIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))} 1mm – 5mm</td>
+                ${actionTp('Good', isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(brakePedalIdx === 1)} &gt;5mm</td>
-                ${actionTp('Check &amp; Adjust', brakePedalIdx === 1)}
+                <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))} &gt;5mm</td>
+                ${actionTp('Check &amp; Adjust', isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))}
               </tr>
             </table>
           </td>
@@ -5868,12 +5883,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Clutch<br>Pedal</td>
-                <td style="${Tp}">${cb(clutchPedalIdx === 0)} 10mm – 20mm</td>
-                ${actionTp('Good', clutchPedalIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))} 10mm – 20mm</td>
+                ${actionTp('Good', isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(clutchPedalIdx === 1)} &gt;20mm</td>
-                ${actionTp('Check', clutchPedalIdx === 1)}
+                <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))} &gt;20mm</td>
+                ${actionTp('Check', isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))}
               </tr>
             </table>
           </td>
@@ -6864,9 +6879,9 @@ function AppInner() {
       f['TEST DRIVER CONTROLS::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       // Cat 7: TEST DRIVER CONTROLS (Clutch Pedal, Brake Pedal, Cabin Filter)
-      f['TEST DRIVER CONTROLS::Clutch Pedal'] = { conditionIdx: 0, condition: '10mm – 20mm', action: 'Good', color: 'green' };
-      f['TEST DRIVER CONTROLS::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
-      f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
+      f['TEST DRIVER CONTROLS::Clutch Pedal'] = { conditionIdxs: [1] };
+      f['TEST DRIVER CONTROLS::Brake Pedal Free Play'] = { conditionIdxs: [1] };
+      f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdxs: [2] };
       // Cat 8: INSPECT UNDER CHASSIS
       f['INSPECT UNDER CHASSIS::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
