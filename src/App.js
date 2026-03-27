@@ -2302,7 +2302,7 @@ function PackageSelectionScreen({ onSelect }) {
   );
 }
 
-function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipalities, barangays, fleets, branches }) {
+function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipalities, barangays, fleets, branches, onFillDemo }) {
   const [errors, setErrors] = useState({});
   const [attempted, setAttempted] = useState(false);
   const availableModels = data.make ? [...(models[data.make] || []), 'Others'] : [];
@@ -2340,12 +2340,29 @@ function CustomerVehicleScreen({ data, setData, onSave, brands, models, municipa
 
   return (
     <div className="form-screen">
-      <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>
-        Customer & Vehicle Details
-      </h2>
-      <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
-        Fill in vehicle and customer information
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 4 }}>
+            Customer & Vehicle Details
+          </h2>
+          <p style={{ color: BRAND.gray, fontSize: 14, marginBottom: 16 }}>
+            Fill in vehicle and customer information
+          </p>
+        </div>
+        {onFillDemo && (
+          <button
+            onClick={onFillDemo}
+            style={{
+              fontSize: 12, fontWeight: 700, padding: '6px 14px',
+              borderRadius: 8, border: `1px solid ${BRAND.grayBorder}`,
+              background: BRAND.grayLight, color: BRAND.gray, cursor: 'pointer',
+              whiteSpace: 'nowrap', marginTop: 4,
+            }}
+          >
+            Fill Demo
+          </button>
+        )}
+      </div>
 
       {/* Vehicle Section */}
       <div className="form-card">
@@ -7258,6 +7275,7 @@ function AppInner() {
           barangays={barangays}
           fleets={fleets}
           branches={branches}
+          onFillDemo={fillDemoData}
         />
       )}
 
@@ -7279,7 +7297,6 @@ function AppInner() {
           setCurrentCategoryIdx={setCurrentCatIdx}
           onFinish={() => { saveCurrentDraft('techComment'); setScreen('techComment'); }}
           onBack={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
-          onFillDemo={fillDemoData}
         />
       )}
 
