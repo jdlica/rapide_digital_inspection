@@ -326,13 +326,15 @@ const INSPECTION_DATA = {
     },
     {
       category: 'AIR CONDITIONER',
+      subtitle: 'Check the air cleaner filter condition',
       items: [
         {
           name: 'Air Cleaner',
+          instruction: 'Tap the option that best matches the filter:',
           conditions: [
-            { label: 'Clogged', color: 'red', action: 'Replace' },
-            { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
-            { label: 'Clean', color: 'green', action: 'Good' },
+            { label: 'Clean', color: 'green', action: 'Good', description: 'Filter looks white or light gray, no visible dirt buildup' },
+            { label: 'Light Dirt', color: 'yellow', action: 'Clean', description: 'Some dust or discoloration visible, but still mostly clear' },
+            { label: 'Clogged', color: 'red', action: 'Replace', description: 'Heavy dirt, dark color, or airflow is blocked' },
           ],
         },
       ],
@@ -541,13 +543,15 @@ INSPECTION_DATA.plus = [
   // ── AIR CONDITIONER ────────────────────────────────────────
   {
     category: 'AIR CONDITIONER',
+    subtitle: 'Check the air cleaner filter condition',
     items: [
       {
         name: 'Air Cleaner',
+        instruction: 'Tap the option that best matches the filter:',
         conditions: [
-          { label: 'Clogged', color: 'red', action: 'Replace' },
-          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
-          { label: 'Clean', color: 'green', action: 'Good' },
+          { label: 'Clean', color: 'green', action: 'Good', description: 'Filter looks white or light gray, no visible dirt buildup' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean', description: 'Some dust or discoloration visible, but still mostly clear' },
+          { label: 'Clogged', color: 'red', action: 'Replace', description: 'Heavy dirt, dark color, or airflow is blocked' },
         ],
       },
     ],
@@ -3092,6 +3096,16 @@ function InspectionScreen({
         {cat.category}
       </h2>
 
+      {cat.subtitle && (
+        <div style={{
+          fontSize: 14, color: BRAND.gray, fontWeight: 500,
+          marginTop: -12, marginBottom: 16, padding: '0 4px',
+          lineHeight: 1.4,
+        }}>
+          {cat.subtitle}
+        </div>
+      )}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {cat.items.map((item) => {
           const key = getKey(cat.category, item.name);
@@ -3145,7 +3159,14 @@ function InspectionScreen({
             >
               {/* Item name header */}
               <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{item.name}</div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>{item.name}</div>
+                  {item.instruction && (
+                    <div style={{ fontSize: 12, color: BRAND.gray, fontWeight: 400, marginTop: 2, lineHeight: 1.3 }}>
+                      {item.instruction}
+                    </div>
+                  )}
+                </div>
                 {showCamera && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 12 }}>
                     {finding?.photo && (
@@ -3348,29 +3369,40 @@ function InspectionScreen({
                         style={{
                           borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
                           background: selected ? bgColorMap[cond.color] : 'transparent',
-                          transition: 'background 0.15s',
+                          borderLeft: selected ? `4px solid ${colorMap[cond.color]}` : '4px solid transparent',
+                          transition: 'background 0.15s, border-left 0.15s',
                         }}
                       >
                         <div
                           onClick={() => item.multiSelect ? selectMultiCondition(item.name, ci) : selectCondition(item.name, ci)}
                           style={{
-                            padding: '14px 18px', cursor: 'pointer', display: 'flex',
+                            padding: '16px 18px', cursor: 'pointer', display: 'flex',
                             alignItems: 'center', justifyContent: 'space-between',
+                            minHeight: 56,
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                             <div style={{
-                              width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                              border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
+                              width: 30, height: 30, borderRadius: 15, flexShrink: 0,
+                              border: `2.5px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`,
                               background: selected ? colorMap[cond.color] : BRAND.white,
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              color: BRAND.white, fontSize: 14, fontWeight: 700,
+                              color: BRAND.white, fontSize: 15, fontWeight: 700,
+                              transition: 'all 0.15s',
+                              boxShadow: selected ? `0 2px 8px ${colorMap[cond.color]}33` : 'none',
                             }}>
                               {selected && '✓'}
                             </div>
-                            <span style={{ fontSize: 15, fontWeight: selected ? 700 : 400, color: BRAND.black }}>
-                              {cond.label}
-                            </span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <span style={{ fontSize: 15, fontWeight: selected ? 700 : 500, color: selected ? colorMap[cond.color] : BRAND.black, display: 'block' }}>
+                                {cond.label}
+                              </span>
+                              {cond.description && (
+                                <span style={{ fontSize: 12, color: BRAND.gray, fontWeight: 400, lineHeight: 1.3, display: 'block', marginTop: 2 }}>
+                                  {cond.description}
+                                </span>
+                              )}
+                            </div>
                           </div>
                           <div style={{
                             padding: '8px 16px', borderRadius: 8, fontWeight: 800, fontSize: 13,
@@ -5379,16 +5411,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- AIR CLEANER -->
               <tr>
                 <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="3">Air<br>Cleaner</td>
-                <td style="${T}">${cb(airIdx === 0)} Clogged</td>
-                ${actionTd('Replace', airIdx === 0)}
+                <td style="${T}">${cb(airIdx === 2)} Clogged</td>
+                ${actionTd('Replace', airIdx === 2)}
               </tr>
               <tr>
                 <td style="${T}">${cb(airIdx === 1)} Light Dirt</td>
                 ${actionTd('Clean', airIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(airIdx === 2)} Clean</td>
-                ${actionTd('Good', airIdx === 2)}
+                <td style="${T}">${cb(airIdx === 0)} Clean</td>
+                ${actionTd('Good', airIdx === 0)}
               </tr>
               <!-- BRAKE PAD: 3 rows with positions -->
               <tr>
@@ -5991,16 +6023,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Air<br>Cleaner</td>
-                <td style="${Tp}">${cb(airIdx === 0)} Clogged</td>
-                ${actionTp('Replace', airIdx === 0)}
+                <td style="${Tp}">${cb(airIdx === 2)} Clogged</td>
+                ${actionTp('Replace', airIdx === 2)}
               </tr>
               <tr>
                 <td style="${Tp}">${cb(airIdx === 1)} Light Dirt</td>
                 ${actionTp('Clean', airIdx === 1)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(airIdx === 2)} Clean</td>
-                ${actionTp('Good', airIdx === 2)}
+                <td style="${Tp}">${cb(airIdx === 0)} Clean</td>
+                ${actionTp('Good', airIdx === 0)}
               </tr>
             </table>
           </td>
@@ -6841,7 +6873,7 @@ function AppInner() {
         RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
-      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
+      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
       f['BRAKE PAD::Brake Pad'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
@@ -6875,7 +6907,7 @@ function AppInner() {
         RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
-      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
+      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
       f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
