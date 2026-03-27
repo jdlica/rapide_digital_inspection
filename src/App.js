@@ -480,6 +480,20 @@ INSPECTION_DATA.plus = [
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
+      {
+        name: 'Cooling System Hose',
+        conditions: [
+          { label: 'Cracked / Leaking', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Radiator Hose',
+        conditions: [
+          { label: 'Cracked / Swelled', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
     ],
   },
   // ── BRAKE FLUID ─────────────────────────────────────────────
@@ -764,26 +778,6 @@ INSPECTION_DATA.plus = [
         conditions: [
           { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
           { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
-        ],
-      },
-    ],
-  },
-  // ── COOLING SYSTEM ────────────────────────────────────────
-  {
-    category: 'COOLING SYSTEM',
-    items: [
-      {
-        name: 'Cooling System Hose',
-        conditions: [
-          { label: 'Cracked / Leaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
-        ],
-      },
-      {
-        name: 'Radiator Hose',
-        conditions: [
-          { label: 'Cracked / Swelled', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
         ],
       },
     ],
@@ -5577,8 +5571,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const brakePedalIdx = getIdx('BRAKE PEDAL::Brake Pedal Free Play');
     const transOilIdx = getIdx('TRANSMISSION::Transmission M/T, A/T, CVT Oil');
     const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
-    const coolingSysIdx = getIdx('COOLING SYSTEM::Cooling System Hose');
-    const radiatorHoseIdx = getIdx('COOLING SYSTEM::Radiator Hose');
+    const coolingSysIdx = getIdx('INSPECT ENGINE BAY::Cooling System Hose');
+    const radiatorHoseIdx = getIdx('INSPECT ENGINE BAY::Radiator Hose');
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -6940,8 +6934,8 @@ function AppInner() {
       }};
       f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
       f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
-      f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
-      f['COOLING SYSTEM::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
+      f['INSPECT ENGINE BAY::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
       f['DRIVE SHAFT BOOT::Drive Shaft Boot'] = { positions: {
         FL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         FR: { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
@@ -7285,6 +7279,7 @@ function AppInner() {
           setCurrentCategoryIdx={setCurrentCatIdx}
           onFinish={() => { saveCurrentDraft('techComment'); setScreen('techComment'); }}
           onBack={() => { saveCurrentDraft('serviceQuestions'); setScreen('serviceQuestions'); }}
+          onFillDemo={fillDemoData}
         />
       )}
 
