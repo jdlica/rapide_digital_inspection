@@ -615,7 +615,7 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── INSPECT UNDER CHASSIS ─────────────────────────────────
+  // ── INSPECT UNDER CHASSIS (Tires & Brakes) ─────────────────
   {
     category: 'INSPECT UNDER CHASSIS',
     items: [
@@ -663,6 +663,12 @@ INSPECTION_DATA.plus = [
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
+    ],
+  },
+  // ── INSPECT UNDER CHASSIS (Suspension & Steering) ─────────
+  {
+    category: 'INSPECT UNDER CHASSIS',
+    items: [
       {
         partLabel: 'FRONT SUSPENSION',
         name: 'Front Suspension',
@@ -700,6 +706,48 @@ INSPECTION_DATA.plus = [
         hasPosition: true,
         positions: ['Left', 'Right'],
       },
+      {
+        partLabel: 'BALL JOINT',
+        name: 'Ball Joint',
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'Boot Torn', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
+      },
+      {
+        partLabel: 'STEERING LINKAGE',
+        name: 'Steering Linkage',
+        multiSelect: true,
+        conditions: [
+          { label: 'Boot Damage', color: 'red', action: 'Replace' },
+          { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
+          { label: 'Steering Loose', color: 'red', action: 'Replace' },
+          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+      {
+        partLabel: 'STAB BAR BUSHING',
+        name: 'Stab Bar Bushing',
+        conditions: [
+          { label: 'Worn / Cracked', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
+      },
+      {
+        partLabel: 'STAB LINK',
+        name: 'Stab Link',
+        conditions: [
+          { label: 'Loose / Worn', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['Left', 'Right'],
+      },
     ],
   },
   {
@@ -728,22 +776,6 @@ INSPECTION_DATA.plus = [
           { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
-      },
-    ],
-  },
-  // ── BALL JOINT ─────────────────────────────────────────────
-  {
-    category: 'BALL JOINT',
-    items: [
-      {
-        name: 'Ball Joint',
-        conditions: [
-          { label: 'Loose', color: 'red', action: 'Replace' },
-          { label: 'Boot Torn', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
-        ],
-        hasPosition: true,
-        positions: ['Left', 'Right'],
       },
     ],
   },
@@ -5755,20 +5787,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 0))} Boot Damage</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 0))}
+                <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 0))} Boot Damage</td>
+                ${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 0))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 1))} Tie Rod Loose</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 1))}
+                <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 1))} Tie Rod Loose</td>
+                ${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 1))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 2))} Steering Loose</td>
-                ${actionTp('Replace', isSelected('STEERING LINKAGE::Steering Linkage', 2))}
+                <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 2))} Steering Loose</td>
+                ${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 2))}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(isSelected('STEERING LINKAGE::Steering Linkage', 3))} No Sign of Damage</td>
-                ${actionTp('Good', isSelected('STEERING LINKAGE::Steering Linkage', 3))}
+                <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 3))} No Sign of Damage</td>
+                ${actionTp('Good', isSelected('INSPECT UNDER CHASSIS::Steering Linkage', 3))}
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Engine<br>Support</td>
@@ -5870,16 +5902,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Ball<br>Joint</td>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 0, ['Left','Right']))} Loose ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 0, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Ball Joint', 0, ['Left','Right']))} Loose ${allPosBadgesPos('INSPECT UNDER CHASSIS::Ball Joint', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Ball Joint', 0, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 1, ['Left','Right']))} Boot Torn ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 1, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Ball Joint', 1, ['Left','Right']))} Boot Torn ${allPosBadgesPos('INSPECT UNDER CHASSIS::Ball Joint', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Ball Joint', 1, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 2, ['Left','Right']))} No Damage ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 2, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Ball Joint', 2, ['Left','Right']))} No Damage ${allPosBadgesPos('INSPECT UNDER CHASSIS::Ball Joint', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Ball Joint', 2, ['Left','Right'])}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Clutch<br>Pedal</td>
@@ -6860,9 +6892,7 @@ function AppInner() {
       f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
       f['BELT::Belt Condition'] = { conditionIdxs: [3] };
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
-      // Cat 3: STEERING LINKAGE
-      f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
-      // Cat 4: INSPECT ENGINE BAY (Coolant, Cooling Hose, Radiator Hose, Brake Fluid, Clutch Fluid, Air Cleaner)
+      // Cat 3: INSPECT ENGINE BAY (Coolant, Cooling Hose, Radiator Hose, Brake Fluid, Clutch Fluid, Air Cleaner)
       f['INSPECT ENGINE BAY::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
@@ -6878,11 +6908,11 @@ function AppInner() {
       f['TEST DRIVER CONTROLS::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      // Cat 7: TEST DRIVER CONTROLS (Clutch Pedal, Brake Pedal, Cabin Filter)
+      // Cat 6: TEST DRIVER CONTROLS (Clutch Pedal, Brake Pedal, Cabin Filter)
       f['TEST DRIVER CONTROLS::Clutch Pedal'] = { conditionIdxs: [1] };
       f['TEST DRIVER CONTROLS::Brake Pedal Free Play'] = { conditionIdxs: [1] };
       f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdxs: [2] };
-      // Cat 8: INSPECT UNDER CHASSIS
+      // Cat 7: INSPECT UNDER CHASSIS (Tires & Brakes)
       f['INSPECT UNDER CHASSIS::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
         FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
@@ -6907,6 +6937,7 @@ function AppInner() {
         RL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         RR: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
+      // Cat 8: INSPECT UNDER CHASSIS (Suspension & Steering)
       f['INSPECT UNDER CHASSIS::Front Suspension'] = { positions: {
         Left: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
         Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
@@ -6919,13 +6950,22 @@ function AppInner() {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      // Remaining categories
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
-      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
-      f['BALL JOINT::Ball Joint'] = { positions: {
+      f['INSPECT UNDER CHASSIS::Ball Joint'] = { positions: {
         Left: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
+      f['INSPECT UNDER CHASSIS::Steering Linkage'] = { conditionIdxs: [3] };
+      f['INSPECT UNDER CHASSIS::Stab Bar Bushing'] = { positions: {
+        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
+      f['INSPECT UNDER CHASSIS::Stab Link'] = { positions: {
+        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
+      // Remaining categories
+      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
+      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
       f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
       f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
     }
