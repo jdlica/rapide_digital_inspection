@@ -543,8 +543,8 @@ INSPECTION_DATA.plus = [
       {
         name: 'Transmission M/T, A/T, CVT Oil',
         conditions: [
-          { label: 'Contaminated', color: 'red', action: 'Replace', subOptions: ['Dark', 'Burnt', 'Metal Particles', 'Milky'] },
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -2983,16 +2983,12 @@ function InspectionScreen({
         delete updatedPositions[pos];
         return { ...prev, [key]: { positions: updatedPositions, noDamage: false } };
       }
-      return {
-        ...prev,
-        [key]: {
-          positions: {
-            ...(existing.positions || {}),
-            [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
-          },
-          noDamage: false,
-        },
+      const newPositions = {
+        ...(existing.positions || {}),
+        [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color },
       };
+      const allGreen = item.positions.every((p) => (p === pos ? cond.color : existing.positions?.[p]?.color) === 'green');
+      return { ...prev, [key]: { positions: newPositions, noDamage: allGreen } };
     });
     setAttempted(false);
   };
@@ -3016,7 +3012,9 @@ function InspectionScreen({
         return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
       }
       if (cond.exclusive) {
-        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } }, noDamage: false } };
+        const newPositions = { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } };
+        const allGreen = item.positions.every((p) => (p === pos ? cond.color : existing.positions?.[p]?.color) === 'green');
+        return { ...prev, [key]: { ...existing, positions: newPositions, noDamage: allGreen } };
       }
       const excIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
       const next = [...currentIdxs.filter((i) => !excIdxs.includes(i)), condIdx];
@@ -3241,8 +3239,7 @@ function InspectionScreen({
                 const greenIdx = item.conditions.findIndex((c) => c.color === 'green');
                 const greenCond = greenIdx >= 0 ? item.conditions[greenIdx] : null;
                 const issueConditions = item.conditions
-                  .map((c, i) => ({ ...c, idx: i }))
-                  .filter((c) => c.color !== 'green');
+                  .map((c, i) => ({ ...c, idx: i }));
                 // Group positions: FL/FR/RL/RR or Front*/Rear* → Front + Rear; others → single group
                 const hasFrontRear = (item.positions.includes('FL') && item.positions.includes('RL')) ||
                   (item.positions.some((p) => p.startsWith('Front')) && item.positions.some((p) => p.startsWith('Rear')));
@@ -3296,32 +3293,11 @@ function InspectionScreen({
                                   background: pf ? bgColorMap[pf.color] : BRAND.white,
                                 }}>
                                   <span style={{ fontWeight: 900, fontSize: 13, color: pf ? colorMap[pf.color] : BRAND.black }}>{({ FL: 'Left', FR: 'Right', RL: 'Left', RR: 'Right' })[pos] || pos}</span>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                    {pf && pf.color !== 'green' && (
-                                      <span style={{ fontSize: 9, fontWeight: 800, color: colorMap[pf.color], textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                                        {pf.action}
-                                      </span>
-                                    )}
-                                    {greenIdx >= 0 && (
-                                      <div
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          item.multiSelect
-                                            ? selectPositionMultiCondition(item.name, pos, greenIdx)
-                                            : selectPositionCondition(item.name, pos, greenIdx);
-                                        }}
-                                        style={{
-                                          padding: '2px 7px', borderRadius: 10, cursor: 'pointer',
-                                          background: pf?.color === 'green' ? colorMap.green : 'transparent',
-                                          border: `1.5px solid ${pf?.color === 'green' ? colorMap.green : BRAND.grayBorder}`,
-                                        }}
-                                      >
-                                        <span style={{ fontSize: 9, fontWeight: 800, color: pf?.color === 'green' ? BRAND.white : BRAND.gray, textTransform: 'uppercase' }}>
-                                          {pf?.color === 'green' ? '✓ GOOD' : 'GOOD'}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
+                                  {pf && (
+                                    <span style={{ fontSize: 9, fontWeight: 800, color: colorMap[pf.color], textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                      {pf.action}
+                                    </span>
+                                  )}
                                 </div>
                                 {/* Issue conditions */}
                                 {issueConditions.map((cond) => {
