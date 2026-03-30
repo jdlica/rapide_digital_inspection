@@ -5656,12 +5656,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- RAPIDE LOGO + BRANCH -->
     <div style="text-align:center;margin-bottom:4px;">
-      <div style="display:inline-flex;align-items:center;gap:10px;">
+      <div style="display:inline-block;">
         <div style="background:#FFD100;padding:3px 8px;border-radius:4px;display:inline-block;">
           <div style="font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
           <div style="font-size:5px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
         </div>
-        <div style="text-align:left;">
+        <div style="margin-top:3px;">
           <div style="font-weight:800;font-size:9px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
           <div style="font-size:6px;color:#6B7280;margin-top:1px;">Branch</div>
         </div>
