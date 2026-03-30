@@ -3268,7 +3268,8 @@ function InspectionScreen({
                 const greenIdx = item.conditions.findIndex((c) => c.color === 'green');
                 const greenCond = greenIdx >= 0 ? item.conditions[greenIdx] : null;
                 const issueConditions = item.conditions
-                  .map((c, i) => ({ ...c, idx: i }));
+                  .map((c, i) => ({ ...c, idx: i }))
+                  .filter((c) => c.color !== 'green');
                 // Group positions: FL/FR/RL/RR or Front*/Rear* → Front + Rear; others → single group
                 const hasFrontRear = (item.positions.includes('FL') && item.positions.includes('RL')) ||
                   (item.positions.some((p) => p.startsWith('Front')) && item.positions.some((p) => p.startsWith('Rear')));
