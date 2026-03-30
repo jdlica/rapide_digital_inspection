@@ -139,7 +139,6 @@ const INSPECTION_DATA = {
       items: [
         {
           name: 'Battery Voltage',
-          multiSelect: false,
           conditions: [
             { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
             { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
@@ -4914,8 +4913,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:10px;font-size:9px;vertical-align:middle;">&#10003;</span>`
         : `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;vertical-align:middle;"></span>`;
 
-    const battV = findings['Measure::Battery Voltage'];
-    const battVIdx = battV !== undefined ? (battV.conditionIdx ?? battV.conditionIdxs?.[0] ?? -1) : -1;
+    const isSelQ = (key, condIdx) => { const f = findings[key]; if (!f) return false; if (Array.isArray(f.conditionIdxs)) return f.conditionIdxs.includes(condIdx); return f.conditionIdx === condIdx; };
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
     const coolantIdx = getIdx('Inspect::Coolant Level');
@@ -5072,16 +5070,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 0)} 12.6V to 12.8 V</td>
-                ${actionTd('Good', battVIdx === 0)}
+                <td style="${T}">${cb(isSelQ('Measure::Battery Voltage', 0))} 12.6V to 12.8 V</td>
+                ${actionTd('Good', isSelQ('Measure::Battery Voltage', 0))}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 1)} 12.2V to 12.6 V</td>
-                ${actionTd('Recharge', battVIdx === 1)}
+                <td style="${T}">${cb(isSelQ('Measure::Battery Voltage', 1))} 12.2V to 12.6 V</td>
+                ${actionTd('Recharge', isSelQ('Measure::Battery Voltage', 1))}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
-                ${actionTd('Replace', battVIdx === 2)}
+                <td style="${T}">${cb(isSelQ('Measure::Battery Voltage', 2))} 12.2V</td>
+                ${actionTd('Replace', isSelQ('Measure::Battery Voltage', 2))}
               </tr>
               <tr>
                 <td style="${Ttop}" colspan="2"><strong>Starting Power (CCA)</strong></td>
