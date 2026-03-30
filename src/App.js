@@ -2976,22 +2976,6 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
-    if (cond.color === 'green') {
-      setFindings((prev) => {
-        const existing = prev[key] || { positions: {} };
-        const allGreen = item.positions.every((p) => existing.positions?.[p]?.conditionIdx === condIdx);
-        if (allGreen) {
-          const u = { ...prev }; delete u[key]; return u;
-        }
-        const positions = {};
-        item.positions.forEach((p) => {
-          positions[p] = { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color };
-        });
-        return { ...prev, [key]: { positions, noDamage: true } };
-      });
-      setAttempted(false);
-      return;
-    }
     setFindings((prev) => {
       const existing = prev[key] || { positions: {} };
       if (existing.positions?.[pos]?.conditionIdx === condIdx) {
@@ -3032,18 +3016,7 @@ function InspectionScreen({
         return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
       }
       if (cond.exclusive) {
-        const allExclusive = item.positions.every((p) => {
-          const pd = existing.positions?.[p];
-          return pd?.conditionIdxs?.length === 1 && pd.conditionIdxs[0] === condIdx;
-        });
-        if (allExclusive) {
-          const u = { ...prev }; delete u[key]; return u;
-        }
-        const positions = {};
-        item.positions.forEach((p) => {
-          positions[p] = { conditionIdxs: [condIdx], color: cond.color, action: cond.action };
-        });
-        return { ...prev, [key]: { ...existing, positions, noDamage: true } };
+        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } }, noDamage: false } };
       }
       const excIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
       const next = [...currentIdxs.filter((i) => !excIdxs.includes(i)), condIdx];
@@ -3322,12 +3295,33 @@ function InspectionScreen({
                                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                   background: pf ? bgColorMap[pf.color] : BRAND.white,
                                 }}>
-                                  <span style={{ fontWeight: 900, fontSize: 17, color: pf ? colorMap[pf.color] : BRAND.black }}>{({ FL: 'Left', FR: 'Right', RL: 'Left', RR: 'Right' })[pos] || pos}</span>
-                                  {pf && (
-                                    <span style={{ fontSize: 9, fontWeight: 800, color: colorMap[pf.color], textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                                      {pf.action}
-                                    </span>
-                                  )}
+                                  <span style={{ fontWeight: 900, fontSize: 13, color: pf ? colorMap[pf.color] : BRAND.black }}>{({ FL: 'Left', FR: 'Right', RL: 'Left', RR: 'Right' })[pos] || pos}</span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    {pf && pf.color !== 'green' && (
+                                      <span style={{ fontSize: 9, fontWeight: 800, color: colorMap[pf.color], textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                        {pf.action}
+                                      </span>
+                                    )}
+                                    {greenIdx >= 0 && (
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          item.multiSelect
+                                            ? selectPositionMultiCondition(item.name, pos, greenIdx)
+                                            : selectPositionCondition(item.name, pos, greenIdx);
+                                        }}
+                                        style={{
+                                          padding: '2px 7px', borderRadius: 10, cursor: 'pointer',
+                                          background: pf?.color === 'green' ? colorMap.green : 'transparent',
+                                          border: `1.5px solid ${pf?.color === 'green' ? colorMap.green : BRAND.grayBorder}`,
+                                        }}
+                                      >
+                                        <span style={{ fontSize: 9, fontWeight: 800, color: pf?.color === 'green' ? BRAND.white : BRAND.gray, textTransform: 'uppercase' }}>
+                                          {pf?.color === 'green' ? '✓ GOOD' : 'GOOD'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                                 {/* Issue conditions */}
                                 {issueConditions.map((cond) => {
