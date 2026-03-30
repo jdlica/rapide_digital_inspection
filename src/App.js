@@ -5104,25 +5104,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="6">TIRES</td>
-                <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 0)}</span></td>
-                ${tireCondActionTd('Bulges', 0)}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 1))} Issue Found <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 1)}</span></td>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="3">TIRES</td>
+                <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 1))} Bulges <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 1)}</span></td>
                 ${tireCondActionTd('Bulges', 1)}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('Side Wall Cracks', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Side Wall Cracks', 0)}</span></td>
-                ${tireCondActionTd('Side Wall Cracks', 0)}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('Side Wall Cracks', 1))} Issue Found <span style="font-size:9px;">${tirePosBadgesForCond('Side Wall Cracks', 1)}</span></td>
+                <td style="${Ttop}">${cb(tireAnyAtCond('Side Wall Cracks', 1))} Side Wall Cracks <span style="font-size:9px;">${tirePosBadgesForCond('Side Wall Cracks', 1)}</span></td>
                 ${tireCondActionTd('Side Wall Cracks', 1)}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('Tread <1.7mm', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Tread <1.7mm', 0)}</span></td>
-                ${tireCondActionTd('Tread <1.7mm', 0)}
               </tr>
               <tr>
                 <td style="${Ttop}">${cb(tireAnyAtCond('Tread <1.7mm', 1))} &lt;1.7mm <span style="font-size:9px;">${tirePosBadgesForCond('Tread <1.7mm', 1)}</span></td>
