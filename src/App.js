@@ -139,6 +139,7 @@ const INSPECTION_DATA = {
       items: [
         {
           name: 'Battery Voltage',
+          multiSelect: false,
           conditions: [
             { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
             { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
@@ -3163,7 +3164,8 @@ function InspectionScreen({
         {cat.items.map((item) => {
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
-          const isMultiSelect = item.multiSelect || (
+          const isMultiSelect = item.multiSelect === true || (
+            item.multiSelect !== false &&
             item.conditions.some((c) => c.color === 'red') && item.conditions.some((c) => c.color === 'yellow')
           );
 
@@ -4816,7 +4818,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         : `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;vertical-align:middle;"></span>`;
 
     const battV = findings['Measure::Battery Voltage'];
-    const battVIdx = battV !== undefined ? battV.conditionIdx : -1;
+    const battVIdx = battV !== undefined ? (battV.conditionIdx ?? battV.conditionIdxs?.[0] ?? -1) : -1;
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
     const coolantIdx = getIdx('Inspect::Coolant Level');
