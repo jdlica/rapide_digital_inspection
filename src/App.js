@@ -2924,6 +2924,7 @@ function InspectionScreen({
   const groupDisablerItem = cat.items.find((i) => i.disableOthersInGroup);
   const groupDisablerKey = groupDisablerItem ? getKey(cat.category, groupDisablerItem.name) : null;
   const groupDisablerSelected = groupDisablerKey ? findings[groupDisablerKey]?.conditionIdx === 0 : false;
+  const tireGroupItems = cat.items.filter((i) => i.hasPosition && !!i.groupDisabledBy);
 
   const allFilled = cat.items.every((item) => {
     if (item.optional) return true;
@@ -3161,7 +3162,75 @@ function InspectionScreen({
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {tireGroupItems.length > 0 && (() => {
+          const isGroupDis = groupDisablerSelected;
+          const posGroups = [
+            { label: 'Front', positions: ['Front Left', 'Front Right'] },
+            { label: 'Rear', positions: ['Rear Left', 'Rear Right'] },
+          ];
+          const abbr = { 'Front Left': 'FL', 'Front Right': 'FR', 'Rear Left': 'RL', 'Rear Right': 'RR' };
+          const tireUnanswered = attempted && !isGroupDis && tireGroupItems.some((ti) => {
+            const k = getKey(cat.category, ti.name);
+            const f = findings[k];
+            return !f?.positions || !ti.positions.every((p) => f.positions[p]);
+          });
+          const allTireColors = tireGroupItems.flatMap((ti) => {
+            const f = findings[getKey(cat.category, ti.name)];
+            return (ti.positions || []).map((p) => f?.positions?.[p]?.color).filter(Boolean);
+          });
+          let tireBorder = BRAND.grayBorder;
+          if (tireUnanswered) tireBorder = BRAND.red;
+          else if (allTireColors.includes('red')) tireBorder = colorMap.red;
+          else if (allTireColors.includes('yellow')) tireBorder = colorMap.yellow;
+          else if (allTireColors.length > 0) tireBorder = colorMap.green;
+          return (
+            <div key="tires-combined" style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${tireBorder}`, overflow: 'hidden', opacity: isGroupDis ? 0.35 : 1, pointerEvents: isGroupDis ? 'none' : 'auto', transition: 'border-color 0.2s, opacity 0.2s' }}>
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>Tires</div>
+                <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>Tire Inspection</div>
+              </div>
+              {posGroups.map((group) => (
+                <div key={group.label} style={{ borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                  <div style={{ padding: '6px 14px', background: BRAND.grayLight, borderBottom: `1px solid ${BRAND.grayBorder}`, fontWeight: 800, fontSize: 11, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    {group.label}
+                  </div>
+                  <div style={{ display: 'flex' }}>
+                    {group.positions.map((pos, pi) => (
+                      <div key={pos} style={{ flex: 1, borderRight: pi < group.positions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none' }}>
+                        <div style={{ padding: '6px 0', background: BRAND.grayLight, borderBottom: `1px solid ${BRAND.grayBorder}`, fontWeight: 900, fontSize: 13, textAlign: 'center', color: BRAND.black }}>
+                          {abbr[pos]}
+                        </div>
+                        {tireGroupItems.map((ti, tii) => {
+                          const k = getKey(cat.category, ti.name);
+                          const pf = findings[k]?.positions?.[pos];
+                          return (
+                            <div key={ti.name} style={{ borderBottom: tii < tireGroupItems.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none' }}>
+                              <div style={{ padding: '4px 8px', fontSize: 10, fontWeight: 700, color: BRAND.gray, background: '#f9fafb', borderBottom: `1px solid ${BRAND.grayBorder}` }}>{ti.name}</div>
+                              {ti.conditions.map((cond, ci) => {
+                                const selected = pf?.conditionIdx === ci;
+                                return (
+                                  <div key={ci} onClick={() => selectPositionCondition(ti.name, pos, ci)}
+                                    style={{ padding: '9px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7, background: selected ? bgColorMap[cond.color] : 'transparent', borderLeft: selected ? `3px solid ${colorMap[cond.color]}` : '3px solid transparent', borderBottom: ci < ti.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none', transition: 'background 0.15s' }}>
+                                    <div style={{ width: 18, height: 18, borderRadius: 9, flexShrink: 0, border: `2px solid ${selected ? colorMap[cond.color] : BRAND.grayBorder}`, background: selected ? colorMap[cond.color] : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 10, fontWeight: 700, transition: 'all 0.15s' }}>
+                                      {selected && '✓'}
+                                    </div>
+                                    <span style={{ fontSize: 12, fontWeight: selected ? 700 : 500, color: selected ? colorMap[cond.color] : BRAND.black }}>{cond.label}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
         {cat.items.map((item) => {
+          if (item.groupDisabledBy) return null;
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
           const isMultiSelect = item.multiSelect === true || (
