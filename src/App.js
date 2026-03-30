@@ -660,10 +660,11 @@ INSPECTION_DATA.plus = [
       },
       {
         name: 'Drive Shaft Boot',
+        multiSelect: true,
         conditions: [
           { label: 'Broken', color: 'red', action: 'Replace' },
           { label: 'Leaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
@@ -676,44 +677,48 @@ INSPECTION_DATA.plus = [
     items: [
       {
         name: 'Front Suspension',
+        multiSelect: true,
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
           { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
           { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
           { label: 'Squeaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['Front Left', 'Front Right'],
       },
       {
         name: 'Rear Suspension',
+        multiSelect: true,
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
           { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
           { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
           { label: 'Squeaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['Rear Left', 'Rear Right'],
       },
       {
         name: 'Suspension Arm',
+        multiSelect: true,
         conditions: [
           { label: 'Torn Bushing', color: 'red', action: 'Replace' },
           { label: 'Bent / Damage', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['Front Left', 'Front Right'],
       },
       {
         name: 'Ball Joint',
+        multiSelect: true,
         conditions: [
           { label: 'Loose', color: 'red', action: 'Replace' },
           { label: 'Boot Torn', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
         positions: ['Front Left', 'Front Right'],
