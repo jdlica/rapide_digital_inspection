@@ -5652,6 +5652,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       if (Array.isArray(f.conditionIdxs)) return f.conditionIdxs.includes(condIdx);
       return f.conditionIdx === condIdx;
     };
+    const contaminatedTp = (key, condIdx, subOpts, label = 'Contaminated') => {
+      const selected = isSelected(key, condIdx);
+      const sub = getSubOpt(key);
+      const subLine = subOpts.map(o => selected && o === sub ? `<u>${o}</u>` : o).join('&nbsp;&nbsp;');
+      return `<td style="${Tp}">${cb(selected)} ${label}${selected && subOpts.length ? `<br><span style="font-size:7px;padding-left:14px;">${subLine}</span>` : ''}</td>`;
+    };
     const getPos = (key) => findings[key]?.positions || {};
     const anyAtCond = (key, condIdx) =>
       ['FL','FR','RL','RR','Front Left','Front Right','Rear Left','Rear Right'].some(p => {
@@ -5901,7 +5907,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Coolant<br>Level</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Coolant Level', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Coolant Level', 1))}</tr>
+              <tr>${contaminatedTp('INSPECT ENGINE BAY::Coolant Level', 1, ['Oil', 'Sludge', 'Rust', 'Debris'])}${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Coolant Level', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Coolant Level', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Cooling<br>System Hose</td>
@@ -5921,11 +5927,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="4">Brake<br>Fluid Level</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Brake<br>Fluid Level</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))}</tr>
-              <tr><td style="${Tp};font-size:7.5px;font-style:italic;color:#DC2626;" colspan="2">${getSubOpt('INSPECT ENGINE BAY::Brake Fluid Level') ? `&nbsp;&nbsp;▸ ${getSubOpt('INSPECT ENGINE BAY::Brake Fluid Level')}` : ''}</td></tr>
+              <tr>${contaminatedTp('INSPECT ENGINE BAY::Brake Fluid Level', 1, ['Oil', 'Sludge', 'Rust', 'Debris'], 'Contaminated (3-4% Moisture)')}${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Clutch<br>Fluid</td>
@@ -5956,13 +5961,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Power<br>Steering<br>Fluid</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))}</tr>
+              <tr>${contaminatedTp('INSPECT ENGINE BAY::Power Steering Fluid', 1, ['Dark', 'Burnt', 'Rust', 'Debris'])}${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Transmission<br>M/T, A/T<br>CVT Oil</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))}</tr>
+              <tr>${contaminatedTp('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1, ['Dark', 'Burnt', 'Rust', 'Debris'])}${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 2))}</tr>
             </table>
           </td>
