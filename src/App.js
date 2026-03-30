@@ -197,7 +197,7 @@ const INSPECTION_DATA = {
             { label: 'Issue Found', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
         {
           name: 'Side Wall Cracks',
@@ -206,7 +206,7 @@ const INSPECTION_DATA = {
             { label: 'Issue Found', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
         {
           name: 'Tread <1.7mm',
@@ -215,7 +215,7 @@ const INSPECTION_DATA = {
             { label: 'Issue Found', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
         {
           name: 'No Damage',
@@ -224,7 +224,7 @@ const INSPECTION_DATA = {
             { label: 'Has Damage', color: 'red', action: 'Replace' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
       ],
     },
@@ -350,7 +350,7 @@ const INSPECTION_DATA = {
             { label: '>3.2 mm', color: 'green', action: 'Good' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
         {
           name: 'Bulges / Side Wall Crack',
@@ -359,7 +359,7 @@ const INSPECTION_DATA = {
             { label: 'No Issue', color: 'green', action: 'Good' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
       ],
     },
@@ -374,7 +374,7 @@ const INSPECTION_DATA = {
             { label: '>6 mm', color: 'green', action: 'Good' },
           ],
           hasPosition: true,
-          positions: ['FL', 'FR', 'RL', 'RR'],
+          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
       ],
     },
@@ -686,7 +686,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Front Left', 'Front Right'],
       },
       {
         partLabel: 'REAR SUSPENSION',
@@ -699,7 +699,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Rear Left', 'Rear Right'],
       },
       {
         partLabel: 'SUSPENSION ARM',
@@ -710,7 +710,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Front Left', 'Front Right'],
       },
       {
         partLabel: 'BALL JOINT',
@@ -721,7 +721,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Front Left', 'Front Right'],
       },
       {
         partLabel: 'STEERING LINKAGE',
@@ -744,7 +744,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Front Left', 'Front Right'],
       },
       {
         partLabel: 'STAB LINK',
@@ -754,7 +754,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
-        positions: ['Left', 'Right'],
+        positions: ['Front Left', 'Front Right'],
       },
     ],
   },
@@ -6948,23 +6948,23 @@ function AppInner() {
       f['FLUIDS::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
       f['TIRES::Tread Depth'] = { positions: {
-        FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
-        RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
+        'Front Left': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
+        'Rear Right': { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
       }};
       f['TIRES::Bulges / Side Wall Crack'] = { positions: {
-        FL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Rear Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
       f['BRAKE PAD::Brake Pad'] = { positions: {
-        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
-        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
-        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
+        'Front Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        'Rear Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
       f['TEST::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
@@ -6998,65 +6998,65 @@ function AppInner() {
       f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdxs: [2] };
       // Cat 7: INSPECT UNDER CHASSIS (Tires & Brakes)
       f['INSPECT UNDER CHASSIS::Tread Depth'] = { positions: {
-        FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
-        RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
+        'Front Left': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
+        'Rear Right': { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
       }};
       f['INSPECT UNDER CHASSIS::Bulges / Side Wall Crack'] = { positions: {
-        FL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        'Rear Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Brake Pad / Shoe'] = { positions: {
-        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
-        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
-        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
+        'Front Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        'Rear Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Drive Shaft Boot'] = { positions: {
-        FL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        FR: { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
-        RL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        RR: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
+        'Rear Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Rear Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       // Cat 8: INSPECT UNDER CHASSIS (Suspension & Steering)
       f['INSPECT UNDER CHASSIS::Front Suspension'] = { positions: {
-        Left: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Rear Suspension'] = { positions: {
-        Left: { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' },
-        Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' },
+        'Rear Right': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Suspension Arm'] = { positions: {
-        Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
-        Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
+        'Front Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Ball Joint'] = { positions: {
-        Left: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Steering Linkage'] = { conditionIdxs: [3] };
       f['INSPECT UNDER CHASSIS::Stab Bar Bushing'] = { positions: {
-        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Stab Link'] = { positions: {
-        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       // Remaining categories
       f['INSPECT UNDER CHASSIS::For Leaks'] = { conditionIdxs: [4] };
       f['INSPECT UNDER CHASSIS::Exhaust Pipe Mounting'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
       f['INSPECT UNDER CHASSIS::Wheel Cylinder'] = { positions: {
-        RL: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
-        RR: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Rear Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Caliper'] = { positions: {
-        FL: { conditionIdxs: [2], color: 'green', action: 'Good' },
-        FR: { conditionIdxs: [2], color: 'green', action: 'Good' },
+        'Front Left': { conditionIdxs: [2], color: 'green', action: 'Good' },
+        'Front Right': { conditionIdxs: [2], color: 'green', action: 'Good' },
       }};
       f['INSPECT UNDER CHASSIS::Engine Support'] = { conditionIdxs: [2] };
       f['INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
