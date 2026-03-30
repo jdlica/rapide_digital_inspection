@@ -5642,6 +5642,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const signalLightIdx = getIdx('TEST DRIVER CONTROLS::Signal Light');
     const wiperIdx = getIdx('TEST DRIVER CONTROLS::Wiper');
     const engineOilIdx = getIdx('INSPECT ENGINE BAY::Engine Oil');
+    const clutchPedalAction = isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1) ? 'Good' : isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0) ? 'Check' : '';
+    const brakePedalAction = isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1) ? 'Good' : isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0) ? 'Check & Adjust' : '';
+    const cabinFilterAction = isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2) ? 'Good' : isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1) ? 'Replace' : isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0) ? 'Clean' : '';
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -5904,9 +5907,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T};text-align:center;padding:8px 4px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
         </tr>
         <tr>
-          <td style="${T};text-align:center;padding:8px 4px;"><strong>CLUTCH PEDAL</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))} 10mm–20mm<br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))} &gt;20mm</td>
-          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>BRAKE PEDAL FREE PLAY</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))} 1mm–5mm &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))} &gt;5mm</td>
-          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>CABIN FILTER</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0))} Light Dirt &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1))} Clogged &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2))} Clean</td>
+          <td style="${T};text-align:center;padding:8px 4px;"><strong>CLUTCH PEDAL</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))} 10mm–20mm<br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))} &gt;20mm${clutchPedalAction ? `<br><strong style="${actionBg(clutchPedalAction)}">${clutchPedalAction}</strong>` : ''}</td>
+          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>BRAKE PEDAL FREE PLAY</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))} 1mm–5mm &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))} &gt;5mm${brakePedalAction ? `<br><strong style="${actionBg(brakePedalAction)}">${brakePedalAction}</strong>` : ''}</td>
+          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>CABIN FILTER</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0))} Light Dirt &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1))} Clogged &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2))} Clean${cabinFilterAction ? `<br><strong style="${actionBg(cabinFilterAction)}">${cabinFilterAction}</strong>` : ''}</td>
         </tr>
       </table>
     </div>
