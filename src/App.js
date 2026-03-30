@@ -5820,18 +5820,18 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Coolant<br>Level</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Coolant<br>Level</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Coolant Level', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Coolant Level', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Coolant Level', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Cooling<br>System Hose</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Cooling<br>System Hose</td>
                 <td style="${Tp}">${cb(coolingSysIdx === 0)} Cracked / Leaking</td>${actionTp('Replace', coolingSysIdx === 0)}
               </tr>
               <tr><td style="${Tp}">${cb(coolingSysIdx === 1)} No Damage</td>${actionTp('Good', coolingSysIdx === 1)}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Radiator<br>Hose</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Radiator<br>Hose</td>
                 <td style="${Tp}">${cb(radiatorHoseIdx === 0)} Cracked / Swelled</td>${actionTp('Replace', radiatorHoseIdx === 0)}
               </tr>
               <tr><td style="${Tp}">${cb(radiatorHoseIdx === 1)} No Damage</td>${actionTp('Good', radiatorHoseIdx === 1)}</tr>
@@ -5843,19 +5843,19 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Brake<br>Fluid Level</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Brake<br>Fluid Level</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Clutch<br>Fluid</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Clutch<br>Fluid</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Air<br>Cleaner</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Air<br>Cleaner</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Air Cleaner', 2))} Clogged</td>${actionTp('Replace', isSelected('INSPECT ENGINE BAY::Air Cleaner', 2))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Air Cleaner', 1))} Light Dirt</td>${actionTp('Clean', isSelected('INSPECT ENGINE BAY::Air Cleaner', 1))}</tr>
@@ -5868,19 +5868,19 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Engine<br>Oil</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Engine<br>Oil</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 0))} Normal</td>${actionTp('Change Oil', isSelected('INSPECT ENGINE BAY::Engine Oil', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 1))} Oil Sludge</td>${actionTp('Flush', isSelected('INSPECT ENGINE BAY::Engine Oil', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 2))} Low Level</td>${actionTp('Check For Leaks', isSelected('INSPECT ENGINE BAY::Engine Oil', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Power<br>Steering<br>Fluid</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Power<br>Steering<br>Fluid</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Transmission<br>M/T, A/T<br>CVT Oil</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Transmission<br>M/T, A/T<br>CVT Oil</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))}</tr>
@@ -5925,7 +5925,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:55%;"><col style="width:25%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Tires</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="5">Tires</td>
                 <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Tread Depth', 0))} &lt;1.7 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Tread Depth', 0, ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Tread Depth', 0, ['FL','FR','RL','RR'])}
               </tr>
@@ -5952,7 +5952,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:25%;"><col style="width:50%;"><col style="width:25%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="4">Brake<br>Pad/Shoe</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="4">Brake<br>Pad/Shoe</td>
                 <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 0))} &lt;3 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}
               </tr>
@@ -5975,7 +5975,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:28%;"><col style="width:47%;"><col style="width:25%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Drive<br>Shaft<br>Boot</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Drive<br>Shaft<br>Boot</td>
                 <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Drive Shaft Boot', 0))} Broken ${allPosBadgesPos('INSPECT UNDER CHASSIS::Drive Shaft Boot', 0, ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Drive Shaft Boot', 0, ['FL','FR','RL','RR'])}
               </tr>
@@ -6002,7 +6002,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Front<br>Suspension</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="5">Front<br>Suspension</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right']))} Excess Bounce 2-3x ${allPosBadgesPos('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right'])}
               </tr>
@@ -6018,7 +6018,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Rear<br>Suspension</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="5">Rear<br>Suspension</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right']))} Excess Bounce 2-3x ${allPosBadgesPos('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right'])}
               </tr>
@@ -6034,14 +6034,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Suspension<br>Arm</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Suspension<br>Arm</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right']))} Torn Bushing ${allPosBadgesPos('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right'])}
               </tr>
               <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Suspension Arm', 1, ['Front Left','Front Right']))} Bent / Damage ${allPosBadgesPos('Inspect Under Chassis::Suspension Arm', 1, ['Front Left','Front Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Suspension Arm', 1, ['Front Left','Front Right'])}</tr>
               <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Suspension Arm', 2, ['Front Left','Front Right']))} No Damage ${allPosBadgesPos('Inspect Under Chassis::Suspension Arm', 2, ['Front Left','Front Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Suspension Arm', 2, ['Front Left','Front Right'])}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Ball<br>Joint</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Ball<br>Joint</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Ball Joint', 0, ['Front Left','Front Right']))} Loose ${allPosBadgesPos('Inspect Under Chassis::Ball Joint', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Ball Joint', 0, ['Front Left','Front Right'])}
               </tr>
@@ -6055,20 +6055,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="4">Steering<br>Linkage</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="4">Steering<br>Linkage</td>
                 <td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 0))} Boot Damage</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 1))} Tie Rod Loose</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 2))} Steering Loose</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 2))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 3))} No Sign of Damage</td>${actionTp('Good', isSelected('Inspect Under Chassis::Steering Linkage', 3))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Stab Bar<br>Bushing</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Stab Bar<br>Bushing</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Stab Bar Bushing', 0, ['Front Left','Front Right']))} Worn / Cracked ${allPosBadgesPos('Inspect Under Chassis::Stab Bar Bushing', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Stab Bar Bushing', 0, ['Front Left','Front Right'])}
               </tr>
               <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Stab Bar Bushing', 1, ['Front Left','Front Right']))} No Damage ${allPosBadgesPos('Inspect Under Chassis::Stab Bar Bushing', 1, ['Front Left','Front Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Stab Bar Bushing', 1, ['Front Left','Front Right'])}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Stab<br>Link</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Stab<br>Link</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Stab Link', 0, ['Front Left','Front Right']))} Loose / Worn ${allPosBadgesPos('Inspect Under Chassis::Stab Link', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Stab Link', 0, ['Front Left','Front Right'])}
               </tr>
@@ -6088,7 +6088,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">For<br>Leaks</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="5">For<br>Leaks</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::For Leaks', 0))} Brake Line</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::For Leaks', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::For Leaks', 1))} Transmission</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::For Leaks', 1))}</tr>
@@ -6103,13 +6103,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Exhaust<br>Pipe Mounting</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Exhaust<br>Pipe Mounting</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 0))} Exhaust Hanger Damage</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 1))} Exhaust Gasket Leak</td>${actionTp('Check', isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 2))} No Damage</td>${actionTp('Good', isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Wheel<br>Cylinder</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Wheel<br>Cylinder</td>
                 <td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Wheel Cylinder', 0, ['Rear Left','Rear Right']))} Leak ${allPosBadgesPos('INSPECT UNDER CHASSIS::Wheel Cylinder', 0, ['Rear Left','Rear Right'])}</td>
                 ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Wheel Cylinder', 0, ['Rear Left','Rear Right'])}
               </tr>
@@ -6122,20 +6122,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Caliper</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Caliper</td>
                 <td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Caliper', 0, ['Front Left','Front Right']))} Leak ${allPosBadgesPos('INSPECT UNDER CHASSIS::Caliper', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Caliper', 0, ['Front Left','Front Right'])}
               </tr>
               <tr><td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Caliper', 1, ['Front Left','Front Right']))} Rusted / Stuck Up ${allPosBadgesPos('INSPECT UNDER CHASSIS::Caliper', 1, ['Front Left','Front Right'])}</td>${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Caliper', 1, ['Front Left','Front Right'])}</tr>
               <tr><td style="${Tp}">${cb(anyAtCondPos('INSPECT UNDER CHASSIS::Caliper', 2, ['Front Left','Front Right']))} Normal ${allPosBadgesPos('INSPECT UNDER CHASSIS::Caliper', 2, ['Front Left','Front Right'])}</td>${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Caliper', 2, ['Front Left','Front Right'])}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Engine<br>Support</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Engine<br>Support</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Engine Support', 0))} Crack</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Engine Support', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Engine Support', 1))} Sagging</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Engine Support', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Engine Support', 2))} No Damage</td>${actionTp('Good', isSelected('INSPECT UNDER CHASSIS::Engine Support', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Fuel Tank Cap<br>/ Lines Conn.</td>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Fuel Tank Cap<br>/ Lines Conn.</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 0))} Crack / Brittle Seal</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 1))} Fuel Lines Leak</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 1))}</tr>
