@@ -5548,10 +5548,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;text-align:center;line-height:9px;font-size:8px;vertical-align:middle;">&#10003;</span>`
         : `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;vertical-align:middle;"></span>`;
 
-    const T = `border:0.5px solid #bbb;padding:3px 5px;font-size:9px;vertical-align:middle;`;
-    const Ttop = `border:0.5px solid #bbb;padding:3px 5px;font-size:9px;vertical-align:top;`;
-    const Tp = `border:0.5px solid #bbb;padding:2px 4px;font-size:9px;vertical-align:middle;`;
-    const Tptop = `border:0.5px solid #bbb;padding:2px 4px;font-size:9px;vertical-align:top;`;
+    const T = `border:0.5px solid #bbb;padding:5px 7px;font-size:9.5px;vertical-align:middle;`;
+    const Ttop = `border:0.5px solid #bbb;padding:5px 7px;font-size:9.5px;vertical-align:top;`;
+    const Tp = `border:0.5px solid #bbb;padding:4px 6px;font-size:9px;vertical-align:middle;`;
+    const Tptop = `border:0.5px solid #bbb;padding:4px 6px;font-size:9px;vertical-align:top;`;
 
     const actionBg = (action) => {
       if (action === 'Good') return 'color:#16A34A;font-weight:700;';
@@ -5668,7 +5668,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- VEHICLE DETAILS -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
         <tr>
@@ -5690,7 +5690,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     <!-- CUSTOMER DETAILS -->
     <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
         <tr>
@@ -5729,11 +5729,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </table>
 
     <!-- VEHICLE INSPECTION header -->
-    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:8px;font-weight:700;letter-spacing:2px;margin-bottom:4px;border-radius:4px;">VEHICLE INSPECTION</div>
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:6px;border-radius:4px;">VEHICLE INSPECTION</div>
 
     <!-- MEASURE: Battery (left) + Belt (right) -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:6px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <td style="width:50%;padding:0;vertical-align:top;border:none;">
@@ -5807,8 +5807,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- INSPECT ENGINE BAY -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:11px;font-weight:700;letter-spacing:2px;">INSPECT ENGINE BAY</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-size:12px;font-weight:700;letter-spacing:2px;">INSPECT ENGINE BAY</div>
       <!-- 3 columns: Engine Bay Group 1 | Group 2 | Fluids -->
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
@@ -5890,8 +5890,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TEST DRIVER CONTROLS -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:11px;font-weight:700;letter-spacing:2px;">TEST DRIVER CONTROLS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-size:12px;font-weight:700;letter-spacing:2px;">TEST DRIVER CONTROLS</div>
       <table style="table-layout:fixed;width:100%;">
         <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
         <tr>
@@ -5910,11 +5910,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- INSPECT UNDER CHASSIS -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:11px;font-weight:700;letter-spacing:2px;">INSPECT UNDER CHASSIS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-size:12px;font-weight:700;letter-spacing:2px;">INSPECT UNDER CHASSIS</div>
 
       <!-- Sub: TIRES & BRAKES -->
-      <div style="background:#374151;color:#fff;padding:3px 8px;font-size:9px;font-weight:700;letter-spacing:1px;">TIRES &amp; BRAKES</div>
+      <div style="background:#374151;color:#fff;padding:4px 10px;font-size:9.5px;font-weight:700;letter-spacing:1px;">TIRES &amp; BRAKES</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <td style="width:40%;padding:0;vertical-align:top;border:none;">
@@ -5990,7 +5990,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
 
       <!-- Sub: SUSPENSION & STEERING -->
-      <div style="background:#374151;color:#fff;padding:3px 8px;font-size:9px;font-weight:700;letter-spacing:1px;">SUSPENSION &amp; STEERING</div>
+      <div style="background:#374151;color:#fff;padding:4px 10px;font-size:9.5px;font-weight:700;letter-spacing:1px;">SUSPENSION &amp; STEERING</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- Front Susp -->
@@ -6076,7 +6076,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
 
       <!-- Sub: CHASSIS -->
-      <div style="background:#374151;color:#fff;padding:3px 8px;font-size:9px;font-weight:700;letter-spacing:1px;">CHASSIS</div>
+      <div style="background:#374151;color:#fff;padding:4px 10px;font-size:9.5px;font-weight:700;letter-spacing:1px;">CHASSIS</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- For Leaks -->
@@ -6144,9 +6144,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TECHNICIAN'S COMMENT -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
-      <div style="min-height:32px;padding:3px 6px;font-size:8px;">${inspection.techComment || ''}</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:6px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="min-height:36px;padding:5px 8px;font-size:9px;">${inspection.techComment || ''}</div>
     </div>
 
     <!-- Footnotes -->
@@ -6900,9 +6900,10 @@ function AppInner() {
       f['INSPECT ENGINE BAY::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['INSPECT ENGINE BAY::Air Cleaner'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
-      // Cat 5: FLUIDS (Power Steering, Transmission)
-      f['FLUIDS::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['FLUIDS::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      // Engine Oil, Power Steering, Transmission (all in INSPECT ENGINE BAY cat 5)
+      f['INSPECT ENGINE BAY::Engine Oil'] = { conditionIdx: 0, condition: 'Normal', action: 'Change Oil', color: 'green' };
+      f['INSPECT ENGINE BAY::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      f['INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       // Cat 6: TEST DRIVER CONTROLS (Light, Signal Light, Horn, Wiper, Washer)
       f['TEST DRIVER CONTROLS::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
