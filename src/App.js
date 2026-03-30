@@ -135,14 +135,14 @@ const KM_READINGS = Array.from({ length: 301 }, (_, i) =>
 const INSPECTION_DATA = {
   quick: [
     {
-      category: 'BATTERY TEST',
+      category: 'Measure',
       items: [
         {
           name: 'Battery Voltage',
           conditions: [
             { label: '12.6V – 12.8V', color: 'green', action: 'Good' },
             { label: '12.2V – 12.6V', color: 'yellow', action: 'Recharge' },
-            { label: '<12.2V', color: 'red', action: 'Replace' },
+            { label: '12.2V', color: 'red', action: 'Replace' },
           ],
         },
         {
@@ -155,7 +155,7 @@ const INSPECTION_DATA = {
       ],
     },
     {
-      category: 'UNDER THE HOOD',
+      category: 'Inspect',
       items: [
         {
           name: 'Coolant Level',
@@ -165,14 +165,14 @@ const INSPECTION_DATA = {
           ],
         },
         {
-          name: 'Brake Fluid Level',
+          name: 'Power Steering Fluid',
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
           ],
         },
         {
-          name: 'Power Steering Fluid',
+          name: 'Brake Fluid Level',
           conditions: [
             { label: 'Correct Level', color: 'green', action: 'Good' },
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
@@ -188,7 +188,7 @@ const INSPECTION_DATA = {
       ],
     },
     {
-      category: 'TIRES',
+      category: 'Tires',
       items: [
         {
           name: 'Bulges',
@@ -4799,45 +4799,39 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:10px;font-size:9px;vertical-align:middle;">&#10003;</span>`
         : `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;vertical-align:middle;"></span>`;
 
-    const battV = findings['BATTERY TEST::Battery Voltage'];
+    const battV = findings['Measure::Battery Voltage'];
     const battVIdx = battV !== undefined ? battV.conditionIdx : -1;
 
     const getIdx = (key) => { const f = findings[key]; return f !== undefined ? f.conditionIdx : -1; };
-    const coolantIdx = getIdx('UNDER THE HOOD::Coolant Level');
-    const brakeIdx = getIdx('UNDER THE HOOD::Brake Fluid Level');
-    const psIdx = getIdx('UNDER THE HOOD::Power Steering Fluid');
-    const clutchIdx = getIdx('UNDER THE HOOD::Clutch Fluid');
-    const battCCAIdx = getIdx('BATTERY TEST::Starting Power (CCA)');
-    const noDamageAllGood = ['FL','FR','RL','RR'].every(p => findings['TIRES::No Damage']?.positions?.[p]?.conditionIdx === 0);
-    const isLow = (i) => i === 1 || i === 2;
+    const coolantIdx = getIdx('Inspect::Coolant Level');
+    const brakeIdx = getIdx('Inspect::Brake Fluid Level');
+    const psIdx = getIdx('Inspect::Power Steering Fluid');
+    const clutchIdx = getIdx('Inspect::Clutch Fluid');
+    const battCCAIdx = getIdx('Measure::Starting Power (CCA)');
+    const isLow = (i) => i === 1;
     const isFull = (i) => i === 0;
 
-    const getTirePos = (name) => findings[`TIRES::${name}`]?.positions || {};
-    const hasTireIssue = (name) => Object.values(getTirePos(name)).some(p => p.conditionIdx === 1);
-    // Returns ALL inspected positions with their actual condition colors
-    const tireAllPosBadges = (name) => {
+    const fullPos = ['Front Left','Front Right','Rear Left','Rear Right'];
+    const posAbbr = {'Front Left':'FL','Front Right':'FR','Rear Left':'RL','Rear Right':'RR'};
+    const getTirePos = (name) => findings[`Tires::${name}`]?.positions || {};
+    const tireAnyAtCond = (name, condIdx) => fullPos.some(p => getTirePos(name)[p]?.conditionIdx === condIdx);
+    const tirePosBadgesForCond = (name, condIdx) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getTirePos(name);
-      return ['FL','FR','RL','RR'].flatMap(p => {
+      return fullPos.flatMap(p => {
         const pd = pos[p];
-        if (!pd) return [];
+        if (!pd || pd.conditionIdx !== condIdx) return [];
         const col = cvs[pd.color] || '#000';
-        return [`<strong style="color:${col};">${p}</strong>`];
+        return [`<strong style="color:${col};">${posAbbr[p]}</strong>`];
       }).join('&nbsp;');
     };
-    // Returns action word td — prefer issue action; fall back to good action
-    const tireActionTd = (name) => {
+    const tireCondActionTd = (name, condIdx) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getTirePos(name);
-      const issuePos = ['FL','FR','RL','RR'].find(p => pos[p]?.conditionIdx === 1);
-      if (issuePos) {
-        const pd = pos[issuePos];
-        return `<td style="${T};text-align:center;"><strong style="color:${cvs[pd.color]||'#DC2626'};">${pd.action}</strong></td>`;
-      }
-      const goodPos = ['FL','FR','RL','RR'].find(p => pos[p]?.conditionIdx === 0);
-      if (goodPos) {
-        const pd = pos[goodPos];
-        return `<td style="${T};text-align:center;"><strong style="color:${cvs[pd.color]||'#16A34A'};">${pd.action}</strong></td>`;
+      const matchPos = fullPos.find(p => pos[p]?.conditionIdx === condIdx);
+      if (matchPos) {
+        const pd = pos[matchPos];
+        return `<td style="${T};text-align:center;"><strong style="color:${cvs[pd.color]||'#000'};">${pd.action}</strong></td>`;
       }
       return `<td style="${T}"></td>`;
     };
@@ -4859,18 +4853,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       `<td style="${T}${selected ? actionBg(action) : ''}">${action}</td>`;
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
-    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
     <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
 
     <!-- RAPIDE LOGO + BRANCH -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div style="background:#FFD100;padding:6px 14px;border-radius:6px;display:inline-block;">
-        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
-        <div style="font-size:8px;font-weight:700;letter-spacing:2.5px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-weight:800;font-size:13px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
-        <div style="font-size:9px;color:#6B7280;margin-top:2px;">Branch</div>
+    <div style="text-align:center;margin-bottom:6px;">
+      <div style="display:inline-block;">
+        <div style="background:#FFD100;padding:6px 14px;border-radius:6px;display:inline-block;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:2.5px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+        </div>
+        <div style="margin-top:3px;">
+          <div style="font-weight:800;font-size:13px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+          <div style="font-size:9px;color:#6B7280;margin-top:2px;">Branch</div>
+        </div>
       </div>
     </div>
 
@@ -4957,7 +4953,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TEST<br>BATTERY</td>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">BATTERY</td>
                 <td style="${Ttop}" colspan="2"><strong>Voltage Power</strong></td>
               </tr>
               <tr>
@@ -4969,7 +4965,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTd('Recharge', battVIdx === 1)}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} &lt;12.2V</td>
+                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
                 ${actionTd('Replace', battVIdx === 2)}
               </tr>
               <tr>
@@ -4995,21 +4991,37 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="4">TIRES</td>
-                <td style="${Ttop}">${cb(hasTireIssue('Bulges'))} Bulges <span style="font-size:9px;">${tireAllPosBadges('Bulges')}</span></td>
-                ${tireActionTd('Bulges')}
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="8">TIRES</td>
+                <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 0)}</span></td>
+                ${tireCondActionTd('Bulges', 0)}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Side Wall Cracks'))} Side Wall Cracks <span style="font-size:9px;">${tireAllPosBadges('Side Wall Cracks')}</span></td>
-                ${tireActionTd('Side Wall Cracks')}
+                <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 1))} Issue Found <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 1)}</span></td>
+                ${tireCondActionTd('Bulges', 1)}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(hasTireIssue('Tread <1.7mm'))} &lt;1.7 mm <span style="font-size:9px;">${tireAllPosBadges('Tread <1.7mm')}</span></td>
-                ${tireActionTd('Tread <1.7mm')}
+                <td style="${Ttop}">${cb(tireAnyAtCond('Side Wall Cracks', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Side Wall Cracks', 0)}</span></td>
+                ${tireCondActionTd('Side Wall Cracks', 0)}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(noDamageAllGood)} No Damage <span style="font-size:9px;">${tireAllPosBadges('No Damage')}</span></td>
-                ${tireActionTd('No Damage')}
+                <td style="${Ttop}">${cb(tireAnyAtCond('Side Wall Cracks', 1))} Issue Found <span style="font-size:9px;">${tirePosBadgesForCond('Side Wall Cracks', 1)}</span></td>
+                ${tireCondActionTd('Side Wall Cracks', 1)}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(tireAnyAtCond('Tread <1.7mm', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Tread <1.7mm', 0)}</span></td>
+                ${tireCondActionTd('Tread <1.7mm', 0)}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(tireAnyAtCond('Tread <1.7mm', 1))} &lt;1.7mm <span style="font-size:9px;">${tirePosBadgesForCond('Tread <1.7mm', 1)}</span></td>
+                ${tireCondActionTd('Tread <1.7mm', 1)}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(tireAnyAtCond('No Damage', 0))} No Damage <span style="font-size:9px;">${tirePosBadgesForCond('No Damage', 0)}</span></td>
+                ${tireCondActionTd('No Damage', 0)}
+              </tr>
+              <tr>
+                <td style="${Ttop}">${cb(tireAnyAtCond('No Damage', 1))} Has Damage <span style="font-size:9px;">${tirePosBadgesForCond('No Damage', 1)}</span></td>
+                ${tireCondActionTd('No Damage', 1)}
               </tr>
             </table>
           </td>
