@@ -5907,9 +5907,49 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <td style="${T};text-align:center;padding:8px 4px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
         </tr>
         <tr>
-          <td style="${T};text-align:center;padding:8px 4px;"><strong>CLUTCH PEDAL</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))} 10mm–20mm<br>${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))} &gt;20mm${clutchPedalAction ? `<br><strong style="${actionBg(clutchPedalAction)}">${clutchPedalAction}</strong>` : ''}</td>
-          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>BRAKE PEDAL FREE PLAY</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))} 1mm–5mm &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))} &gt;5mm${brakePedalAction ? `<br><strong style="${actionBg(brakePedalAction)}">${brakePedalAction}</strong>` : ''}</td>
-          <td style="${T};text-align:center;padding:8px 4px;" colspan="2"><strong>CABIN FILTER</strong><br><br>${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0))} Light Dirt &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1))} Clogged &nbsp; ${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2))} Clean${cabinFilterAction ? `<br><strong style="${actionBg(cabinFilterAction)}">${cabinFilterAction}</strong>` : ''}</td>
+          <td colspan="5" style="padding:0;border:0.5px solid #bbb;">
+            <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+              <tr>
+                <!-- Clutch Pedal -->
+                <td style="width:33.33%;padding:0;vertical-align:top;border:none;">
+                  <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+                    <colgroup><col style="width:22%;"><col style="width:52%;"><col style="width:26%;"></colgroup>
+                    <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
+                    <tr>
+                      <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Clutch<br>Pedal</td>
+                      <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))} &gt;20mm</td>${actionTp('Check', isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 0))}
+                    </tr>
+                    <tr><td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))} 10mm–20mm</td>${actionTp('Good', isSelected('TEST DRIVER CONTROLS::Clutch Pedal', 1))}</tr>
+                  </table>
+                </td>
+                <!-- Brake Pedal Free Play -->
+                <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
+                  <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+                    <colgroup><col style="width:22%;"><col style="width:52%;"><col style="width:26%;"></colgroup>
+                    <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
+                    <tr>
+                      <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Brake<br>Pedal<br>Free Play</td>
+                      <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))} &gt;5mm</td>${actionTp('Check & Adjust', isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 0))}
+                    </tr>
+                    <tr><td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))} 1mm–5mm</td>${actionTp('Good', isSelected('TEST DRIVER CONTROLS::Brake Pedal Free Play', 1))}</tr>
+                  </table>
+                </td>
+                <!-- Cabin Filter -->
+                <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
+                  <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+                    <colgroup><col style="width:22%;"><col style="width:52%;"><col style="width:26%;"></colgroup>
+                    <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
+                    <tr>
+                      <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Cabin<br>Filter</td>
+                      <td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0))} Light Dirt</td>${actionTp('Clean', isSelected('TEST DRIVER CONTROLS::Cabin Filter', 0))}
+                    </tr>
+                    <tr><td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1))} Clogged</td>${actionTp('Replace', isSelected('TEST DRIVER CONTROLS::Cabin Filter', 1))}</tr>
+                    <tr><td style="${Tp}">${cb(isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2))} Clean</td>${actionTp('Good', isSelected('TEST DRIVER CONTROLS::Cabin Filter', 2))}</tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
         </tr>
       </table>
     </div>
