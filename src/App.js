@@ -483,14 +483,14 @@ INSPECTION_DATA.plus = [
       {
         name: 'Cooling System Hose',
         conditions: [
-          { label: 'Cracked / Leaking', color: 'red', action: 'Replace' },
+          { label: 'Crack/Leak/Swelling', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
       },
       {
         name: 'Radiator Hose',
         conditions: [
-          { label: 'Cracked / Swelled', color: 'red', action: 'Replace' },
+          { label: 'Crack/Leak/Swelling', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
       },
@@ -512,11 +512,18 @@ INSPECTION_DATA.plus = [
       },
       {
         name: 'Air Cleaner',
-        instruction: 'Tap the option that best matches the filter:',
         conditions: [
-          { label: 'Clean', color: 'green', action: 'Good', description: 'Filter looks white or light gray, no visible dirt buildup' },
-          { label: 'Light Dirt', color: 'yellow', action: 'Clean', description: 'Some dust or discoloration visible, but still mostly clear' },
-          { label: 'Clogged', color: 'red', action: 'Replace', description: 'Heavy dirt, dark color, or airflow is blocked' },
+          { label: 'Clean', color: 'green', action: 'Good' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+        ],
+      },
+      {
+        name: 'Engine Oil',
+        conditions: [
+          { label: 'Normal', color: 'green', action: 'Change Oil' },
+          { label: 'Oil Sludge', color: 'red', action: 'Flush' },
+          { label: 'Low Level', color: 'yellow', action: 'Check For Leaks' },
         ],
       },
     ],
@@ -592,7 +599,7 @@ INSPECTION_DATA.plus = [
         name: 'Clutch Pedal',
         multiSelect: true,
         conditions: [
-          { label: '>20mm', color: 'yellow', action: 'Check' },
+          { label: '20mm', color: 'yellow', action: 'Check' },
           { label: '10mm – 20mm', color: 'green', action: 'Good', exclusive: true },
         ],
       },
@@ -641,7 +648,6 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
-        partLabel: 'BRAKE PAD / SHOE',
         name: 'Brake Pad / Shoe',
         conditions: [
           { label: '<3 mm', color: 'red', action: 'Replace' },
@@ -727,6 +733,8 @@ INSPECTION_DATA.plus = [
           { label: 'Steering Loose', color: 'red', action: 'Replace' },
           { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
         ],
+        hasPosition: true,
+        positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
       },
       {
         partLabel: 'STAB BAR BUSHING',
@@ -779,7 +787,7 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
-        positions: ['RL', 'RR'],
+        positions: ['Rear Left', 'Rear Right'],
       },
       {
         name: 'Caliper',
@@ -790,7 +798,7 @@ INSPECTION_DATA.plus = [
           { label: 'Normal', color: 'green', action: 'Good', exclusive: true },
         ],
         hasPosition: true,
-        positions: ['FL', 'FR'],
+        positions: ['Front Left', 'Front Right'],
       },
       {
         name: 'Engine Support',
@@ -807,21 +815,6 @@ INSPECTION_DATA.plus = [
         conditions: [
           { label: 'Crack / Brittle', color: 'red', action: 'Replace' },
           { label: 'Fuel Line Leak', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── FUEL SYSTEM ────────────────────────────────────────────
-  {
-    category: 'FUEL SYSTEM',
-    items: [
-      {
-        name: 'Fuel Tank Cap / Lines Connection',
-        multiSelect: true,
-        conditions: [
-          { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
-          { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
@@ -3289,12 +3282,13 @@ function InspectionScreen({
                 const greenCond = greenIdx >= 0 ? item.conditions[greenIdx] : null;
                 const issueConditions = item.conditions
                   .map((c, i) => ({ ...c, idx: i }));
-                // Group positions: FL/FR/RL/RR → Front + Rear; others → single group
-                const hasFrontRear = item.positions.includes('FL') && item.positions.includes('RL');
+                // Group positions: FL/FR/RL/RR or Front*/Rear* → Front + Rear; others → single group
+                const hasFrontRear = (item.positions.includes('FL') && item.positions.includes('RL')) ||
+                  (item.positions.some((p) => p.startsWith('Front')) && item.positions.some((p) => p.startsWith('Rear')));
                 const groups = hasFrontRear
                   ? [
-                      { label: 'Front', positions: item.positions.filter((p) => p === 'FL' || p === 'FR') },
-                      { label: 'Rear', positions: item.positions.filter((p) => p === 'RL' || p === 'RR') },
+                      { label: 'Front', positions: item.positions.filter((p) => p === 'FL' || p === 'FR' || p.startsWith('Front')) },
+                      { label: 'Rear', positions: item.positions.filter((p) => p === 'RL' || p === 'RR' || p.startsWith('Rear')) },
                     ]
                   : [{ label: null, positions: item.positions }];
                 return (
