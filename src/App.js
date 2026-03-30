@@ -5179,7 +5179,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const problemsAnswer = (sd.currentProblems || []).join(', ');
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
-    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
     <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:14px;">
 
     <!-- RAPIDE LOGO + BRANCH -->
@@ -5422,13 +5422,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <!-- Tires: Tread Depth (3) + Bulges (2) = 5 -->
               ${(() => { const tirePos = ['Front Left','Front Right','Rear Left','Rear Right']; return `
               <tr>
-                <td style="${Ttop};font-weight:900;font-size:8.5px;text-align:center;" rowspan="5">Tires</td>
+                <td style="${Ttop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="3">Tires<br><span style="font-weight:700;font-size:7px;">Tread<br>Depth</span></td>
                 <td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Tread Depth', 0, tirePos))} &lt;1.7 mm ${allPosBadgesPos('Inspect Under Chassis::Tread Depth', 0, tirePos)}</td>
                 ${alwaysActionTd('Inspect Under Chassis::Tread Depth', 0, tirePos)}
               </tr>
               <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Tread Depth', 1, tirePos))} 3.2 – 1.7 mm ${allPosBadgesPos('Inspect Under Chassis::Tread Depth', 1, tirePos)}</td>${alwaysActionTd('Inspect Under Chassis::Tread Depth', 1, tirePos)}</tr>
               <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Tread Depth', 2, tirePos))} &gt;3.2 mm ${allPosBadgesPos('Inspect Under Chassis::Tread Depth', 2, tirePos)}</td>${alwaysActionTd('Inspect Under Chassis::Tread Depth', 2, tirePos)}</tr>
-              <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos))} Bulges / Side Wall Crack ${allPosBadgesPos('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos)}</td>${alwaysActionTd('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos)}</tr>
+              <tr>
+                <td style="${Ttop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="2">Tires<br><span style="font-weight:700;font-size:7px;">Bulges/<br>Side Wall<br>Crack</span></td>
+                <td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos))} Bulges / Side Wall Crack ${allPosBadgesPos('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos)}</td>
+                ${alwaysActionTd('Inspect Under Chassis::Bulges / Side Wall Crack', 0, tirePos)}
+              </tr>
               <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Bulges / Side Wall Crack', 1, tirePos))} No Issue ${allPosBadgesPos('Inspect Under Chassis::Bulges / Side Wall Crack', 1, tirePos)}</td>${alwaysActionTd('Inspect Under Chassis::Bulges / Side Wall Crack', 1, tirePos)}</tr>
               `; })()}
               <!-- Steering Linkage (4 rows) -->
