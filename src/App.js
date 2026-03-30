@@ -154,6 +154,8 @@ const INSPECTION_DATA = {
         },
         {
           name: 'Bulges',
+          partLabel: 'Tires',
+          groupDisabledBy: 'No Damage',
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -163,6 +165,8 @@ const INSPECTION_DATA = {
         },
         {
           name: 'Side Wall Cracks',
+          partLabel: 'Tires',
+          groupDisabledBy: 'No Damage',
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -172,6 +176,8 @@ const INSPECTION_DATA = {
         },
         {
           name: 'Tread <1.7mm',
+          partLabel: 'Tires',
+          groupDisabledBy: 'No Damage',
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -181,12 +187,12 @@ const INSPECTION_DATA = {
         },
         {
           name: 'No Damage',
+          partLabel: 'Tires',
+          optional: true,
+          disableOthersInGroup: true,
           conditions: [
             { label: 'No Damage', color: 'green', action: 'Good' },
-            { label: 'Has Damage', color: 'red', action: 'Replace' },
           ],
-          hasPosition: true,
-          positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
         },
       ],
     },
@@ -2914,8 +2920,13 @@ function InspectionScreen({
 
   const getKey = (catName, itemName) => `${catName}::${itemName}`;
 
+  const groupDisablerItem = cat.items.find((i) => i.disableOthersInGroup);
+  const groupDisablerKey = groupDisablerItem ? getKey(cat.category, groupDisablerItem.name) : null;
+  const groupDisablerSelected = groupDisablerKey ? findings[groupDisablerKey]?.conditionIdx === 0 : false;
+
   const allFilled = cat.items.every((item) => {
     if (item.optional) return true;
+    if (item.groupDisabledBy && groupDisablerSelected) return true;
     const key = getKey(cat.category, item.name);
     const finding = findings[key];
     if (item.hasPosition) {
@@ -2948,7 +2959,13 @@ function InspectionScreen({
         delete updated[key];
         return updated;
       }
-      return { ...prev, [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color } };
+      const updated = { ...prev, [key]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color } };
+      if (item.disableOthersInGroup) {
+        cat.items.forEach((i) => {
+          if (i.groupDisabledBy === itemName) delete updated[getKey(cat.category, i.name)];
+        });
+      }
+      return updated;
     });
     setAttempted(false);
   };
@@ -3150,7 +3167,9 @@ function InspectionScreen({
             item.conditions.some((c) => c.color === 'red') && item.conditions.some((c) => c.color === 'yellow')
           );
 
-          const unanswered = !item.optional && attempted && (
+          const isGroupDisabled = !!item.groupDisabledBy && groupDisablerSelected;
+
+          const unanswered = !item.optional && !isGroupDisabled && attempted && (
             item.hasPosition
               ? !finding?.noDamage && (!finding?.positions || !item.positions.every((p) => finding.positions[p]))
               : isMultiSelect ? !(finding?.conditionIdxs?.length > 0) : !finding
@@ -3193,7 +3212,9 @@ function InspectionScreen({
                 borderRadius: 14,
                 border: `2px solid ${cardBorder}`,
                 overflow: 'hidden',
-                transition: 'border-color 0.2s',
+                transition: 'border-color 0.2s, opacity 0.2s',
+                opacity: isGroupDisabled ? 0.35 : 1,
+                pointerEvents: isGroupDisabled ? 'none' : 'auto',
               }}
             >
               {/* Item name header */}
@@ -4808,6 +4829,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const fullPos = ['Front Left','Front Right','Rear Left','Rear Right'];
     const posAbbr = {'Front Left':'FL','Front Right':'FR','Rear Left':'RL','Rear Right':'RR'};
+    const noDamage = findings['Measure::No Damage']?.conditionIdx === 0;
     const getTirePos = (name) => findings[`Measure::${name}`]?.positions || {};
     const tireAnyAtCond = (name, condIdx) => fullPos.some(p => getTirePos(name)[p]?.conditionIdx === condIdx);
     const tirePosBadgesForCond = (name, condIdx) => {
@@ -4986,7 +5008,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="8">TIRES</td>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="7">TIRES</td>
                 <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 0))} No Issue <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 0)}</span></td>
                 ${tireCondActionTd('Bulges', 0)}
               </tr>
@@ -5011,12 +5033,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${tireCondActionTd('Tread <1.7mm', 1)}
               </tr>
               <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('No Damage', 0))} No Damage <span style="font-size:9px;">${tirePosBadgesForCond('No Damage', 0)}</span></td>
-                ${tireCondActionTd('No Damage', 0)}
-              </tr>
-              <tr>
-                <td style="${Ttop}">${cb(tireAnyAtCond('No Damage', 1))} Has Damage <span style="font-size:9px;">${tirePosBadgesForCond('No Damage', 1)}</span></td>
-                ${tireCondActionTd('No Damage', 1)}
+                <td style="${Ttop}">${cb(noDamage)} No Damage</td>
+                <td style="${T};text-align:center;"><strong style="color:${noDamage ? '#16A34A' : 'transparent'};">Good</strong></td>
               </tr>
             </table>
           </td>
