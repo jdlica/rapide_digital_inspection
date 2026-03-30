@@ -498,7 +498,7 @@ INSPECTION_DATA.plus = [
         name: 'Brake Fluid Level',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -6099,11 +6099,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="4">Steering<br>Linkage</td>
-                <td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 0))} Boot Damage</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 0))}
+                <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Steering Linkage', 0, ['Front Left','Front Right','Rear Left','Rear Right']))} Boot Damage ${allPosBadgesPos('Inspect Under Chassis::Steering Linkage', 0, ['Front Left','Front Right','Rear Left','Rear Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Steering Linkage', 0, ['Front Left','Front Right','Rear Left','Rear Right'])}
               </tr>
-              <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 1))} Tie Rod Loose</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 1))}</tr>
-              <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 2))} Steering Loose</td>${actionTp('Replace', isSelected('Inspect Under Chassis::Steering Linkage', 2))}</tr>
-              <tr><td style="${Tp}">${cb(isSelected('Inspect Under Chassis::Steering Linkage', 3))} No Sign of Damage</td>${actionTp('Good', isSelected('Inspect Under Chassis::Steering Linkage', 3))}</tr>
+              <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Steering Linkage', 1, ['Front Left','Front Right','Rear Left','Rear Right']))} Tie Rod Loose ${allPosBadgesPos('Inspect Under Chassis::Steering Linkage', 1, ['Front Left','Front Right','Rear Left','Rear Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Steering Linkage', 1, ['Front Left','Front Right','Rear Left','Rear Right'])}</tr>
+              <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Steering Linkage', 2, ['Front Left','Front Right','Rear Left','Rear Right']))} Steering Loose ${allPosBadgesPos('Inspect Under Chassis::Steering Linkage', 2, ['Front Left','Front Right','Rear Left','Rear Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Steering Linkage', 2, ['Front Left','Front Right','Rear Left','Rear Right'])}</tr>
+              <tr><td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Steering Linkage', 3, ['Front Left','Front Right','Rear Left','Rear Right']))} No Sign of Damage ${allPosBadgesPos('Inspect Under Chassis::Steering Linkage', 3, ['Front Left','Front Right','Rear Left','Rear Right'])}</td>${alwaysActionTdSmall('Inspect Under Chassis::Steering Linkage', 3, ['Front Left','Front Right','Rear Left','Rear Right'])}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="2">Stab Bar<br>Bushing</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Stab Bar Bushing', 0, ['Front Left','Front Right']))} Worn / Cracked ${allPosBadgesPos('Inspect Under Chassis::Stab Bar Bushing', 0, ['Front Left','Front Right'])}</td>
