@@ -3136,15 +3136,18 @@ function InspectionScreen({
         {cat.items.map((item) => {
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
+          const isMultiSelect = item.multiSelect || (
+            item.conditions.some((c) => c.color === 'red') && item.conditions.some((c) => c.color === 'yellow')
+          );
 
           const unanswered = !item.optional && attempted && (
             item.hasPosition
               ? !finding?.noDamage && (!finding?.positions || !item.positions.every((p) => finding.positions[p]))
-              : item.multiSelect ? !(finding?.conditionIdxs?.length > 0) : !finding
+              : isMultiSelect ? !(finding?.conditionIdxs?.length > 0) : !finding
           );
 
           // For multi-select: derive worst color from selected conditions
-          const multiSelectColors = item.multiSelect
+          const multiSelectColors = isMultiSelect
             ? (finding?.conditionIdxs || []).map((i) => item.conditions[i]?.color).filter(Boolean)
             : [];
           const worstMultiColor = multiSelectColors.includes('red') ? 'red'
@@ -3161,15 +3164,15 @@ function InspectionScreen({
             if (cols.includes('red')) cardBorder = colorMap.red;
             else if (cols.includes('yellow')) cardBorder = colorMap.yellow;
             else if (cols.length > 0) cardBorder = colorMap.green;
-          } else if (item.multiSelect && worstMultiColor) {
+          } else if (isMultiSelect && worstMultiColor) {
             cardBorder = colorMap[worstMultiColor];
           } else if (!item.hasPosition && finding) {
             cardBorder = colorMap[finding.color];
           }
 
           const showCamera = (
-            (!item.hasPosition && !item.multiSelect && finding && (finding.color === 'yellow' || finding.color === 'red')) ||
-            (!item.hasPosition && item.multiSelect && (worstMultiColor === 'yellow' || worstMultiColor === 'red'))
+            (!item.hasPosition && !isMultiSelect && finding && (finding.color === 'yellow' || finding.color === 'red')) ||
+            (!item.hasPosition && isMultiSelect && (worstMultiColor === 'yellow' || worstMultiColor === 'red'))
           );
 
           return (
@@ -3301,15 +3304,15 @@ function InspectionScreen({
                                 </div>
                                 {/* Issue conditions */}
                                 {issueConditions.map((cond) => {
-                                  const isSelected = item.multiSelect
-                                    ? (pf?.conditionIdxs?.includes(cond.idx) ?? false)
+                                  const isSelected = isMultiSelect
+                                    ? (pf?.conditionIdxs?.includes(cond.idx) || pf?.conditionIdx === cond.idx)
                                     : pf?.conditionIdx === cond.idx;
-                                  const posExclusiveLocked = item.multiSelect && !cond.exclusive &&
+                                  const posExclusiveLocked = isMultiSelect && !cond.exclusive &&
                                     item.conditions.some((c, i) => c.exclusive && pf?.conditionIdxs?.includes(i));
                                   return (
                                     <div
                                       key={cond.idx}
-                                      onClick={() => item.multiSelect
+                                      onClick={() => isMultiSelect
                                         ? selectPositionMultiCondition(item.name, pos, cond.idx)
                                         : selectPositionCondition(item.name, pos, cond.idx)}
                                       style={{
@@ -3400,10 +3403,10 @@ function InspectionScreen({
                 /* Standard condition list for non-position items */
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {item.conditions.map((cond, ci) => {
-                    const selected = item.multiSelect
-                      ? (finding?.conditionIdxs?.includes(ci) ?? false)
+                    const selected = isMultiSelect
+                      ? (finding?.conditionIdxs?.includes(ci) || finding?.conditionIdx === ci)
                       : finding?.conditionIdx === ci;
-                    const exclusiveLocked = item.multiSelect && !cond.exclusive &&
+                    const exclusiveLocked = isMultiSelect && !cond.exclusive &&
                       item.conditions.some((c, i) => c.exclusive && finding?.conditionIdxs?.includes(i));
                     return (
                       <div
@@ -3418,7 +3421,7 @@ function InspectionScreen({
                         }}
                       >
                         <div
-                          onClick={() => item.multiSelect ? selectMultiCondition(item.name, ci) : selectCondition(item.name, ci)}
+                          onClick={() => isMultiSelect ? selectMultiCondition(item.name, ci) : selectCondition(item.name, ci)}
                           style={{
                             padding: '16px 18px', cursor: 'pointer', display: 'flex',
                             alignItems: 'center', justifyContent: 'space-between',
