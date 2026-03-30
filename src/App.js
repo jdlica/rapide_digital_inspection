@@ -498,7 +498,7 @@ INSPECTION_DATA.plus = [
         name: 'Brake Fluid Level',
         conditions: [
           { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace' },
+          { label: 'Contaminated (3-4% Moisture)', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
           { label: 'Correct Level', color: 'green', action: 'Good' },
         ],
       },
@@ -5850,7 +5850,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))}</tr>
-              <tr><td style="${Tp};font-size:7px;" colspan="2">&nbsp;&nbsp;${cb(false)} Oil &nbsp; ${cb(false)} Sludge &nbsp; ${cb(false)} Rust &nbsp; ${cb(false)} Debris</td></tr>
+              <tr><td style="${Tp};font-size:7.5px;font-style:italic;color:#DC2626;" colspan="2">${getSubOpt('INSPECT ENGINE BAY::Brake Fluid Level') ? `&nbsp;&nbsp;▸ ${getSubOpt('INSPECT ENGINE BAY::Brake Fluid Level')}` : ''}</td></tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;word-break:break-word;" rowspan="3">Clutch<br>Fluid</td>
