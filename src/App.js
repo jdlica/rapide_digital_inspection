@@ -667,7 +667,7 @@ INSPECTION_DATA.plus = [
   },
   // ── INSPECT UNDER CHASSIS (Suspension & Steering) ─────────
   {
-    category: 'INSPECT UNDER CHASSIS',
+    category: 'Inspect Under Chassis',
     items: [
       {
         partLabel: 'FRONT SUSPENSION',
@@ -751,14 +751,62 @@ INSPECTION_DATA.plus = [
     ],
   },
   {
-    category: 'ENGINE SUPPORT',
+    category: 'INSPECT UNDER CHASSIS',
     items: [
+      {
+        name: 'For Leaks',
+        multiSelect: true,
+        conditions: [
+          { label: 'Brake Line', color: 'red', action: 'Replace' },
+          { label: 'Transmission', color: 'red', action: 'Replace' },
+          { label: 'Transfer Case', color: 'red', action: 'Replace' },
+          { label: 'Differential', color: 'red', action: 'Replace' },
+          { label: 'No Leak', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+      {
+        name: 'Exhaust Pipe Mounting',
+        conditions: [
+          { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
+          { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+      {
+        name: 'Wheel Cylinder',
+        conditions: [
+          { label: 'Leak', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+        hasPosition: true,
+        positions: ['RL', 'RR'],
+      },
+      {
+        name: 'Caliper',
+        multiSelect: true,
+        conditions: [
+          { label: 'Leak', color: 'red', action: 'Replace' },
+          { label: 'Rusted / Stuck Up', color: 'red', action: 'Replace' },
+          { label: 'Normal', color: 'green', action: 'Good', exclusive: true },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR'],
+      },
       {
         name: 'Engine Support',
         multiSelect: true,
         conditions: [
           { label: 'Crack', color: 'red', action: 'Replace' },
           { label: 'Sagging', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+      {
+        name: 'Fuel Tank Cap / Lines Connection',
+        multiSelect: true,
+        conditions: [
+          { label: 'Crack / Brittle', color: 'red', action: 'Replace' },
+          { label: 'Fuel Line Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
@@ -2996,6 +3044,36 @@ function InspectionScreen({
     setAttempted(false);
   };
 
+  const selectPositionMultiCondition = (itemName, pos, condIdx) => {
+    const key = getKey(cat.category, itemName);
+    const item = cat.items.find((i) => i.name === itemName);
+    const cond = item.conditions[condIdx];
+    setFindings((prev) => {
+      const existing = prev[key] || { positions: {} };
+      const posData = existing.positions?.[pos];
+      const currentIdxs = posData?.conditionIdxs || [];
+      if (currentIdxs.includes(condIdx)) {
+        const next = currentIdxs.filter((i) => i !== condIdx);
+        if (next.length === 0) {
+          const up = { ...(existing.positions || {}) }; delete up[pos];
+          return { ...prev, [key]: { ...existing, positions: up, noDamage: false } };
+        }
+        const wc = next.reduce((a, i) => { const c = item.conditions[i]?.color; return c === 'red' ? 'red' : a === 'red' ? 'red' : c === 'yellow' ? 'yellow' : a; }, 'green');
+        const wa = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || item.conditions[next[0]]?.action;
+        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
+      }
+      if (cond.exclusive) {
+        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } }, noDamage: false } };
+      }
+      const excIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
+      const next = [...currentIdxs.filter((i) => !excIdxs.includes(i)), condIdx];
+      const wc = next.reduce((a, i) => { const c = item.conditions[i]?.color; return c === 'red' ? 'red' : a === 'red' ? 'red' : c === 'yellow' ? 'yellow' : a; }, 'green');
+      const wa = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || cond.action;
+      return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
+    });
+    setAttempted(false);
+  };
+
   const handleNoDamage = (itemName) => {
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
@@ -3271,18 +3349,26 @@ function InspectionScreen({
                                 </div>
                                 {/* Issue conditions */}
                                 {issueConditions.map((cond) => {
-                                  const isSelected = pf?.conditionIdx === cond.idx;
+                                  const isSelected = item.multiSelect
+                                    ? (pf?.conditionIdxs?.includes(cond.idx) ?? false)
+                                    : pf?.conditionIdx === cond.idx;
+                                  const posExclusiveLocked = item.multiSelect && !cond.exclusive &&
+                                    item.conditions.some((c, i) => c.exclusive && pf?.conditionIdxs?.includes(i));
                                   return (
                                     <div
                                       key={cond.idx}
-                                      onClick={() => selectPositionCondition(item.name, pos, cond.idx)}
+                                      onClick={() => item.multiSelect
+                                        ? selectPositionMultiCondition(item.name, pos, cond.idx)
+                                        : selectPositionCondition(item.name, pos, cond.idx)}
                                       style={{
                                         padding: '9px 10px',
-                                        cursor: 'pointer',
+                                        cursor: posExclusiveLocked ? 'default' : 'pointer',
                                         background: isSelected ? bgColorMap[cond.color] : 'transparent',
                                         borderBottom: `1px solid ${BRAND.grayBorder}`,
                                         display: 'flex', alignItems: 'flex-start', gap: 7,
                                         transition: 'background 0.15s',
+                                        opacity: posExclusiveLocked ? 0.35 : 1,
+                                        pointerEvents: posExclusiveLocked ? 'none' : 'auto',
                                       }}
                                     >
                                       <div style={{
@@ -3365,12 +3451,16 @@ function InspectionScreen({
                     const selected = item.multiSelect
                       ? (finding?.conditionIdxs?.includes(ci) ?? false)
                       : finding?.conditionIdx === ci;
+                    const exclusiveLocked = item.multiSelect && !cond.exclusive &&
+                      item.conditions.some((c, i) => c.exclusive && finding?.conditionIdxs?.includes(i));
                     return (
                       <div
                         key={ci}
                         style={{
                           borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
                           background: selected ? bgColorMap[cond.color] : 'transparent',
+                          opacity: exclusiveLocked ? 0.35 : 1,
+                          pointerEvents: exclusiveLocked ? 'none' : 'auto',
                           borderLeft: selected ? `4px solid ${colorMap[cond.color]}` : '4px solid transparent',
                           transition: 'background 0.15s, border-left 0.15s',
                         }}
@@ -6964,10 +7054,18 @@ function AppInner() {
         Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       // Remaining categories
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
-      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
-      f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
-      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
+      f['INSPECT UNDER CHASSIS::For Leaks'] = { conditionIdxs: [4] };
+      f['INSPECT UNDER CHASSIS::Exhaust Pipe Mounting'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['INSPECT UNDER CHASSIS::Wheel Cylinder'] = { positions: {
+        RL: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
+      f['INSPECT UNDER CHASSIS::Caliper'] = { positions: {
+        FL: { conditionIdxs: [2], color: 'green', action: 'Good' },
+        FR: { conditionIdxs: [2], color: 'green', action: 'Good' },
+      }};
+      f['INSPECT UNDER CHASSIS::Engine Support'] = { conditionIdxs: [2] };
+      f['INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
     }
     setFindings(f);
   };
