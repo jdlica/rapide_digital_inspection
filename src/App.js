@@ -5185,14 +5185,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:14px;">
 
     <!-- RAPIDE LOGO + BRANCH -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
-      <div style="background:#FFD100;padding:5px 12px;border-radius:5px;display:inline-block;">
-        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
-        <div style="font-size:7px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-weight:800;font-size:11px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
-        <div style="font-size:8px;color:#6B7280;margin-top:1px;">Branch</div>
+    <div style="text-align:center;margin-bottom:5px;">
+      <div style="display:inline-block;">
+        <div style="background:#FFD100;padding:5px 12px;border-radius:5px;display:inline-block;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+          <div style="font-size:7px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+        </div>
+        <div style="margin-top:3px;">
+          <div style="font-weight:800;font-size:11px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+          <div style="font-size:8px;color:#6B7280;margin-top:1px;">Branch</div>
+        </div>
       </div>
     </div>
 
