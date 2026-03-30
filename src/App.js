@@ -522,9 +522,39 @@ INSPECTION_DATA.plus = [
       },
     ],
   },
-  // ── INSPECT UNDER CHASSIS ───────────────────────────────────
+  // ── STEERING LINKAGE ────────────────────────────────────────
   {
-    category: 'INSPECT UNDER CHASSIS',
+    category: 'STEERING LINKAGE',
+    items: [
+      {
+        name: 'Steering Linkage',
+        multiSelect: true,
+        conditions: [
+          { label: 'Boot Damage', color: 'red', action: 'Replace' },
+          { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
+          { label: 'Steering Loose', color: 'red', action: 'Replace' },
+          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
+        ],
+      },
+    ],
+  },
+  // ── AIR CONDITIONER ────────────────────────────────────────
+  {
+    category: 'AIR CONDITIONER',
+    items: [
+      {
+        name: 'Air Cleaner',
+        conditions: [
+          { label: 'Clogged', color: 'red', action: 'Replace' },
+          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
+          { label: 'Clean', color: 'green', action: 'Good' },
+        ],
+      },
+    ],
+  },
+  // ── TIRES ───────────────────────────────────────────────────
+  {
+    category: 'TIRES',
     items: [
       {
         name: 'Tread Depth',
@@ -545,6 +575,12 @@ INSPECTION_DATA.plus = [
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
+    ],
+  },
+  // ── BRAKE PAD / SHOE ────────────────────────────────────────
+  {
+    category: 'BRAKE PAD / SHOE',
+    items: [
       {
         name: 'Brake Pad / Shoe',
         conditions: [
@@ -556,139 +592,12 @@ INSPECTION_DATA.plus = [
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
-      {
-        name: 'Drive Shaft Boot',
-        conditions: [
-          { label: 'Broken', color: 'red', action: 'Replace' },
-          { label: 'Leaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good' },
-        ],
-        hasPosition: true,
-        positions: ['FL', 'FR', 'RL', 'RR'],
-      },
     ],
   },
-  // ── INSPECT UNDER CHASSIS (SUSPENSION & STEERING) ──────────
+  // ── ENGINE SUPPORT ──────────────────────────────────────────
   {
-    category: 'INSPECT UNDER CHASSIS',
+    category: 'ENGINE SUPPORT',
     items: [
-      {
-        name: 'Front Suspension',
-        multiSelect: true,
-        conditions: [
-          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
-          { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
-          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
-          { label: 'Squeaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['Left', 'Right'],
-      },
-      {
-        name: 'Rear Suspension',
-        multiSelect: true,
-        conditions: [
-          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
-          { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
-          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
-          { label: 'Squeaking', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['Left', 'Right'],
-      },
-      {
-        name: 'Suspension Arm',
-        multiSelect: true,
-        conditions: [
-          { label: 'Torn Bushing', color: 'red', action: 'Replace' },
-          { label: 'Bent / Damage', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['Left', 'Right'],
-      },
-      {
-        name: 'Ball Joint',
-        multiSelect: true,
-        conditions: [
-          { label: 'Loose', color: 'red', action: 'Replace' },
-          { label: 'Boot Torn', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['Left', 'Right'],
-      },
-      {
-        name: 'Steering Linkage',
-        multiSelect: true,
-        conditions: [
-          { label: 'Boot Damage', color: 'red', action: 'Replace' },
-          { label: 'Tie Rod Loose', color: 'red', action: 'Replace' },
-          { label: 'Steering Loose', color: 'red', action: 'Replace' },
-          { label: 'No Sign of Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-      {
-        name: 'Stab Bar Bushing',
-        conditions: [
-          { label: 'Loose', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-      {
-        name: 'Stab Link',
-        conditions: [
-          { label: 'Loose', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── INSPECT UNDER CHASSIS (LEAKS & ENGINE) ──────────────────
-  {
-    category: 'INSPECT UNDER CHASSIS',
-    items: [
-      {
-        name: 'For Leaks',
-        multiSelect: true,
-        conditions: [
-          { label: 'Brake Line', color: 'red', action: 'Replace' },
-          { label: 'Transmission', color: 'red', action: 'Replace' },
-          { label: 'Transfer Case', color: 'red', action: 'Replace' },
-          { label: 'Differential', color: 'red', action: 'Replace' },
-          { label: 'No Leak', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-      {
-        name: 'Exhaust Pipe Mounting',
-        conditions: [
-          { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
-          { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-      {
-        name: 'Wheel Cylinder',
-        conditions: [
-          { label: 'Leak', color: 'red', action: 'Replace' },
-          { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['RL', 'RR'],
-      },
-      {
-        name: 'Caliper',
-        multiSelect: true,
-        conditions: [
-          { label: 'Leak', color: 'red', action: 'Replace' },
-          { label: 'Rusted / Stuck Up', color: 'red', action: 'Replace' },
-          { label: 'Normal', color: 'green', action: 'Good', exclusive: true },
-        ],
-        hasPosition: true,
-        positions: ['FL', 'FR'],
-      },
       {
         name: 'Engine Support',
         multiSelect: true,
@@ -698,6 +607,12 @@ INSPECTION_DATA.plus = [
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
         ],
       },
+    ],
+  },
+  // ── FUEL SYSTEM ────────────────────────────────────────────
+  {
+    category: 'FUEL SYSTEM',
+    items: [
       {
         name: 'Fuel Tank Cap / Lines Connection',
         multiSelect: true,
@@ -705,20 +620,6 @@ INSPECTION_DATA.plus = [
           { label: 'Crack / Brittle Seal', color: 'red', action: 'Replace' },
           { label: 'Fuel Lines Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── AIR CONDITIONER ────────────────────────────────────────
-  {
-    category: 'AIR CONDITIONER',
-    items: [
-      {
-        name: 'Air Cleaner',
-        conditions: [
-          { label: 'Clogged', color: 'red', action: 'Replace' },
-          { label: 'Light Dirt', color: 'yellow', action: 'Clean' },
-          { label: 'Clean', color: 'green', action: 'Good' },
         ],
       },
     ],
@@ -880,6 +781,22 @@ INSPECTION_DATA.plus = [
           { label: 'Cracked / Swelled', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
+      },
+    ],
+  },
+  // ── DRIVE SHAFT BOOT ──────────────────────────────────────
+  {
+    category: 'DRIVE SHAFT BOOT',
+    items: [
+      {
+        name: 'Drive Shaft Boot',
+        conditions: [
+          { label: 'Broken', color: 'red', action: 'Replace' },
+          { label: 'Leaking', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+        hasPosition: true,
+        positions: ['FL', 'FR', 'RL', 'RR'],
       },
     ],
   },
@@ -3078,54 +2995,6 @@ function InspectionScreen({
     setAttempted(false);
   };
 
-  const selectPositionMultiCondition = (itemName, pos, condIdx) => {
-    const key = getKey(cat.category, itemName);
-    const item = cat.items.find((i) => i.name === itemName);
-    const cond = item.conditions[condIdx];
-    setFindings((prev) => {
-      const existing = prev[key] || { positions: {} };
-      const posData = existing.positions?.[pos];
-      const currentIdxs = posData?.conditionIdxs || [];
-
-      if (currentIdxs.includes(condIdx)) {
-        const next = currentIdxs.filter((i) => i !== condIdx);
-        if (next.length === 0) {
-          const updatedPositions = { ...(existing.positions || {}) };
-          delete updatedPositions[pos];
-          return { ...prev, [key]: { ...existing, positions: updatedPositions, noDamage: false } };
-        }
-        const worstColor = next.reduce((a, i) => { const c = item.conditions[i]?.color; return c === 'red' ? 'red' : a === 'red' ? 'red' : c === 'yellow' ? 'yellow' : a; }, 'green');
-        const worstAction = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || item.conditions[next[0]]?.action;
-        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: worstColor, action: worstAction } }, noDamage: false } };
-      }
-
-      if (cond.exclusive) {
-        return {
-          ...prev,
-          [key]: {
-            ...existing,
-            positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } },
-            noDamage: false,
-          },
-        };
-      }
-
-      const exclusiveIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
-      const next = [...currentIdxs.filter((i) => !exclusiveIdxs.includes(i)), condIdx];
-      const worstColor = next.reduce((a, i) => { const c = item.conditions[i]?.color; return c === 'red' ? 'red' : a === 'red' ? 'red' : c === 'yellow' ? 'yellow' : a; }, 'green');
-      const worstAction = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || cond.action;
-      return {
-        ...prev,
-        [key]: {
-          ...existing,
-          positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: worstColor, action: worstAction } },
-          noDamage: false,
-        },
-      };
-    });
-    setAttempted(false);
-  };
-
   const handleNoDamage = (itemName) => {
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
@@ -3378,29 +3247,19 @@ function InspectionScreen({
                                   )}
                                 </div>
                                 {/* Issue conditions */}
-                                {(() => {
-                                  const posExclusiveSelected = item.multiSelect &&
-                                    item.conditions.some((c, i) => c.exclusive && pf?.conditionIdxs?.includes(i));
-                                  return issueConditions.map((cond) => {
-                                  const isSelected = item.multiSelect
-                                    ? (pf?.conditionIdxs?.includes(cond.idx) ?? false)
-                                    : pf?.conditionIdx === cond.idx;
-                                  const isLockedOut = posExclusiveSelected && !cond.exclusive;
+                                {issueConditions.map((cond) => {
+                                  const isSelected = pf?.conditionIdx === cond.idx;
                                   return (
                                     <div
                                       key={cond.idx}
-                                      onClick={() => item.multiSelect
-                                        ? selectPositionMultiCondition(item.name, pos, cond.idx)
-                                        : selectPositionCondition(item.name, pos, cond.idx)}
+                                      onClick={() => selectPositionCondition(item.name, pos, cond.idx)}
                                       style={{
                                         padding: '9px 10px',
-                                        cursor: isLockedOut ? 'default' : 'pointer',
+                                        cursor: 'pointer',
                                         background: isSelected ? bgColorMap[cond.color] : 'transparent',
                                         borderBottom: `1px solid ${BRAND.grayBorder}`,
                                         display: 'flex', alignItems: 'flex-start', gap: 7,
                                         transition: 'background 0.15s',
-                                        opacity: isLockedOut ? 0.35 : 1,
-                                        pointerEvents: isLockedOut ? 'none' : 'auto',
                                       }}
                                     >
                                       <div style={{
@@ -3422,7 +3281,7 @@ function InspectionScreen({
                                       </div>
                                     </div>
                                   );
-                                });})()}
+                                })}
                                 {/* Photo button */}
                                 {needsPhoto && (
                                   <div style={{ padding: '5px 8px', display: 'flex', gap: 4, borderBottom: `1px solid ${BRAND.grayBorder}` }}>
@@ -3479,14 +3338,10 @@ function InspectionScreen({
               })() : (
                 /* Standard condition list for non-position items */
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {(() => {
-                    const exclusiveSelected = item.multiSelect &&
-                      item.conditions.some((c, i) => c.exclusive && finding?.conditionIdxs?.includes(i));
-                    return item.conditions.map((cond, ci) => {
+                  {item.conditions.map((cond, ci) => {
                     const selected = item.multiSelect
                       ? (finding?.conditionIdxs?.includes(ci) ?? false)
                       : finding?.conditionIdx === ci;
-                    const isLockedOut = exclusiveSelected && !cond.exclusive;
                     return (
                       <div
                         key={ci}
@@ -3494,14 +3349,12 @@ function InspectionScreen({
                           borderBottom: ci < item.conditions.length - 1 ? `1px solid ${BRAND.grayBorder}` : 'none',
                           background: selected ? bgColorMap[cond.color] : 'transparent',
                           transition: 'background 0.15s',
-                          opacity: isLockedOut ? 0.35 : 1,
-                          pointerEvents: isLockedOut ? 'none' : 'auto',
                         }}
                       >
                         <div
                           onClick={() => item.multiSelect ? selectMultiCondition(item.name, ci) : selectCondition(item.name, ci)}
                           style={{
-                            padding: '14px 18px', cursor: isLockedOut ? 'default' : 'pointer', display: 'flex',
+                            padding: '14px 18px', cursor: 'pointer', display: 'flex',
                             alignItems: 'center', justifyContent: 'space-between',
                           }}
                         >
@@ -3558,7 +3411,7 @@ function InspectionScreen({
                         )}
                       </div>
                     );
-                  });})()}
+                  })}
                 </div>
               )}
             </div>
@@ -6171,24 +6024,24 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="5">Tires</td>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Tread Depth', 0))} &lt;1.7 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 0))} &lt;1.7 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('TIRES::Tread Depth', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Tread Depth', 1))} 3.2 – 1.7 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 1))} 3.2 – 1.7 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('TIRES::Tread Depth', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Tread Depth', 2))} &gt;3.2 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Tread Depth', ['FL','FR','RL','RR'])}</td>
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Tread Depth', 2))} &gt;3.2 mm ${allPosBadgesPos('TIRES::Tread Depth', ['FL','FR','RL','RR'])}</td>
                 ${alwaysActionTdSmall('TIRES::Tread Depth', 2, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${allPosBadgesPos('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 0))} Bulges / Side Wall Crack ${allPosBadgesPos('TIRES::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Bulges / Side Wall Crack', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', 1))} No Issue ${allPosBadgesPos('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Bulges / Side Wall Crack', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('TIRES::Bulges / Side Wall Crack', 1))} No Issue ${allPosBadgesPos('TIRES::Bulges / Side Wall Crack', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('TIRES::Bulges / Side Wall Crack', 1, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -6202,25 +6055,21 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="2">Brake<br>Pad/Shoe</td>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 1))} 3 – 6 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="4">Brake<br>Pad/Shoe</td>
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 0))} &lt;3 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 2))} &gt;6 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 2, ['FL','FR','RL','RR'])}
-              </tr>
-            </table>
-            <table style="border-collapse:collapse;width:100%;table-layout:fixed;border-top:1.5px solid #bbb;">
-              <colgroup><col style="width:25%;"><col style="width:50%;"><col style="width:25%;"></colgroup>
-              <tr>
-                <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="2">Brake<br>Pad/Shoe</td>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 0))} &lt;3 mm ${allPosBadgesPos('INSPECT UNDER CHASSIS::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 1))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 3))} Rotor Disc Worn ${allPosBadgesPos('INSPECT UNDER CHASSIS::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Brake Pad / Shoe', 3, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 2))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 2, ['FL','FR','RL','RR'])}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 3))} Rotor Disc Worn ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 3, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -6235,16 +6084,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Drive<br>Shaft<br>Boot</td>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Drive Shaft Boot', 0))} Broken ${allPosBadgesPos('INSPECT UNDER CHASSIS::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Drive Shaft Boot', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 0))} Broken ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Drive Shaft Boot', 1))} Leaking ${allPosBadgesPos('INSPECT UNDER CHASSIS::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Drive Shaft Boot', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 1))} Leaking ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('INSPECT UNDER CHASSIS::Drive Shaft Boot', 2))} No Damage ${allPosBadgesPos('INSPECT UNDER CHASSIS::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('INSPECT UNDER CHASSIS::Drive Shaft Boot', 2, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('DRIVE SHAFT BOOT::Drive Shaft Boot', 2))} No Damage ${allPosBadgesPos('DRIVE SHAFT BOOT::Drive Shaft Boot', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('DRIVE SHAFT BOOT::Drive Shaft Boot', 2, ['FL','FR','RL','RR'])}
               </tr>
             </table>
           </td>
@@ -7027,7 +6876,7 @@ function AppInner() {
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
-      f['INSPECT UNDER CHASSIS::Brake Pad / Shoe'] = { positions: {
+      f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
         RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
@@ -7061,7 +6910,7 @@ function AppInner() {
       f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
       f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['COOLING SYSTEM::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
-      f['INSPECT UNDER CHASSIS::Drive Shaft Boot'] = { positions: {
+      f['DRIVE SHAFT BOOT::Drive Shaft Boot'] = { positions: {
         FL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
         FR: { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
         RL: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
