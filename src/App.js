@@ -5100,8 +5100,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         ? `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;text-align:center;line-height:9px;font-size:8px;vertical-align:middle;">&#10003;</span>`
         : `<span style="display:inline-block;width:10px;height:10px;border:1px solid #000;vertical-align:middle;"></span>`;
 
-    const T = `border:0.5px solid #bbb;padding:3px 5px;font-size:8.5px;vertical-align:middle;`;
-    const Ttop = `border:0.5px solid #bbb;padding:3px 5px;font-size:8.5px;vertical-align:top;`;
+    const T = `border:0.5px solid #bbb;padding:1.5px 3px;font-size:7.5px;vertical-align:middle;`;
+    const Ttop = `border:0.5px solid #bbb;padding:1.5px 3px;font-size:7.5px;vertical-align:top;`;
 
     const actionBg = (action) => {
       if (action === 'Good') return 'color:#16A34A;font-weight:700;';
@@ -5182,28 +5182,28 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
     <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
-    <div style="font-family:Arial,sans-serif;font-size:9px;color:#000;background:#fff;width:794px;padding:14px;">
+    <div style="font-family:Arial,sans-serif;font-size:8px;color:#000;background:#fff;width:794px;padding:8px;">
 
     <!-- RAPIDE LOGO + BRANCH -->
-    <div style="text-align:center;margin-bottom:5px;">
+    <div style="text-align:center;margin-bottom:3px;">
       <div style="display:inline-block;">
-        <div style="background:#FFD100;padding:5px 12px;border-radius:5px;display:inline-block;">
-          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
-          <div style="font-size:7px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+        <div style="background:#FFD100;padding:3px 8px;border-radius:4px;display:inline-block;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+          <div style="font-size:6px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
         </div>
-        <div style="margin-top:3px;">
-          <div style="font-weight:800;font-size:11px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
-          <div style="font-size:8px;color:#6B7280;margin-top:1px;">Branch</div>
+        <div style="margin-top:2px;">
+          <div style="font-weight:800;font-size:9px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+          <div style="font-size:7px;color:#6B7280;margin-top:1px;">Branch</div>
         </div>
       </div>
     </div>
 
     <!-- TITLE -->
-    <div style="color:#000;text-align:center;padding:3px 0 2px;font-family:'Arial Black',Arial,sans-serif;font-size:20px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:5px;">EXPRESS INSPECTION FORM</div>
+    <div style="color:#000;text-align:center;padding:2px 0 1px;font-family:'Arial Black',Arial,sans-serif;font-size:14px;font-weight:900;letter-spacing:0;line-height:1.05;margin-bottom:3px;">EXPRESS INSPECTION FORM</div>
 
     <!-- VEHICLE DETAILS -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:4px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">VEHICLE DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:14%;"><col style="width:9%;"><col style="width:19%;"><col style="width:27%;"><col style="width:17%;"><col style="width:14%;"></colgroup>
         <tr>
@@ -5224,8 +5224,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- CUSTOMER DETAILS -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;">CUSTOMER DETAILS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:18%;"><col style="width:10%;"><col style="width:22%;"><col style="width:25%;"><col style="width:25%;"></colgroup>
         <tr>
@@ -5248,27 +5248,27 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- QUESTIONS -->
-    <table style="margin-bottom:6px;">
+    <table style="margin-bottom:3px;">
       <tr>
-        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:8.5px;">1. When was your last change oil / PMS ?&nbsp;</td>
-        <td style="border:none;border-bottom:0.5px solid #bbb;padding:2px 0;font-size:8.5px;width:100%;">&nbsp;${pmsAnswer}</td>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:7.5px;">1. When was your last change oil / PMS ?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:7.5px;width:100%;">&nbsp;${pmsAnswer}</td>
       </tr>
       <tr>
-        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:8.5px;">2. What part/s were replaced in your last service?&nbsp;</td>
-        <td style="border:none;border-bottom:0.5px solid #bbb;padding:2px 0;font-size:8.5px;">&nbsp;${partsAnswer}</td>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:7.5px;">2. What part/s were replaced in your last service?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:7.5px;">&nbsp;${partsAnswer}</td>
       </tr>
       <tr>
-        <td style="border:none;white-space:nowrap;padding:2px 0;font-size:8.5px;">3. Any problems with your Vehicle ATM?&nbsp;</td>
-        <td style="border:none;border-bottom:0.5px solid #bbb;padding:2px 0;font-size:8.5px;">&nbsp;${problemsAnswer}</td>
+        <td style="border:none;white-space:nowrap;padding:1px 0;font-size:7.5px;">3. Any problems with your Vehicle ATM?&nbsp;</td>
+        <td style="border:none;border-bottom:0.5px solid #bbb;padding:1px 0;font-size:7.5px;">&nbsp;${problemsAnswer}</td>
       </tr>
     </table>
 
     <!-- VEHICLE INSPECTION header -->
-    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:4px 0;font-size:9px;font-weight:700;letter-spacing:2px;margin-bottom:5px;border-radius:6px;">VEHICLE INSPECTION</div>
+    <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:2px;margin-bottom:3px;border-radius:4px;">VEHICLE INSPECTION</div>
 
     <!-- 1. MEASURE -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">MEASURE</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">MEASURE</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT: BATTERY -->
@@ -5312,8 +5312,8 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- 2. INSPECT -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">INSPECT</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">INSPECT</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- Coolant -->
@@ -5398,24 +5398,24 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- 4. TEST DRIVER CONTROLS -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TEST DRIVER CONTROLS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TEST DRIVER CONTROLS</div>
       <table style="table-layout:fixed;">
         <colgroup><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"></colgroup>
         <tr>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>LIGHT</strong><br>${cb(lightIdx === 0)} All Good&nbsp;&nbsp;${cb(lightIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>HORN</strong><br>${cb(hornIdx === 0)} All Good&nbsp;&nbsp;${cb(hornIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>WASHER</strong><br>${cb(washerIdx === 0)} All Good&nbsp;&nbsp;${cb(washerIdx === 1)} Not Working</td>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>SIGNAL LIGHT</strong><br>${cb(signalIdx === 0)} All Good&nbsp;&nbsp;${cb(signalIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>WIPER</strong><br>${cb(wiperIdx === 0)} All Good&nbsp;&nbsp;${cb(wiperIdx === 1)} Busted</td>
-          <td style="${T};text-align:center;padding:6px 3px;"><strong>CABIN FILTER</strong><br>${cb(cabinFilterIdx === 0)} Dirty&nbsp;&nbsp;${cb(cabinFilterIdx === 1)} Clean</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>LIGHT</strong><br>${cb(lightIdx === 0)} All Good&nbsp;&nbsp;${cb(lightIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>HORN</strong><br>${cb(hornIdx === 0)} All Good&nbsp;&nbsp;${cb(hornIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>WASHER</strong><br>${cb(washerIdx === 0)} All Good&nbsp;&nbsp;${cb(washerIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>SIGNAL LIGHT</strong><br>${cb(signalIdx === 0)} All Good&nbsp;&nbsp;${cb(signalIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>WIPER</strong><br>${cb(wiperIdx === 0)} All Good&nbsp;&nbsp;${cb(wiperIdx === 1)} Busted</td>
+          <td style="${T};text-align:center;padding:3px 2px;"><strong>CABIN FILTER</strong><br>${cb(cabinFilterIdx === 0)} Dirty&nbsp;&nbsp;${cb(cabinFilterIdx === 1)} Clean</td>
         </tr>
       </table>
     </div>
 
     <!-- 5. INSPECT UNDER CHASSIS -->
-    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">INSPECT UNDER CHASSIS</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">INSPECT UNDER CHASSIS</div>
       <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
         <tr>
           <!-- LEFT: Tires + Steering Linkage -->
@@ -5479,13 +5479,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- TECHNICIAN'S COMMENT -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:5px;">
-      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
-      <div style="min-height:44px;padding:4px 6px;font-size:9px;">${inspection.techComment || ''}</div>
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:2px 0;font-size:8px;font-weight:700;letter-spacing:1px;">TECHNICIAN'S COMMENT</div>
+      <div style="min-height:20px;padding:3px 6px;font-size:7.5px;">${inspection.techComment || ''}</div>
     </div>
 
     <!-- Footnotes -->
-    <div style="margin-bottom:5px;font-size:7px;line-height:1.4;">
+    <div style="margin-bottom:3px;font-size:6.5px;line-height:1.3;">
       <div>**Indicate measurements</div>
       <div><strong>1. THIS ACKNOWLEDGES THAT THE STORE MANAGER HAS PROPERLY CONDUCTED THE SHOW &amp; TELL AND CLEARLY PRESENTED THE BASIC INSPECTION FROM FINDINGS</strong></div>
       <div>2. The above articles/vehicles are received in good condition &amp; inspection have been made to my satisfaction.</div>
@@ -5493,7 +5493,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:100px;">
+    <table style="margin-top:10px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
