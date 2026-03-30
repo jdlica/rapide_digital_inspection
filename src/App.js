@@ -2962,10 +2962,10 @@ function InspectionScreen({
         if (next.length === 0) { const u = { ...prev }; delete u[key]; return u; }
         return { ...prev, [key]: { conditionIdxs: next } };
       }
-      if (cond.exclusive) {
+      if (cond.exclusive || cond.color === 'green') {
         return { ...prev, [key]: { conditionIdxs: [condIdx] } };
       }
-      const exclusiveIdxs = item.conditions.map((c, i) => c.exclusive ? i : -1).filter((i) => i >= 0);
+      const exclusiveIdxs = item.conditions.map((c, i) => (c.exclusive || c.color === 'green') ? i : -1).filter((i) => i >= 0);
       const next = [...existing.filter((i) => !exclusiveIdxs.includes(i)), condIdx];
       return { ...prev, [key]: { conditionIdxs: next } };
     });
@@ -3011,12 +3011,12 @@ function InspectionScreen({
         const wa = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || item.conditions[next[0]]?.action;
         return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
       }
-      if (cond.exclusive) {
+      if (cond.exclusive || cond.color === 'green') {
         const newPositions = { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } };
         const allGreen = item.positions.every((p) => (p === pos ? cond.color : existing.positions?.[p]?.color) === 'green');
         return { ...prev, [key]: { ...existing, positions: newPositions, noDamage: allGreen } };
       }
-      const excIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
+      const excIdxs = item.conditions.map((c, i) => ((c.exclusive || c.color === 'green') ? i : -1)).filter((i) => i >= 0);
       const next = [...currentIdxs.filter((i) => !excIdxs.includes(i)), condIdx];
       const wc = next.reduce((a, i) => { const c = item.conditions[i]?.color; return c === 'red' ? 'red' : a === 'red' ? 'red' : c === 'yellow' ? 'yellow' : a; }, 'green');
       const wa = next.map((i) => item.conditions[i]?.action).find((a) => a === 'Replace') || cond.action;
@@ -3307,8 +3307,8 @@ function InspectionScreen({
                                   const isSelected = isMultiSelect
                                     ? (pf?.conditionIdxs?.includes(cond.idx) || pf?.conditionIdx === cond.idx)
                                     : pf?.conditionIdx === cond.idx;
-                                  const posExclusiveLocked = isMultiSelect && !cond.exclusive &&
-                                    item.conditions.some((c, i) => c.exclusive && pf?.conditionIdxs?.includes(i));
+                                  const posExclusiveLocked = isMultiSelect && !cond.exclusive && cond.color !== 'green' &&
+                                    item.conditions.some((c, i) => (c.exclusive || c.color === 'green') && pf?.conditionIdxs?.includes(i));
                                   return (
                                     <div
                                       key={cond.idx}
@@ -3406,8 +3406,8 @@ function InspectionScreen({
                     const selected = isMultiSelect
                       ? (finding?.conditionIdxs?.includes(ci) || finding?.conditionIdx === ci)
                       : finding?.conditionIdx === ci;
-                    const exclusiveLocked = isMultiSelect && !cond.exclusive &&
-                      item.conditions.some((c, i) => c.exclusive && finding?.conditionIdxs?.includes(i));
+                    const exclusiveLocked = isMultiSelect && !cond.exclusive && cond.color !== 'green' &&
+                      item.conditions.some((c, i) => (c.exclusive || c.color === 'green') && finding?.conditionIdxs?.includes(i));
                     return (
                       <div
                         key={ci}
