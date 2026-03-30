@@ -279,7 +279,7 @@ const INSPECTION_DATA = {
           name: 'Coolant Level',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -295,7 +295,15 @@ const INSPECTION_DATA = {
           name: 'Power Steering Fluid',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+          ],
+        },
+        {
+          name: 'Transmission M/T, A/T, CVT Oil',
+          conditions: [
+            { label: 'Contaminated', color: 'red', action: 'Replace' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -379,6 +387,21 @@ const INSPECTION_DATA = {
       ],
     },
     {
+      category: 'FOR LEAKS',
+      items: [
+        {
+          name: 'For Leaks',
+          multiSelect: true,
+          conditions: [
+            { label: 'Brake Line', color: 'red', action: 'Replace' },
+            { label: 'Transmission', color: 'red', action: 'Replace' },
+            { label: 'Transfer Case', color: 'red', action: 'Replace' },
+            { label: 'Differential', color: 'red', action: 'Replace' },
+          ],
+        },
+      ],
+    },
+    {
       category: 'TEST',
       items: [
         {
@@ -414,6 +437,13 @@ const INSPECTION_DATA = {
           conditions: [
             { label: 'All Good', color: 'green', action: 'Good' },
             { label: 'Not Working', color: 'red', action: 'Check' },
+          ],
+        },
+        {
+          name: 'Cabin Filter',
+          conditions: [
+            { label: 'Dirty', color: 'yellow', action: 'Clean' },
+            { label: 'Clean', color: 'green', action: 'Good' },
           ],
         },
       ],
@@ -5173,6 +5203,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const hornIdx = getIdx('TEST::Horn');
     const wiperIdx = getIdx('TEST::Wiper');
     const washerIdx = getIdx('TEST::Washer');
+    const cabinFilterIdx = getIdx('TEST::Cabin Filter');
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -5381,6 +5412,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T}">${cb(psIdx === 2)} Correct Level</td>
                 ${actionTd('Good', psIdx === 2)}
               </tr>
+              <!-- TRANSMISSION -->
+              <tr>
+                <td style="${T};font-weight:900;font-size:8.5px;text-align:center;" rowspan="3">Trans-<br>mission</td>
+                <td style="${T}">${cb(isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 0))} Contaminated</td>
+                ${actionTd('Replace', isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 0))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 1))} Low Level</td>
+                ${actionTd('Top Up', isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 1))}
+              </tr>
+              <tr>
+                <td style="${T}">${cb(isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 2))} Correct Level</td>
+                ${actionTd('Good', isSelected('FLUIDS::Transmission M/T, A/T, CVT Oil', 2))}
+              </tr>
               <!-- STEERING LINKAGE -->
               <tr>
                 <td style="${T};font-weight:900;font-size:10px;text-align:center;" rowspan="4">Steering<br>Linkage</td>
@@ -5494,17 +5539,47 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
     </div>
 
+    <!-- FOR LEAKS -->
+    <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
+      <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">FOR LEAKS</div>
+      <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
+        <colgroup><col style="width:13%;"><col style="width:24%;"><col style="width:13%;"><col style="width:13%;"><col style="width:24%;"><col style="width:13%;"></colgroup>
+        <tr>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
+          <td style="${T}"></td>
+          <td style="${T};text-align:center;font-weight:700;">Condition</td>
+          <td style="${T};text-align:center;font-weight:700;">Action</td>
+        </tr>
+        <tr>
+          <td style="${T};font-weight:900;font-size:8.5px;text-align:center;" rowspan="2">For<br>Leaks</td>
+          <td style="${T}">${cb(isSelected('FOR LEAKS::For Leaks', 0))} Brake Line</td>
+          ${actionTd('Replace', isSelected('FOR LEAKS::For Leaks', 0))}
+          <td style="${T}">${cb(isSelected('FOR LEAKS::For Leaks', 2))} Transfer Case</td>
+          ${actionTd('Replace', isSelected('FOR LEAKS::For Leaks', 2))}
+        </tr>
+        <tr>
+          <td style="${T}">${cb(isSelected('FOR LEAKS::For Leaks', 1))} Transmission</td>
+          ${actionTd('Replace', isSelected('FOR LEAKS::For Leaks', 1))}
+          <td style="${T}">${cb(isSelected('FOR LEAKS::For Leaks', 3))} Differential</td>
+          ${actionTd('Replace', isSelected('FOR LEAKS::For Leaks', 3))}
+        </tr>
+      </table>
+    </div>
+
     <!-- TEST -->
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:5px;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:3px 0;font-size:9px;font-weight:700;letter-spacing:1px;">TEST</div>
       <table style="table-layout:fixed;">
-        <colgroup><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"><col style="width:20%;"></colgroup>
+        <colgroup><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"><col style="width:16.66%;"></colgroup>
         <tr>
           <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>LIGHT</strong><br><br>${cb(lightIdx === 0)} All Good &nbsp; ${cb(lightIdx === 1)} Busted</td>
           <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>SIGNAL LIGHT</strong><br><br>${cb(signalIdx === 0)} All Good &nbsp; ${cb(signalIdx === 1)} Busted</td>
           <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>HORN</strong><br><br>${cb(hornIdx === 0)} All Good &nbsp; ${cb(hornIdx === 1)} Not Working</td>
           <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>WIPER</strong><br><br>${cb(wiperIdx === 0)} All Good &nbsp; ${cb(wiperIdx === 1)} Busted</td>
           <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>WASHER</strong><br><br>${cb(washerIdx === 0)} All Good &nbsp; ${cb(washerIdx === 1)} Not Working</td>
+          <td style="${T};text-align:center;padding-top:8px;padding-bottom:8px;"><strong>CABIN FILTER</strong><br><br>${cb(cabinFilterIdx === 0)} Dirty &nbsp; ${cb(cabinFilterIdx === 1)} Clean</td>
         </tr>
       </table>
     </div>
