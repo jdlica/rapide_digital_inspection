@@ -5648,18 +5648,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const problemsAnswer = (sd.currentProblems || []).join(', ');
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
-    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}</style>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}table{border-collapse:collapse;width:100%;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
     <div style="font-family:Arial,sans-serif;font-size:8px;color:#000;background:#fff;width:794px;padding:12px;">
 
     <!-- RAPIDE LOGO + BRANCH -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-      <div style="background:#FFD100;padding:4px 10px;border-radius:5px;display:inline-block;">
-        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
-        <div style="font-size:6px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-weight:800;font-size:10px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
-        <div style="font-size:7px;color:#6B7280;margin-top:1px;">Branch</div>
+    <div style="text-align:center;margin-bottom:4px;">
+      <div style="display:inline-flex;align-items:center;gap:10px;">
+        <div style="background:#FFD100;padding:3px 8px;border-radius:4px;display:inline-block;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+          <div style="font-size:5px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-weight:800;font-size:9px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
+          <div style="font-size:6px;color:#6B7280;margin-top:1px;">Branch</div>
+        </div>
       </div>
     </div>
 
@@ -5815,7 +5817,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- COL 1: Coolant, Cooling Hose, Radiator Hose -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Coolant<br>Level</td>
@@ -5838,7 +5840,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- COL 2: Brake Fluid, Clutch Fluid, Air Cleaner -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Brake<br>Fluid</td>
@@ -5863,7 +5865,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- COL 3: Engine Oil, PS Fluid, Trans Oil -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Engine<br>Oil</td>
@@ -5909,8 +5911,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       </table>
     </div>
 
+    <!--SPLIT-->
     <!-- INSPECT UNDER CHASSIS -->
-    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+    <div style="border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:8px;page-break-before:always;">
       <div style="background:#1A1A1A;color:#fff;text-align:center;padding:6px 0;font-size:12px;font-weight:700;letter-spacing:2px;">INSPECT UNDER CHASSIS</div>
 
       <!-- Sub: TIRES & BRAKES -->
@@ -5996,7 +5999,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Front Susp -->
           <td style="width:25%;padding:0;vertical-align:top;border:none;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:26%;"><col style="width:52%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Front<br>Susp.</td>
@@ -6012,7 +6015,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Rear Susp -->
           <td style="width:25%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:26%;"><col style="width:52%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Rear<br>Susp.</td>
@@ -6028,7 +6031,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Susp Arm + Ball Joint -->
           <td style="width:25%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:26%;"><col style="width:52%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Susp.<br>Arm</td>
@@ -6049,7 +6052,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Steering Linkage + Stab Bar + Stab Link -->
           <td style="width:25%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:26%;"><col style="width:52%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="4">Steering<br>Linkage</td>
@@ -6082,7 +6085,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- For Leaks -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">For<br>Leaks</td>
@@ -6097,7 +6100,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Exhaust Pipe Mounting + Wheel Cylinder -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Exhaust<br>Pipe Mnt.</td>
@@ -6116,7 +6119,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <!-- Caliper + Engine Support + Fuel Tank Cap/Lines -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
-              <colgroup><col style="width:24%;"><col style="width:54%;"><col style="width:22%;"></colgroup>
+              <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Caliper</td>
@@ -6292,12 +6295,34 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     // A4: 210mm × 297mm, 0.25 inch (6.35mm) margins
     const pdf = new jsPDF('p', 'mm', 'a4');
 
-    const formCanvas = await renderCanvas(html);
-    addCanvasToPdf(pdf, formCanvas, false);
+    if (inspection.packageType === 'plus') {
+      // Split plus form at <!--SPLIT--> into 2 clean pages
+      const SPLIT = '<!--SPLIT-->';
+      const bodyContent = (html.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', ''])[1];
+      const splitPos = bodyContent.indexOf(SPLIT);
+      if (splitPos !== -1) {
+        const styleEnd = bodyContent.indexOf('</style>') + '</style>'.length;
+        const wrapStart = bodyContent.indexOf('<div', styleEnd);
+        const wrapTagEnd = bodyContent.indexOf('>', wrapStart) + 1;
+        const styleSection = bodyContent.slice(0, styleEnd);
+        const wrapTag = bodyContent.slice(wrapStart, wrapTagEnd);
+        const innerEnd = bodyContent.lastIndexOf('</div>');
+        const p1Inner = bodyContent.slice(wrapTagEnd, splitPos);
+        const p2Inner = bodyContent.slice(splitPos + SPLIT.length, innerEnd);
+        const mkPage = (inner) =>
+          `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${styleSection}${wrapTag}${inner}</div></body></html>`;
+        addCanvasToPdf(pdf, await renderCanvas(mkPage(p1Inner)), false);
+        addCanvasToPdf(pdf, await renderCanvas(mkPage(p2Inner)), true);
+      } else {
+        addCanvasToPdf(pdf, await renderCanvas(html), false);
+      }
+    } else {
+      addCanvasToPdf(pdf, await renderCanvas(html), false);
+    }
 
     if (photosHTML) {
       const photosCanvas = await renderCanvas(photosHTML);
-      addCanvasToPdf(pdf, photosCanvas, true); // always starts on a new page
+      addCanvasToPdf(pdf, photosCanvas, true);
     }
 
     pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
@@ -6305,6 +6330,14 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
   const printInspectionForm = () => {
     const printWindow = window.open('', '_blank');
+
+    if (inspection.packageType === 'plus') {
+      printWindow.document.write(buildPlusFormHTML());
+      printWindow.document.close();
+      setTimeout(() => { printWindow.print(); }, 600);
+      return;
+    }
+
     const categories = INSPECTION_DATA[inspection.packageType] || [];
     const pkgLabel = { quick: 'QUICK', express: 'EXPRESS', plus: 'PREMIUM PLUS' };
 
