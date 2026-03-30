@@ -5601,21 +5601,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
       const pos = getPos(key);
       const match = positions.find(p => pos[p]?.conditionIdx === condIdx || pos[p]?.conditionIdxs?.includes(condIdx));
-      let action, col;
       if (match) {
-        action = pos[match].action;
-        col = cvs[pos[match].color] || '#000';
+        const action = pos[match].action;
+        const col = cvs[pos[match].color] || '#000';
+        if (!action) return `<td style="${Tp}"></td>`;
+        return `<td style="${Tp};text-align:center;"><strong style="color:${col};">${action}</strong></td>`;
       } else {
         const [catName, itemName] = key.split('::');
         const cats = INSPECTION_DATA['plus'] || [];
         const cat = cats.find(c => c.category === catName);
         const item = cat?.items.find(i => i.name === itemName);
-        const cond = item?.conditions[condIdx];
-        action = cond?.action || '';
-        col = cond ? (cvs[cond.color] || '#666') : '#666';
+        const action = item?.conditions[condIdx]?.action || '';
+        if (!action) return `<td style="${Tp}"></td>`;
+        return `<td style="${Tp};text-align:center;">${action}</td>`;
       }
-      if (!action) return `<td style="${Tp}"></td>`;
-      return `<td style="${Tp};text-align:center;"><strong style="color:${col};">${action}</strong></td>`;
     };
     const anyAtCondPos = (key, condIdx, positions) =>
       positions.some(p => {
