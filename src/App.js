@@ -6942,30 +6942,40 @@ function AppInner() {
       f['POWER STEERING FLUID::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['CLUTCH FLUID::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
       f['STEERING LINKAGE::Steering Linkage'] = { conditionIdxs: [3] };
-      f['TIRES::Tread Depth'] = { positions: {
+      f['Inspect Under Chassis::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
+      f['Inspect Under Chassis::Tread Depth'] = { positions: {
         FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
         FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
         RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
         RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
       }};
-      f['TIRES::Bulges / Side Wall Crack'] = { positions: {
+      f['Inspect Under Chassis::Bulges / Side Wall Crack'] = { positions: {
         FL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         FR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
-      f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
-      f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
+      f['Inspect Under Chassis::Brake Pad / Shoe'] = { positions: {
         FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
         FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
         RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
         RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
+      f['INSPECT UNDER CHASSIS::For Leaks'] = { conditionIdxs: [4] };
+      f['INSPECT UNDER CHASSIS::Exhaust Pipe Mounting'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['INSPECT UNDER CHASSIS::Wheel Cylinder'] = { positions: {
+        RL: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+      }};
+      f['INSPECT UNDER CHASSIS::Caliper'] = { positions: {
+        FL: { conditionIdxs: [2], color: 'green', action: 'Good' },
+        FR: { conditionIdxs: [2], color: 'green', action: 'Good' },
+      }};
+      f['INSPECT UNDER CHASSIS::Engine Support'] = { conditionIdxs: [2] };
+      f['INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
       f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      f['ENGINE SUPPORT::Engine Support'] = { conditionIdxs: [2] };
-      f['FUEL SYSTEM::Fuel Tank Cap / Lines Connection'] = { conditionIdxs: [2] };
       f['BRAKE PEDAL::Brake Pedal Free Play'] = { conditionIdx: 0, condition: '1mm – 5mm', action: 'Good', color: 'green' };
       f['SUSPENSION ARM::Suspension Arm'] = { positions: {
         Left: { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
@@ -6985,8 +6995,6 @@ function AppInner() {
         Left: { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' },
         Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
-      f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
       f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['COOLING SYSTEM::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
       f['DRIVE SHAFT BOOT::Drive Shaft Boot'] = { positions: {
