@@ -156,6 +156,7 @@ const INSPECTION_DATA = {
         {
           name: 'Bulges',
           partLabel: 'Tires',
+          combinedTireView: true,
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -166,6 +167,7 @@ const INSPECTION_DATA = {
         {
           name: 'Side Wall Cracks',
           partLabel: 'Tires',
+          combinedTireView: true,
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -176,6 +178,7 @@ const INSPECTION_DATA = {
         {
           name: 'Tread <1.7mm',
           partLabel: 'Tires',
+          combinedTireView: true,
           conditions: [
             { label: 'No Issue', color: 'green', action: 'Good' },
             { label: 'Issue Found', color: 'red', action: 'Replace' },
@@ -2912,7 +2915,7 @@ function InspectionScreen({
   const groupDisablerItem = cat.items.find((i) => i.disableOthersInGroup);
   const groupDisablerKey = groupDisablerItem ? getKey(cat.category, groupDisablerItem.name) : null;
   const groupDisablerSelected = groupDisablerKey ? findings[groupDisablerKey]?.conditionIdx === 0 : false;
-  const tireGroupItems = cat.items.filter((i) => i.hasPosition && !!i.groupDisabledBy);
+  const tireGroupItems = cat.items.filter((i) => !!i.combinedTireView);
 
   const allFilled = cat.items.every((item) => {
     if (item.optional) return true;
@@ -3150,7 +3153,112 @@ function InspectionScreen({
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {tireGroupItems.length > 0 && (() => {
+          const posGroups = [
+            { label: 'Front', positions: ['Front Left', 'Front Right'] },
+            { label: 'Rear', positions: ['Rear Left', 'Rear Right'] },
+          ];
+          const abbr = { 'Front Left': 'FL', 'Front Right': 'FR', 'Rear Left': 'RL', 'Rear Right': 'RR' };
+          const getPF = (tiName, pos) => findings[getKey(cat.category, tiName)]?.positions?.[pos];
+          const isNoDamagePos = (pos) => tireGroupItems.every((ti) => getPF(ti.name, pos)?.conditionIdx === 0);
+          const handleIssuePos = (clickedTi, pos) => {
+            setFindings((prev) => {
+              const updated = { ...prev };
+              const clickedKey = getKey(cat.category, clickedTi.name);
+              const currentIsIssue = updated[clickedKey]?.positions?.[pos]?.conditionIdx === 1;
+              const newCondIdx = currentIsIssue ? 0 : 1;
+              tireGroupItems.forEach((ti) => {
+                const k = getKey(cat.category, ti.name);
+                const existing = updated[k] || { positions: {} };
+                const posData = existing.positions?.[pos];
+                const condIdx = ti.name === clickedTi.name ? newCondIdx : (posData !== undefined ? posData.conditionIdx : 0);
+                const cond = ti.conditions[condIdx];
+                updated[k] = { ...existing, positions: { ...existing.positions, [pos]: { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color } } };
+              });
+              return updated;
+            });
+            setAttempted(false);
+          };
+          const handleNoDamagePos = (pos) => {
+            const isND = isNoDamagePos(pos);
+            setFindings((prev) => {
+              const updated = { ...prev };
+              tireGroupItems.forEach((ti) => {
+                const k = getKey(cat.category, ti.name);
+                const existing = updated[k] || { positions: {} };
+                if (isND) {
+                  const np = { ...existing.positions }; delete np[pos];
+                  updated[k] = { ...existing, positions: np };
+                } else {
+                  const cond = ti.conditions[0];
+                  updated[k] = { ...existing, positions: { ...existing.positions, [pos]: { conditionIdx: 0, condition: cond.label, action: cond.action, color: cond.color } } };
+                }
+              });
+              return updated;
+            });
+            setAttempted(false);
+          };
+          const tireUnanswered = attempted && tireGroupItems.some((ti) => {
+            const f = findings[getKey(cat.category, ti.name)];
+            return !f?.positions || !ti.positions.every((p) => f.positions[p]);
+          });
+          const allTireColors = tireGroupItems.flatMap((ti) => {
+            const f = findings[getKey(cat.category, ti.name)];
+            return (ti.positions || []).map((p) => f?.positions?.[p]?.color).filter(Boolean);
+          });
+          let tireBorder = BRAND.grayBorder;
+          if (tireUnanswered) tireBorder = BRAND.red;
+          else if (allTireColors.includes('red')) tireBorder = colorMap.red;
+          else if (allTireColors.length > 0) tireBorder = colorMap.green;
+          return (
+            <div key="tires-combined" style={{ background: BRAND.white, borderRadius: 14, border: `2px solid ${tireBorder}`, overflow: 'hidden', transition: 'border-color 0.2s' }}>
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>Tires</div>
+                <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>Tire Condition</div>
+              </div>
+              {posGroups.map((group) => (
+                <div key={group.label} style={{ borderBottom: `1px solid ${BRAND.grayBorder}` }}>
+                  <div style={{ padding: '6px 14px', background: BRAND.grayLight, borderBottom: `1px solid ${BRAND.grayBorder}`, fontWeight: 800, fontSize: 11, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1 }}>{group.label}</div>
+                  <div style={{ display: 'flex' }}>
+                    {group.positions.map((pos, pi) => {
+                      const isND = isNoDamagePos(pos);
+                      return (
+                        <div key={pos} style={{ flex: 1, borderRight: pi === 0 ? `1px solid ${BRAND.grayBorder}` : 'none' }}>
+                          <div style={{ padding: '6px 0', fontWeight: 900, fontSize: 13, textAlign: 'center', color: BRAND.black, background: BRAND.grayLight, borderBottom: `1px solid ${BRAND.grayBorder}` }}>{abbr[pos]}</div>
+                          {tireGroupItems.map((ti) => {
+                            const pf = getPF(ti.name, pos);
+                            const issue = pf?.conditionIdx === 1;
+                            const issueCond = ti.conditions[1];
+                            return (
+                              <div key={ti.name} onClick={() => handleIssuePos(ti, pos)}
+                                style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: issue ? bgColorMap[issueCond.color] : 'transparent', borderLeft: issue ? `4px solid ${colorMap[issueCond.color]}` : '4px solid transparent', borderBottom: `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  <div style={{ width: 22, height: 22, borderRadius: 5, flexShrink: 0, border: `2px solid ${issue ? colorMap[issueCond.color] : BRAND.grayBorder}`, background: issue ? colorMap[issueCond.color] : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 12, fontWeight: 700 }}>{issue && '✓'}</div>
+                                  <span style={{ fontSize: 12, fontWeight: issue ? 700 : 500, color: issue ? colorMap[issueCond.color] : BRAND.black }}>{ti.name === 'Tread <1.7mm' ? '<1.7mm' : ti.name}</span>
+                                </div>
+                                <div style={{ padding: '4px 8px', borderRadius: 6, fontWeight: 800, fontSize: 11, background: issue ? colorMap[issueCond.color] : BRAND.grayLight, color: issue ? BRAND.white : BRAND.gray, minWidth: 56, textAlign: 'center' }}>{issueCond.action}</div>
+                              </div>
+                            );
+                          })}
+                          <div onClick={() => handleNoDamagePos(pos)}
+                            style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isND ? bgColorMap.green : 'transparent', borderLeft: isND ? `4px solid ${colorMap.green}` : '4px solid transparent', transition: 'background 0.15s' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{ width: 22, height: 22, borderRadius: 5, flexShrink: 0, border: `2px solid ${isND ? colorMap.green : BRAND.grayBorder}`, background: isND ? colorMap.green : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 12, fontWeight: 700 }}>{isND && '✓'}</div>
+                              <span style={{ fontSize: 12, fontWeight: isND ? 700 : 500, color: isND ? colorMap.green : BRAND.black }}>No Damage</span>
+                            </div>
+                            <div style={{ padding: '4px 8px', borderRadius: 6, fontWeight: 800, fontSize: 11, background: isND ? colorMap.green : BRAND.grayLight, color: isND ? BRAND.white : BRAND.gray, minWidth: 56, textAlign: 'center' }}>Good</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
         {cat.items.map((item) => {
+          if (item.combinedTireView) return null;
           const key = getKey(cat.category, item.name);
           const finding = findings[key];
           const isMultiSelect = item.multiSelect === true || (
