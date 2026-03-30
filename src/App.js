@@ -377,6 +377,7 @@ const INSPECTION_DATA = {
       items: [
         {
           name: 'Tread Depth',
+          partLabel: 'Tires',
           conditions: [
             { label: '<1.7 mm', color: 'red', action: 'Replace' },
             { label: '3.2 – 1.7 mm', color: 'yellow', action: 'Observe' },
@@ -387,6 +388,7 @@ const INSPECTION_DATA = {
         },
         {
           name: 'Bulges / Side Wall Crack',
+          partLabel: 'Tires',
           conditions: [
             { label: 'Bulges / Side Wall Crack', color: 'red', action: 'Replace' },
             { label: 'No Issue', color: 'green', action: 'Good' },
