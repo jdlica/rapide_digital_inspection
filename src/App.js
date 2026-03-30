@@ -152,44 +152,6 @@ const INSPECTION_DATA = {
             { label: '<80%', color: 'red', action: 'Replace' },
           ],
         },
-      ],
-    },
-    {
-      category: 'Inspect',
-      items: [
-        {
-          name: 'Coolant Level',
-          conditions: [
-            { label: 'Correct Level', color: 'green', action: 'Good' },
-            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          ],
-        },
-        {
-          name: 'Power Steering Fluid',
-          conditions: [
-            { label: 'Correct Level', color: 'green', action: 'Good' },
-            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          ],
-        },
-        {
-          name: 'Brake Fluid Level',
-          conditions: [
-            { label: 'Correct Level', color: 'green', action: 'Good' },
-            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          ],
-        },
-        {
-          name: 'Clutch Fluid',
-          conditions: [
-            { label: 'Correct Level', color: 'green', action: 'Good' },
-            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-          ],
-        },
-      ],
-    },
-    {
-      category: 'Tires',
-      items: [
         {
           name: 'Bulges',
           conditions: [
@@ -225,6 +187,39 @@ const INSPECTION_DATA = {
           ],
           hasPosition: true,
           positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
+        },
+      ],
+    },
+    {
+      category: 'Inspect',
+      items: [
+        {
+          name: 'Coolant Level',
+          conditions: [
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          ],
+        },
+        {
+          name: 'Power Steering Fluid',
+          conditions: [
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          ],
+        },
+        {
+          name: 'Brake Fluid Level',
+          conditions: [
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          ],
+        },
+        {
+          name: 'Clutch Fluid',
+          conditions: [
+            { label: 'Correct Level', color: 'green', action: 'Good' },
+            { label: 'Low Level', color: 'yellow', action: 'Top Up' },
+          ],
         },
       ],
     },
@@ -4813,7 +4808,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
     const fullPos = ['Front Left','Front Right','Rear Left','Rear Right'];
     const posAbbr = {'Front Left':'FL','Front Right':'FR','Rear Left':'RL','Rear Right':'RR'};
-    const getTirePos = (name) => findings[`Tires::${name}`]?.positions || {};
+    const getTirePos = (name) => findings[`Measure::${name}`]?.positions || {};
     const tireAnyAtCond = (name, condIdx) => fullPos.some(p => getTirePos(name)[p]?.conditionIdx === condIdx);
     const tirePosBadgesForCond = (name, condIdx) => {
       const cvs = { green: '#16A34A', yellow: '#D97706', red: '#DC2626' };
