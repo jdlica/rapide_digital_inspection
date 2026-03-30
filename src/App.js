@@ -5104,7 +5104,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${T};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="3">TIRES</td>
+                <td style="${T};font-weight:900;font-size:12px;text-align:center;" rowspan="4">TIRES</td>
                 <td style="${Ttop}">${cb(tireAnyAtCond('Bulges', 1))} Bulges <span style="font-size:9px;">${tirePosBadgesForCond('Bulges', 1)}</span></td>
                 ${tireCondActionTd('Bulges', 1)}
               </tr>
@@ -5115,6 +5115,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr>
                 <td style="${Ttop}">${cb(tireAnyAtCond('Tread <1.7mm', 1))} &lt;1.7mm <span style="font-size:9px;">${tirePosBadgesForCond('Tread <1.7mm', 1)}</span></td>
                 ${tireCondActionTd('Tread <1.7mm', 1)}
+              </tr>
+              <tr>
+                ${(() => { const ndPos = fullPos.filter(p => ['Bulges','Side Wall Cracks','Tread <1.7mm'].every(n => getTirePos(n)[p]?.conditionIdx === 0)); const ndBadges = ndPos.map(p => `<strong style="color:#16A34A;">${posAbbr[p]}</strong>`).join('&nbsp;'); const hasND = ndPos.length > 0; return `<td style="${Ttop}">${cb(hasND)} No Damage <span style="font-size:9px;">${ndBadges}</span></td><td style="${T};text-align:center;"><strong style="color:${hasND ? '#16A34A' : 'transparent'};">Good</strong></td>`; })()}
               </tr>
             </table>
           </td>
