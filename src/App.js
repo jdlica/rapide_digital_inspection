@@ -5748,16 +5748,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${T};font-weight:900;font-size:11px;text-align:center;" rowspan="5">BATTERY</td>
-                <td style="${T}">${cb(battVIdx === 0)} 12.6V – 12.8V</td>
-                ${actionTd('Good', battVIdx === 0)}
+                <td style="${T}">${cb(isSelected('BATTERY::Battery Voltage', 0))} 12.6V – 12.8V</td>
+                ${actionTd('Good', isSelected('BATTERY::Battery Voltage', 0))}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 1)} 12.2V – 12.6V</td>
-                ${actionTd('Recharge', battVIdx === 1)}
+                <td style="${T}">${cb(isSelected('BATTERY::Battery Voltage', 1))} 12.2V – 12.6V</td>
+                ${actionTd('Recharge', isSelected('BATTERY::Battery Voltage', 1))}
               </tr>
               <tr>
-                <td style="${T}">${cb(battVIdx === 2)} 12.2V</td>
-                ${actionTd('Replace', battVIdx === 2)}
+                <td style="${T}">${cb(isSelected('BATTERY::Battery Voltage', 2))} 12.2V</td>
+                ${actionTd('Replace', isSelected('BATTERY::Battery Voltage', 2))}
               </tr>
               <tr>
                 <td style="${T}">${cb(battCCAIdx === 0)} &gt;80%</td>
@@ -6922,89 +6922,107 @@ function AppInner() {
       f['TEST::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
     } else if (packageType === 'plus') {
-      f['BATTERY::Battery Voltage'] = { conditionIdx: 0, condition: '12.6V – 12.8V', action: 'Good', color: 'green' };
+      // Battery Voltage: auto-multiSelect (has both red+yellow) → conditionIdxs
+      f['BATTERY::Battery Voltage'] = { conditionIdxs: [0], color: 'green', action: 'Good' };
       f['BATTERY::Starting Power (CCA)'] = { conditionIdx: 0, condition: '>80%', action: 'Good', color: 'green' };
       f['BELT::Belt Condition'] = { conditionIdxs: [3] };
       f['BELT::Belt Deflection'] = { conditionIdx: 0, condition: '<1/2 inch Deflection', action: 'Good', color: 'green' };
-      // Cat 3: INSPECT ENGINE BAY (Coolant, Cooling Hose, Radiator Hose, Brake Fluid, Clutch Fluid, Air Cleaner)
-      f['INSPECT ENGINE BAY::Coolant Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
+      // INSPECT ENGINE BAY (Coolant, Cooling Hose, Radiator Hose, Brake Fluid, Clutch Fluid, Air Cleaner)
+      // Coolant Level: auto-multiSelect (yellow+red+green) → conditionIdxs
+      f['INSPECT ENGINE BAY::Coolant Level'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
       f['INSPECT ENGINE BAY::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
-      f['INSPECT ENGINE BAY::Radiator Hose'] = { conditionIdx: 0, condition: 'Cracked / Swelled', action: 'Replace', color: 'red' };
-      f['INSPECT ENGINE BAY::Brake Fluid Level'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['INSPECT ENGINE BAY::Air Cleaner'] = { conditionIdx: 0, condition: 'Clean', action: 'Good', color: 'green' };
-      // Engine Oil, Power Steering, Transmission (all in INSPECT ENGINE BAY cat 5)
-      f['INSPECT ENGINE BAY::Engine Oil'] = { conditionIdx: 0, condition: 'Normal', action: 'Change Oil', color: 'green' };
-      f['INSPECT ENGINE BAY::Power Steering Fluid'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      // Cat 6: TEST DRIVER CONTROLS (Light, Signal Light, Horn, Wiper, Washer)
+      f['INSPECT ENGINE BAY::Radiator Hose'] = { conditionIdx: 0, condition: 'Crack/Leak/Swelling', action: 'Replace', color: 'red' };
+      // Brake Fluid Level: auto-multiSelect (yellow+red+green) → conditionIdxs
+      f['INSPECT ENGINE BAY::Brake Fluid Level'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
+      // Clutch Fluid: auto-multiSelect (yellow+red+green) → conditionIdxs
+      f['INSPECT ENGINE BAY::Clutch Fluid'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
+      // Air Cleaner: auto-multiSelect (green+yellow+red) → conditionIdxs
+      f['INSPECT ENGINE BAY::Air Cleaner'] = { conditionIdxs: [0], color: 'green', action: 'Good' };
+      // INSPECT ENGINE BAY (Engine Oil, Power Steering, Transmission)
+      // Engine Oil: auto-multiSelect (green+red+yellow) → conditionIdxs
+      f['INSPECT ENGINE BAY::Engine Oil'] = { conditionIdxs: [0], color: 'green', action: 'Change Oil' };
+      // Power Steering Fluid: auto-multiSelect (yellow+red+green) → conditionIdxs
+      f['INSPECT ENGINE BAY::Power Steering Fluid'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
+      // Transmission M/T,A/T,CVT Oil: auto-multiSelect (yellow+red+green) → conditionIdxs
+      f['INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
+      // TEST DRIVER CONTROLS (Light, Signal Light, Horn, Wiper, Washer) — green+red only, not auto-multiSelect
       f['TEST DRIVER CONTROLS::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Signal Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Wiper'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['TEST DRIVER CONTROLS::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
-      // Cat 6: TEST DRIVER CONTROLS (Clutch Pedal, Brake Pedal, Cabin Filter)
+      // TEST DRIVER CONTROLS (Clutch Pedal, Brake Pedal, Cabin Filter) — explicit multiSelect:true
       f['TEST DRIVER CONTROLS::Clutch Pedal'] = { conditionIdxs: [1] };
       f['TEST DRIVER CONTROLS::Brake Pedal Free Play'] = { conditionIdxs: [1] };
       f['TEST DRIVER CONTROLS::Cabin Filter'] = { conditionIdxs: [2] };
-      // Cat 7: INSPECT UNDER CHASSIS (Tires & Brakes)
+      // INSPECT UNDER CHASSIS (Tires & Brakes) — positions use FL/FR/RL/RR abbreviations
       f['INSPECT UNDER CHASSIS::Tread Depth'] = { positions: {
-        'Front Left': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        'Front Right': { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
-        'Rear Left': { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
-        'Rear Right': { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
+        FL: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 2, condition: '>3.2 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 0, condition: '<1.7 mm', action: 'Replace', color: 'red' },
+        RR: { conditionIdx: 1, condition: '3.2 – 1.7 mm', action: 'Observe', color: 'yellow' },
       }};
       f['INSPECT UNDER CHASSIS::Bulges / Side Wall Crack'] = { positions: {
-        'Front Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        'Front Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        'Rear Left': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
-        'Rear Right': { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        FL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        FR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
+        RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['INSPECT UNDER CHASSIS::Brake Pad / Shoe'] = { positions: {
-        'Front Left': { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
-        'Front Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
-        'Rear Left': { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
-        'Rear Right': { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
+        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
+      // Drive Shaft Boot: multiSelect:true + positions FL/FR/RL/RR → conditionIdxs per position
       f['INSPECT UNDER CHASSIS::Drive Shaft Boot'] = { positions: {
-        'Front Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        'Front Right': { conditionIdx: 0, condition: 'Broken', action: 'Replace', color: 'red' },
-        'Rear Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        'Rear Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        FL: { conditionIdxs: [2], color: 'green', action: 'Good' },
+        FR: { conditionIdxs: [0], color: 'red', action: 'Replace' },
+        RL: { conditionIdxs: [2], color: 'green', action: 'Good' },
+        RR: { conditionIdxs: [2], color: 'green', action: 'Good' },
       }};
-      // Cat 8: INSPECT UNDER CHASSIS (Suspension & Steering)
+      // Inspect Under Chassis (Suspension & Steering) — multiSelect:true + hasPosition → conditionIdxs per position
       f['Inspect Under Chassis::Front Suspension'] = { positions: {
-        'Front Left': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
-        'Front Right': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdxs: [4], color: 'green', action: 'Good' },
+        'Front Right': { conditionIdxs: [4], color: 'green', action: 'Good' },
       }};
       f['Inspect Under Chassis::Rear Suspension'] = { positions: {
-        'Rear Left': { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' },
-        'Rear Right': { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Rear Left': { conditionIdxs: [0], color: 'red', action: 'Replace' },
+        'Rear Right': { conditionIdxs: [4], color: 'green', action: 'Good' },
       }};
       f['Inspect Under Chassis::Suspension Arm'] = { positions: {
-        'Front Left': { conditionIdx: 0, condition: 'Torn Bushing', action: 'Replace', color: 'red' },
-        'Front Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdxs: [0], color: 'red', action: 'Replace' },
+        'Front Right': { conditionIdxs: [2], color: 'green', action: 'Good' },
       }};
       f['Inspect Under Chassis::Ball Joint'] = { positions: {
-        'Front Left': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        'Front Right': { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+        'Front Left': { conditionIdxs: [2], color: 'green', action: 'Good' },
+        'Front Right': { conditionIdxs: [2], color: 'green', action: 'Good' },
       }};
-      f['Inspect Under Chassis::Steering Linkage'] = { conditionIdxs: [3] };
-      f['INSPECT UNDER CHASSIS::Stab Bar Bushing'] = { positions: {
+      // Steering Linkage: multiSelect:true + positions ['Front Left','Front Right','Rear Left','Rear Right']
+      f['Inspect Under Chassis::Steering Linkage'] = { positions: {
+        'Front Left': { conditionIdxs: [3], color: 'green', action: 'Good' },
+        'Front Right': { conditionIdxs: [3], color: 'green', action: 'Good' },
+        'Rear Left': { conditionIdxs: [3], color: 'green', action: 'Good' },
+        'Rear Right': { conditionIdxs: [3], color: 'green', action: 'Good' },
+      }};
+      // Stab Bar Bushing and Stab Link: under 'Inspect Under Chassis' (mixed case), positions ['Front Left','Front Right']
+      f['Inspect Under Chassis::Stab Bar Bushing'] = { positions: {
         'Front Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
         'Front Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      f['INSPECT UNDER CHASSIS::Stab Link'] = { positions: {
+      f['Inspect Under Chassis::Stab Link'] = { positions: {
         'Front Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
         'Front Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      // Remaining categories
+      // INSPECT UNDER CHASSIS (Leaks, Exhaust, Wheel Cylinder, Caliper, Engine Support, Fuel Tank)
       f['INSPECT UNDER CHASSIS::For Leaks'] = { conditionIdxs: [4] };
-      f['INSPECT UNDER CHASSIS::Exhaust Pipe Mounting'] = { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' };
+      // Exhaust Pipe Mounting: auto-multiSelect (red+yellow+green) → conditionIdxs
+      f['INSPECT UNDER CHASSIS::Exhaust Pipe Mounting'] = { conditionIdxs: [2], color: 'green', action: 'Good' };
       f['INSPECT UNDER CHASSIS::Wheel Cylinder'] = { positions: {
         'Rear Left': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
         'Rear Right': { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
+      // Caliper: multiSelect:true + positions ['Front Left','Front Right'] → conditionIdxs per position
       f['INSPECT UNDER CHASSIS::Caliper'] = { positions: {
         'Front Left': { conditionIdxs: [2], color: 'green', action: 'Good' },
         'Front Right': { conditionIdxs: [2], color: 'green', action: 'Good' },
