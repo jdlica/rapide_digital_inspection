@@ -582,15 +582,27 @@ INSPECTION_DATA.plus = [
     category: 'BRAKE PAD / SHOE',
     items: [
       {
-        name: 'Brake Pad / Shoe',
+        name: 'Thickness',
         conditions: [
-          { label: '<3 mm', color: 'red', action: 'Replace' },
           { label: '3 – 6 mm', color: 'yellow', action: 'Observe' },
           { label: '>6 mm', color: 'green', action: 'Good' },
-          { label: 'Rotor Disc Worn', color: 'red', action: 'Reface' },
         ],
         hasPosition: true,
         positions: ['FL', 'FR', 'RL', 'RR'],
+      },
+      {
+        name: '<3 mm',
+        conditions: [
+          { label: '<3 mm', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Rotor Disc Worn',
+        conditions: [
+          { label: 'Worn', color: 'red', action: 'Reface' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
       },
     ],
   },
@@ -672,14 +684,34 @@ INSPECTION_DATA.plus = [
     category: 'BALL JOINT',
     items: [
       {
-        name: 'Ball Joint',
+        name: 'Front Ball Joint',
         conditions: [
-          { label: 'Loose', color: 'red', action: 'Replace' },
           { label: 'Boot Torn', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
+      },
+      {
+        name: 'Loose',
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Sway Bar Bushing',
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Stab Link',
+        conditions: [
+          { label: 'Loose', color: 'red', action: 'Replace' },
+          { label: 'No Damage', color: 'green', action: 'Good' },
+        ],
       },
     ],
   },
@@ -701,16 +733,34 @@ INSPECTION_DATA.plus = [
     category: 'FRONT SUSPENSION',
     items: [
       {
-        name: 'Front Suspension',
+        name: 'Shock Absorber',
         conditions: [
-          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
           { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
-          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
-          { label: 'Squeaking', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
+      },
+      {
+        name: 'Excess Bounce',
+        conditions: [
+          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Uneven Tire Wear',
+        conditions: [
+          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Squeaking',
+        conditions: [
+          { label: 'Squeaking', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
       },
     ],
   },
@@ -719,16 +769,34 @@ INSPECTION_DATA.plus = [
     category: 'REAR SUSPENSION',
     items: [
       {
-        name: 'Rear Suspension',
+        name: 'Shock Absorber',
         conditions: [
-          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
           { label: 'Shock Absorber Oil Leak', color: 'red', action: 'Replace' },
-          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
-          { label: 'Squeaking', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good' },
         ],
         hasPosition: true,
         positions: ['Left', 'Right'],
+      },
+      {
+        name: 'Excess Bounce',
+        conditions: [
+          { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Uneven Tire Wear',
+        conditions: [
+          { label: 'Uneven Tire Wear', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
+      },
+      {
+        name: 'Squeaking',
+        conditions: [
+          { label: 'Squeaking', color: 'red', action: 'Replace' },
+          { label: 'No', color: 'green', action: 'Good' },
+        ],
       },
     ],
   },
@@ -5547,6 +5615,17 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const clutchPedalIdx = getIdx('CLUTCH PEDAL::Clutch Pedal');
     const coolingSysIdx = getIdx('COOLING SYSTEM::Cooling System Hose');
     const radiatorHoseIdx = getIdx('COOLING SYSTEM::Radiator Hose');
+    const brake3mmIdx = getIdx('BRAKE PAD / SHOE::<3 mm');
+    const rotorDiscIdx = getIdx('BRAKE PAD / SHOE::Rotor Disc Worn');
+    const frontExcessBounceIdx = getIdx('FRONT SUSPENSION::Excess Bounce');
+    const frontUnevenWearIdx = getIdx('FRONT SUSPENSION::Uneven Tire Wear');
+    const frontSqueakingIdx = getIdx('FRONT SUSPENSION::Squeaking');
+    const rearExcessBounceIdx = getIdx('REAR SUSPENSION::Excess Bounce');
+    const rearUnevenWearIdx = getIdx('REAR SUSPENSION::Uneven Tire Wear');
+    const rearSqueakingIdx = getIdx('REAR SUSPENSION::Squeaking');
+    const ballJointLooseIdx = getIdx('BALL JOINT::Loose');
+    const swayBarIdx = getIdx('BALL JOINT::Sway Bar Bushing');
+    const stabLinkIdx = getIdx('BALL JOINT::Stab Link');
 
     const pmsAnswer = [sd.lastPmsMonth, sd.lastPmsYear].filter(Boolean).join(' ');
     const partsAnswer = (sd.replacedParts || []).join(', ');
@@ -5867,17 +5946,36 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 ${actionTp('Good', transOilIdx === 2)}
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="3">Ball<br>Joint</td>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 0, ['Left','Right']))} Loose ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 0, ['Left','Right'])}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Front<br>Ball Joint</td>
+                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Front Ball Joint', 0, ['Left','Right']))} Boot Torn ${allPosBadgesPos('BALL JOINT::Front Ball Joint', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('BALL JOINT::Front Ball Joint', 0, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 1, ['Left','Right']))} Boot Torn ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 1, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Front Ball Joint', 1, ['Left','Right']))} No Damage ${allPosBadgesPos('BALL JOINT::Front Ball Joint', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('BALL JOINT::Front Ball Joint', 1, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('BALL JOINT::Ball Joint', 2, ['Left','Right']))} No Damage ${allPosBadgesPos('BALL JOINT::Ball Joint', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('BALL JOINT::Ball Joint', 2, ['Left','Right'])}
+                <td style="${Tp};font-weight:900;font-size:7px;text-align:center;">Ball Joint<br>Loose</td>
+                <td style="${Tp}">${cb(ballJointLooseIdx === 0)} Loose</td>
+                ${actionTp('Replace', ballJointLooseIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Sway Bar<br>Bushing</td>
+                <td style="${Tp}">${cb(swayBarIdx === 0)} Loose</td>
+                ${actionTp('Replace', swayBarIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(swayBarIdx === 1)} No Damage</td>
+                ${actionTp('Good', swayBarIdx === 1)}
+              </tr>
+              <tr>
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Stab<br>Link</td>
+                <td style="${Tp}">${cb(stabLinkIdx === 0)} Loose</td>
+                ${actionTp('Replace', stabLinkIdx === 0)}
+              </tr>
+              <tr>
+                <td style="${Tp}">${cb(stabLinkIdx === 1)} No Damage</td>
+                ${actionTp('Good', stabLinkIdx === 1)}
               </tr>
               <tr>
                 <td style="${Tp};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Clutch<br>Pedal</td>
@@ -5900,46 +5998,46 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
                 <td style="${Tp};text-align:center;font-weight:700;">Action</td>
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="5">Front<br>Susp.</td>
-                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Front Suspension', 0, ['Left','Right']))} Excess Bounce 2-3x ${allPosBadgesPos('FRONT SUSPENSION::Front Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('FRONT SUSPENSION::Front Suspension', 0, ['Left','Right'])}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Front<br>Susp.</td>
+                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Shock Absorber', 0, ['Left','Right']))} Shock Absorber Oil Leak ${allPosBadgesPos('FRONT SUSPENSION::Shock Absorber', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('FRONT SUSPENSION::Shock Absorber', 0, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Front Suspension', 1, ['Left','Right']))} Shock Absorber Oil Leak ${allPosBadgesPos('FRONT SUSPENSION::Front Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('FRONT SUSPENSION::Front Suspension', 1, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Shock Absorber', 1, ['Left','Right']))} No Damage ${allPosBadgesPos('FRONT SUSPENSION::Shock Absorber', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('FRONT SUSPENSION::Shock Absorber', 1, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Front Suspension', 2, ['Left','Right']))} Uneven Tire Wear ${allPosBadgesPos('FRONT SUSPENSION::Front Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('FRONT SUSPENSION::Front Suspension', 2, ['Left','Right'])}
+                <td style="${Tp}">${cb(frontExcessBounceIdx === 0)} Excess Bounce 2-3x</td>
+                ${actionTp('Replace', frontExcessBounceIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Front Suspension', 3, ['Left','Right']))} Squeaking ${allPosBadgesPos('FRONT SUSPENSION::Front Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('FRONT SUSPENSION::Front Suspension', 3, ['Left','Right'])}
+                <td style="${Tp}">${cb(frontUnevenWearIdx === 0)} Uneven Tire Wear</td>
+                ${actionTp('Replace', frontUnevenWearIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('FRONT SUSPENSION::Front Suspension', 4, ['Left','Right']))} No Damage ${allPosBadgesPos('FRONT SUSPENSION::Front Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('FRONT SUSPENSION::Front Suspension', 4, ['Left','Right'])}
+                <td style="${Tp}">${cb(frontSqueakingIdx === 0)} Squeaking</td>
+                ${actionTp('Replace', frontSqueakingIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="5">Rear<br>Susp.</td>
-                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Rear Suspension', 0, ['Left','Right']))} Excess Bounce 2-3x ${allPosBadgesPos('REAR SUSPENSION::Rear Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('REAR SUSPENSION::Rear Suspension', 0, ['Left','Right'])}
+                <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="2">Rear<br>Susp.</td>
+                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Shock Absorber', 0, ['Left','Right']))} Shock Absorber Oil Leak ${allPosBadgesPos('REAR SUSPENSION::Shock Absorber', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('REAR SUSPENSION::Shock Absorber', 0, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Rear Suspension', 1, ['Left','Right']))} Shock Absorber Oil Leak ${allPosBadgesPos('REAR SUSPENSION::Rear Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('REAR SUSPENSION::Rear Suspension', 1, ['Left','Right'])}
+                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Shock Absorber', 1, ['Left','Right']))} No Damage ${allPosBadgesPos('REAR SUSPENSION::Shock Absorber', ['Left','Right'])}</td>
+                ${alwaysActionTdSmall('REAR SUSPENSION::Shock Absorber', 1, ['Left','Right'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Rear Suspension', 2, ['Left','Right']))} Uneven Tire Wear ${allPosBadgesPos('REAR SUSPENSION::Rear Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('REAR SUSPENSION::Rear Suspension', 2, ['Left','Right'])}
+                <td style="${Tp}">${cb(rearExcessBounceIdx === 0)} Excess Bounce 2-3x</td>
+                ${actionTp('Replace', rearExcessBounceIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Rear Suspension', 3, ['Left','Right']))} Squeaking ${allPosBadgesPos('REAR SUSPENSION::Rear Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('REAR SUSPENSION::Rear Suspension', 3, ['Left','Right'])}
+                <td style="${Tp}">${cb(rearUnevenWearIdx === 0)} Uneven Tire Wear</td>
+                ${actionTp('Replace', rearUnevenWearIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCondPos('REAR SUSPENSION::Rear Suspension', 4, ['Left','Right']))} No Damage ${allPosBadgesPos('REAR SUSPENSION::Rear Suspension', ['Left','Right'])}</td>
-                ${alwaysActionTdSmall('REAR SUSPENSION::Rear Suspension', 4, ['Left','Right'])}
+                <td style="${Tp}">${cb(rearSqueakingIdx === 0)} Squeaking</td>
+                ${actionTp('Replace', rearSqueakingIdx === 0)}
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7px;text-align:center;" rowspan="5">For<br>Leaks</td>
@@ -6056,20 +6154,20 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               </tr>
               <tr>
                 <td style="${Tptop};font-weight:900;font-size:7.5px;text-align:center;" rowspan="4">Brake<br>Pad/Shoe</td>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 0))} &lt;3 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 0, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Thickness', 0))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Thickness', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Thickness', 0, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 1))} 3 – 6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 1, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Thickness', 1))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Thickness', ['FL','FR','RL','RR'])}</td>
+                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Thickness', 1, ['FL','FR','RL','RR'])}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 2))} &gt;6 mm ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 2, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(brake3mmIdx === 0)} &lt;3 mm</td>
+                ${actionTp('Replace', brake3mmIdx === 0)}
               </tr>
               <tr>
-                <td style="${Tp}">${cb(anyAtCond('BRAKE PAD / SHOE::Brake Pad / Shoe', 3))} Rotor Disc Worn ${allPosBadgesPos('BRAKE PAD / SHOE::Brake Pad / Shoe', ['FL','FR','RL','RR'])}</td>
-                ${alwaysActionTdSmall('BRAKE PAD / SHOE::Brake Pad / Shoe', 3, ['FL','FR','RL','RR'])}
+                <td style="${Tp}">${cb(rotorDiscIdx === 0)} Rotor Disc Worn</td>
+                ${actionTp('Reface', rotorDiscIdx === 0)}
               </tr>
             </table>
           </td>
@@ -6876,12 +6974,14 @@ function AppInner() {
         RR: { conditionIdx: 1, condition: 'No Issue', action: 'Good', color: 'green' },
       }};
       f['AIR CONDITIONER::Air Cleaner'] = { conditionIdx: 2, condition: 'Clean', action: 'Good', color: 'green' };
-      f['BRAKE PAD / SHOE::Brake Pad / Shoe'] = { positions: {
-        FL: { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' },
-        FR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
-        RL: { conditionIdx: 1, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
-        RR: { conditionIdx: 2, condition: '>6 mm', action: 'Good', color: 'green' },
+      f['BRAKE PAD / SHOE::Thickness'] = { positions: {
+        FL: { conditionIdx: 0, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        FR: { conditionIdx: 1, condition: '>6 mm', action: 'Good', color: 'green' },
+        RL: { conditionIdx: 0, condition: '3 – 6 mm', action: 'Observe', color: 'yellow' },
+        RR: { conditionIdx: 1, condition: '>6 mm', action: 'Good', color: 'green' },
       }};
+      f['BRAKE PAD / SHOE::<3 mm'] = { conditionIdx: 0, condition: '<3 mm', action: 'Replace', color: 'red' };
+      f['BRAKE PAD / SHOE::Rotor Disc Worn'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Light'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Horn'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
       f['DRIVER CONTROL::Washer'] = { conditionIdx: 0, condition: 'All Good', action: 'Good', color: 'green' };
@@ -6893,19 +6993,28 @@ function AppInner() {
         Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
       f['TRANSMISSION::Transmission M/T, A/T, CVT Oil'] = { conditionIdx: 2, condition: 'Correct Level', action: 'Good', color: 'green' };
-      f['BALL JOINT::Ball Joint'] = { positions: {
-        Left: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 2, condition: 'No Damage', action: 'Good', color: 'green' },
+      f['BALL JOINT::Front Ball Joint'] = { positions: {
+        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
+      f['BALL JOINT::Loose'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
+      f['BALL JOINT::Sway Bar Bushing'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
+      f['BALL JOINT::Stab Link'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
       f['CLUTCH PEDAL::Clutch Pedal'] = { conditionIdx: 0, condition: '10mm – 20mm', action: 'Good', color: 'green' };
-      f['FRONT SUSPENSION::Front Suspension'] = { positions: {
-        Left: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
-        Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+      f['FRONT SUSPENSION::Shock Absorber'] = { positions: {
+        Left: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
+        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
-      f['REAR SUSPENSION::Rear Suspension'] = { positions: {
-        Left: { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' },
-        Right: { conditionIdx: 4, condition: 'No Damage', action: 'Good', color: 'green' },
+      f['FRONT SUSPENSION::Excess Bounce'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
+      f['FRONT SUSPENSION::Uneven Tire Wear'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
+      f['FRONT SUSPENSION::Squeaking'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
+      f['REAR SUSPENSION::Shock Absorber'] = { positions: {
+        Left: { conditionIdx: 0, condition: 'Shock Absorber Oil Leak', action: 'Replace', color: 'red' },
+        Right: { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' },
       }};
+      f['REAR SUSPENSION::Excess Bounce'] = { conditionIdx: 0, condition: 'Excess Bounce 2-3x', action: 'Replace', color: 'red' };
+      f['REAR SUSPENSION::Uneven Tire Wear'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
+      f['REAR SUSPENSION::Squeaking'] = { conditionIdx: 1, condition: 'No', action: 'Good', color: 'green' };
       f['FOR LEAKS::For Leaks'] = { conditionIdxs: [4] };
       f['EXHAUST PIPE MOUNTING::Exhaust Pipe Mounting'] = { conditionIdxs: [] };
       f['COOLING SYSTEM::Cooling System Hose'] = { conditionIdx: 1, condition: 'No Damage', action: 'Good', color: 'green' };
