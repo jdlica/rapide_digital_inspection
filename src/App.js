@@ -518,6 +518,12 @@ INSPECTION_DATA.plus = [
           { label: 'Clogged', color: 'red', action: 'Replace' },
         ],
       },
+    ],
+  },
+  // ── INSPECT ENGINE BAY (Fluids) ────────────────────────────
+  {
+    category: 'INSPECT ENGINE BAY',
+    items: [
       {
         name: 'Engine Oil',
         conditions: [
@@ -526,12 +532,6 @@ INSPECTION_DATA.plus = [
           { label: 'Low Level', color: 'yellow', action: 'Check For Leaks' },
         ],
       },
-    ],
-  },
-  // ── FLUIDS ─────────────────────────────────────────────────
-  {
-    category: 'FLUIDS',
-    items: [
       {
         name: 'Power Steering Fluid',
         conditions: [
