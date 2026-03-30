@@ -6875,7 +6875,13 @@ function AppInner() {
   const [models, setModels] = useState({ ...CAR_MODELS });
   const [municipalities, setMunicipalities] = useState([...MUNICIPALITY_LIST]);
   const [barangays, setBarangays] = useState({ ..._barangaysByMunicipality });
-  const [technicians, setTechnicians] = useState([]);
+  const [technicians, setTechnicians] = useState([
+    { id: 1, name: 'LITO LLANES', active: true },
+    { id: 2, name: 'KRISTOFFER MODALES', active: true },
+    { id: 3, name: 'CHARLES BATONGBAKAL', active: true },
+    { id: 4, name: 'THOMAS EUSEBIO', active: true },
+    { id: 5, name: 'TAMEL TULAY', active: true },
+  ]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
   const [branches, setBranches] = useState([{ id: 1, name: 'Rapide San Antonio' }]);
 
