@@ -659,7 +659,6 @@ INSPECTION_DATA.plus = [
         positions: ['FL', 'FR', 'RL', 'RR'],
       },
       {
-        partLabel: 'DRIVE SHAFT BOOT',
         name: 'Drive Shaft Boot',
         conditions: [
           { label: 'Broken', color: 'red', action: 'Replace' },
@@ -676,7 +675,6 @@ INSPECTION_DATA.plus = [
     category: 'Inspect Under Chassis',
     items: [
       {
-        partLabel: 'FRONT SUSPENSION',
         name: 'Front Suspension',
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
@@ -689,7 +687,6 @@ INSPECTION_DATA.plus = [
         positions: ['Front Left', 'Front Right'],
       },
       {
-        partLabel: 'REAR SUSPENSION',
         name: 'Rear Suspension',
         conditions: [
           { label: 'Excess Bounce 2-3x', color: 'red', action: 'Replace' },
@@ -702,7 +699,6 @@ INSPECTION_DATA.plus = [
         positions: ['Rear Left', 'Rear Right'],
       },
       {
-        partLabel: 'SUSPENSION ARM',
         name: 'Suspension Arm',
         conditions: [
           { label: 'Torn Bushing', color: 'red', action: 'Replace' },
@@ -713,7 +709,6 @@ INSPECTION_DATA.plus = [
         positions: ['Front Left', 'Front Right'],
       },
       {
-        partLabel: 'BALL JOINT',
         name: 'Ball Joint',
         conditions: [
           { label: 'Loose', color: 'red', action: 'Replace' },
@@ -724,7 +719,6 @@ INSPECTION_DATA.plus = [
         positions: ['Front Left', 'Front Right'],
       },
       {
-        partLabel: 'STEERING LINKAGE',
         name: 'Steering Linkage',
         multiSelect: true,
         conditions: [
@@ -737,7 +731,6 @@ INSPECTION_DATA.plus = [
         positions: ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'],
       },
       {
-        partLabel: 'STAB BAR BUSHING',
         name: 'Stab Bar Bushing',
         conditions: [
           { label: 'Worn / Cracked', color: 'red', action: 'Replace' },
@@ -747,7 +740,6 @@ INSPECTION_DATA.plus = [
         positions: ['Front Left', 'Front Right'],
       },
       {
-        partLabel: 'STAB LINK',
         name: 'Stab Link',
         conditions: [
           { label: 'Loose / Worn', color: 'red', action: 'Replace' },
@@ -816,38 +808,6 @@ INSPECTION_DATA.plus = [
           { label: 'Crack / Brittle', color: 'red', action: 'Replace' },
           { label: 'Fuel Line Leak', color: 'red', action: 'Replace' },
           { label: 'No Damage', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── FOR LEAKS ─────────────────────────────────────────────
-  {
-    category: 'FOR LEAKS',
-    items: [
-      {
-        name: 'For Leaks',
-        multiSelect: true,
-        conditions: [
-          { label: 'Brake Line', color: 'red', action: 'Replace' },
-          { label: 'Transfer Case', color: 'red', action: 'Replace' },
-          { label: 'Transmission', color: 'red', action: 'Replace' },
-          { label: 'Differential', color: 'red', action: 'Replace' },
-          { label: 'No Leak', color: 'green', action: 'Good', exclusive: true },
-        ],
-      },
-    ],
-  },
-  // ── EXHAUST PIPE MOUNTING ──────────────────────────────────
-  {
-    category: 'EXHAUST PIPE MOUNTING',
-    items: [
-      {
-        name: 'Exhaust Pipe Mounting',
-        multiSelect: true,
-        optional: true,
-        conditions: [
-          { label: 'Exhaust Hanger Damage', color: 'red', action: 'Replace' },
-          { label: 'Exhaust Gasket Leak', color: 'yellow', action: 'Check' },
         ],
       },
     ],
@@ -3016,6 +2976,22 @@ function InspectionScreen({
     const key = getKey(cat.category, itemName);
     const item = cat.items.find((i) => i.name === itemName);
     const cond = item.conditions[condIdx];
+    if (cond.color === 'green') {
+      setFindings((prev) => {
+        const existing = prev[key] || { positions: {} };
+        const allGreen = item.positions.every((p) => existing.positions?.[p]?.conditionIdx === condIdx);
+        if (allGreen) {
+          const u = { ...prev }; delete u[key]; return u;
+        }
+        const positions = {};
+        item.positions.forEach((p) => {
+          positions[p] = { conditionIdx: condIdx, condition: cond.label, action: cond.action, color: cond.color };
+        });
+        return { ...prev, [key]: { positions, noDamage: true } };
+      });
+      setAttempted(false);
+      return;
+    }
     setFindings((prev) => {
       const existing = prev[key] || { positions: {} };
       if (existing.positions?.[pos]?.conditionIdx === condIdx) {
@@ -3056,7 +3032,18 @@ function InspectionScreen({
         return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: next, color: wc, action: wa } }, noDamage: false } };
       }
       if (cond.exclusive) {
-        return { ...prev, [key]: { ...existing, positions: { ...(existing.positions || {}), [pos]: { conditionIdxs: [condIdx], color: cond.color, action: cond.action } }, noDamage: false } };
+        const allExclusive = item.positions.every((p) => {
+          const pd = existing.positions?.[p];
+          return pd?.conditionIdxs?.length === 1 && pd.conditionIdxs[0] === condIdx;
+        });
+        if (allExclusive) {
+          const u = { ...prev }; delete u[key]; return u;
+        }
+        const positions = {};
+        item.positions.forEach((p) => {
+          positions[p] = { conditionIdxs: [condIdx], color: cond.color, action: cond.action };
+        });
+        return { ...prev, [key]: { ...existing, positions, noDamage: true } };
       }
       const excIdxs = item.conditions.map((c, i) => (c.exclusive ? i : -1)).filter((i) => i >= 0);
       const next = [...currentIdxs.filter((i) => !excIdxs.includes(i)), condIdx];
