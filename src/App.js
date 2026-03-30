@@ -5821,12 +5821,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Coolant<br>Level</td>
-                <td style="${Tp}">${cb(coolantIdx === 0)} Low Level</td>${actionTp('Top Up', coolantIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Coolant Level', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(coolantIdx === 1)} Contaminated</td>${actionTp('Flush/Replace', coolantIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(coolantIdx === 2)} Correct Level</td>${actionTp('Good', coolantIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Coolant Level', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Coolant Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Coolant Level', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Cooling<br>Sys. Hose</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="2">Cooling<br>System Hose</td>
                 <td style="${Tp}">${cb(coolingSysIdx === 0)} Cracked / Leaking</td>${actionTp('Replace', coolingSysIdx === 0)}
               </tr>
               <tr><td style="${Tp}">${cb(coolingSysIdx === 1)} No Damage</td>${actionTp('Good', coolingSysIdx === 1)}</tr>
@@ -5837,54 +5837,54 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr><td style="${Tp}">${cb(radiatorHoseIdx === 1)} No Damage</td>${actionTp('Good', radiatorHoseIdx === 1)}</tr>
             </table>
           </td>
-          <!-- COL 2: Brake Fluid, Clutch Fluid, Air Cleaner -->
+          <!-- COL 2: Brake Fluid Level, Clutch Fluid, Air Cleaner -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Brake<br>Fluid</td>
-                <td style="${Tp}">${cb(brakeFluidIdx === 0)} Low Level</td>${actionTp('Top Up', brakeFluidIdx === 0)}
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Brake<br>Fluid Level</td>
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(brakeFluidIdx === 1)} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', brakeFluidIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(brakeFluidIdx === 2)} Correct Level</td>${actionTp('Good', brakeFluidIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Brake Fluid Level', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Clutch<br>Fluid</td>
-                <td style="${Tp}">${cb(clutchIdx === 0)} Low Level</td>${actionTp('Top Up', clutchIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(clutchIdx === 1)} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', clutchIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(clutchIdx === 2)} Correct Level</td>${actionTp('Good', clutchIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 1))} Contaminated (3-4% Moisture)</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Clutch Fluid', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Clutch Fluid', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Air<br>Cleaner</td>
-                <td style="${Tp}">${cb(airIdx === 2)} Clogged</td>${actionTp('Replace', airIdx === 2)}
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Air Cleaner', 2))} Clogged</td>${actionTp('Replace', isSelected('INSPECT ENGINE BAY::Air Cleaner', 2))}
               </tr>
-              <tr><td style="${Tp}">${cb(airIdx === 1)} Light Dirt</td>${actionTp('Clean', airIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(airIdx === 0)} Clean</td>${actionTp('Good', airIdx === 0)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Air Cleaner', 1))} Light Dirt</td>${actionTp('Clean', isSelected('INSPECT ENGINE BAY::Air Cleaner', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Air Cleaner', 0))} Clean</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Air Cleaner', 0))}</tr>
             </table>
           </td>
-          <!-- COL 3: Engine Oil, PS Fluid, Trans Oil -->
+          <!-- COL 3: Engine Oil, Power Steering Fluid, Transmission M/T, A/T, CVT Oil -->
           <td style="width:33.33%;padding:0;vertical-align:top;border:none;border-left:0.5px solid #bbb;">
             <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Engine<br>Oil</td>
-                <td style="${Tp}">${cb(engineOilIdx === 0)} Normal</td>${actionTp('Change Oil', engineOilIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 0))} Normal</td>${actionTp('Change Oil', isSelected('INSPECT ENGINE BAY::Engine Oil', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(engineOilIdx === 1)} Oil Sludge</td>${actionTp('Flush', engineOilIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(engineOilIdx === 2)} Low Level</td>${actionTp('Check For Leaks', engineOilIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 1))} Oil Sludge</td>${actionTp('Flush', isSelected('INSPECT ENGINE BAY::Engine Oil', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Engine Oil', 2))} Low Level</td>${actionTp('Check For Leaks', isSelected('INSPECT ENGINE BAY::Engine Oil', 2))}</tr>
               <tr>
                 <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Power<br>Steering<br>Fluid</td>
-                <td style="${Tp}">${cb(psIdx === 0)} Low Level</td>${actionTp('Top Up', psIdx === 0)}
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(psIdx === 1)} Contaminated</td>${actionTp('Flush/Replace', psIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(psIdx === 2)} Correct Level</td>${actionTp('Good', psIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Power Steering Fluid', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Trans.<br>M/T,A/T<br>CVT Oil</td>
-                <td style="${Tp}">${cb(transOilIdx === 0)} Low Level</td>${actionTp('Top Up', transOilIdx === 0)}
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Transmission<br>M/T, A/T<br>CVT Oil</td>
+                <td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))} Low Level</td>${actionTp('Top Up', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 0))}
               </tr>
-              <tr><td style="${Tp}">${cb(transOilIdx === 1)} Contaminated</td>${actionTp('Replace', transOilIdx === 1)}</tr>
-              <tr><td style="${Tp}">${cb(transOilIdx === 2)} Correct Level</td>${actionTp('Good', transOilIdx === 2)}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))} Contaminated</td>${actionTp('Flush/Replace', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 1))}</tr>
+              <tr><td style="${Tp}">${cb(isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 2))} Correct Level</td>${actionTp('Good', isSelected('INSPECT ENGINE BAY::Transmission M/T, A/T, CVT Oil', 2))}</tr>
             </table>
           </td>
         </tr>
@@ -6002,7 +6002,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Front<br>Susp.</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Front<br>Suspension</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right']))} Excess Bounce 2-3x ${allPosBadgesPos('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Front Suspension', 0, ['Front Left','Front Right'])}
               </tr>
@@ -6018,7 +6018,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Rear<br>Susp.</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="5">Rear<br>Suspension</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right']))} Excess Bounce 2-3x ${allPosBadgesPos('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Rear Suspension', 0, ['Rear Left','Rear Right'])}
               </tr>
@@ -6034,7 +6034,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:22%;"><col style="width:50%;"><col style="width:28%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Susp.<br>Arm</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Suspension<br>Arm</td>
                 <td style="${Tp}">${cb(anyAtCondPos('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right']))} Torn Bushing ${allPosBadgesPos('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right'])}</td>
                 ${alwaysActionTdSmall('Inspect Under Chassis::Suspension Arm', 0, ['Front Left','Front Right'])}
               </tr>
@@ -6103,7 +6103,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <colgroup><col style="width:20%;"><col style="width:48%;"><col style="width:32%;"></colgroup>
               <tr><td style="${Tp};font-weight:700;"></td><td style="${Tp};font-weight:700;">Condition</td><td style="${Tp};font-weight:700;">Action</td></tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Exhaust<br>Pipe Mnt.</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Exhaust<br>Pipe Mounting</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 0))} Exhaust Hanger Damage</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 1))} Exhaust Gasket Leak</td>${actionTp('Check', isSelected('INSPECT UNDER CHASSIS::Exhaust Pipe Mounting', 1))}</tr>
@@ -6135,7 +6135,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Engine Support', 1))} Sagging</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Engine Support', 1))}</tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Engine Support', 2))} No Damage</td>${actionTp('Good', isSelected('INSPECT UNDER CHASSIS::Engine Support', 2))}</tr>
               <tr>
-                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Fuel Tank<br>Cap/Lines</td>
+                <td style="${Tptop};font-weight:900;text-align:center;" rowspan="3">Fuel Tank Cap<br>/ Lines Conn.</td>
                 <td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 0))} Crack / Brittle Seal</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 0))}
               </tr>
               <tr><td style="${Tp}">${cb(isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 1))} Fuel Lines Leak</td>${actionTp('Replace', isSelected('INSPECT UNDER CHASSIS::Fuel Tank Cap / Lines Connection', 1))}</tr>
