@@ -1700,7 +1700,7 @@ const drawerIconStyle = { fontSize: 18, width: 24, textAlign: 'center' };
 // ============================================================
 // MANAGE SCREEN
 // ============================================================
-function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, onAddTechnician, onEditTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
+function ManageScreen({ technicians, brands, models, municipalities, barangays, fleets, shopBranch, onSetShopBranch, onAddTechnician, onEditTechnician, onAddBrand, onAddModel, onAddMunicipality, onAddBarangay, onAddFleet }) {
   const [showAddTech, setShowAddTech] = useState(false);
   const [showAddBrand, setShowAddBrand] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
@@ -1750,6 +1750,22 @@ function ManageScreen({ technicians, brands, models, municipalities, barangays, 
         <h2 style={{ fontSize: 24, fontWeight: 900, color: BRAND.black, margin: 0 }}>Manage</h2>
         <p style={{ color: BRAND.gray, fontSize: 14, margin: 0, marginTop: 4 }}>
           Technicians, Brands, Models, Locations & Fleet Customers
+        </p>
+      </div>
+
+      {/* Branch Settings */}
+      <div style={sectionStyle}>
+        <div style={sectionHeaderStyle}>
+          <h3 style={sectionTitleStyle}>Branch Settings</h3>
+        </div>
+        <TextInput
+          label="Branch Name"
+          value={shopBranch}
+          onChange={onSetShopBranch}
+          placeholder="e.g. Rapide Makati"
+        />
+        <p style={{ fontSize: 12, color: BRAND.gray, margin: '8px 0 0' }}>
+          Appears on printed inspection photo reports.
         </p>
       </div>
 
@@ -2626,6 +2642,29 @@ function InspectionScreen({
     reader.readAsDataURL(file);
     e.target.value = '';
   };
+
+  const handlePositionPhotoCapture = (key, pos, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFindings((prev) => ({
+        ...prev,
+        [key]: {
+          ...(prev[key] || { positions: {} }),
+          positions: {
+            ...(prev[key]?.positions || {}),
+            [pos]: {
+              ...(prev[key]?.positions?.[pos] || {}),
+              photo: ev.target.result,
+            },
+          },
+        },
+      }));
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
   const cat = categories[currentCategoryIdx];
   const isFirst = currentCategoryIdx === 0;
   const isLast = currentCategoryIdx === categories.length - 1;
@@ -2767,10 +2806,7 @@ function InspectionScreen({
           }
 
           const showCamera = (
-            (!item.hasPosition && finding && (finding.color === 'yellow' || finding.color === 'red')) ||
-            (item.hasPosition && finding?.positions && item.positions.some(
-              (p) => finding.positions[p]?.color === 'yellow' || finding.positions[p]?.color === 'red'
-            ))
+            !item.hasPosition && finding && (finding.color === 'yellow' || finding.color === 'red')
           );
 
           return (
@@ -2863,6 +2899,57 @@ function InspectionScreen({
                       );
                     })}
                   </div>
+
+                  {/* Per-position cameras — shown for red/amber positions */}
+                  {item.positions.some((p) => {
+                    const pf = finding?.positions?.[p];
+                    return pf?.color === 'red' || pf?.color === 'yellow';
+                  }) && (
+                    <div style={{ padding: '8px 18px', borderBottom: `1px solid ${BRAND.grayBorder}`, display: 'flex', gap: 10 }}>
+                      {item.positions.map((pos) => {
+                        const pf = finding?.positions?.[pos];
+                        if (!pf || (pf.color !== 'red' && pf.color !== 'yellow')) {
+                          return <div key={pos} style={{ flex: 1 }} />;
+                        }
+                        const posKey = `${key}::pos::${pos}`;
+                        const bColor = colorMap[pf.color];
+                        return (
+                          <div key={pos} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: 9, fontWeight: 700, color: bColor, textTransform: 'uppercase' }}>{pos}</span>
+                            {pf.photo && (
+                              <img
+                                src={pf.photo}
+                                alt=""
+                                style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', border: `2px solid ${bColor}`, cursor: 'pointer' }}
+                                onClick={() => window.open(pf.photo, '_blank')}
+                              />
+                            )}
+                            <button
+                              onClick={() => fileInputRefs.current[posKey]?.click()}
+                              style={{
+                                background: bColor, border: 'none', borderRadius: 8,
+                                width: 36, height: 36, display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
+                              }}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                              </svg>
+                            </button>
+                            <input
+                              ref={(el) => { fileInputRefs.current[posKey] = el; }}
+                              type="file"
+                              accept="image/*"
+                              capture="environment"
+                              style={{ display: 'none' }}
+                              onChange={(e) => handlePositionPhotoCapture(key, pos, e)}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Condition selector — only shown for active position */}
                   {activePosition?.itemName === item.name && (
@@ -3704,7 +3791,7 @@ function AdminDashboard({
   );
 }
 
-function ServiceDecisionScreen({ inspection, onSave, onBack }) {
+function ServiceDecisionScreen({ inspection, shopBranch, onSave, onBack }) {
   const [decisions, setDecisions] = useState({});
 
   // Get yellow and red findings — handle both normal and per-position findings
@@ -3817,30 +3904,41 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         </div>`;
     });
 
-    // Collect photos from all findings
+    // Collect photos from all findings (item-level and per-position)
     const photos = [];
     categories.forEach((cat) => {
       cat.items.forEach((item) => {
         const key = `${cat.category}::${item.name}`;
         const f = findings[key];
-        if (f?.photo) {
-          photos.push({ category: cat.category, name: item.name, photo: f.photo, color: f.color, action: f.action });
+        if (!f) return;
+        if (item.hasPosition && item.positions && f.positions) {
+          item.positions.forEach((pos) => {
+            const pf = f.positions[pos];
+            if (pf?.photo && (pf.color === 'red' || pf.color === 'yellow')) {
+              photos.push({ category: cat.category, name: item.name, position: pos, photo: pf.photo, color: pf.color, condition: pf.condition, action: pf.action });
+            }
+          });
+        } else if (!item.hasPosition && f.photo && (f.color === 'red' || f.color === 'yellow')) {
+          photos.push({ category: cat.category, name: item.name, position: null, photo: f.photo, color: f.color, condition: f.condition, action: f.action });
         }
       });
     });
 
     let photosPageHTML = '';
     if (photos.length > 0) {
+      const branchDisplay = shopBranch || '';
       const photoCards = photos.map((p) => {
         const borderColor = p.color === 'red' ? '#E31E24' : '#F59E0B';
         const bgColor = p.color === 'red' ? '#FEE2E2' : '#FEF3C7';
         const textColor = p.color === 'red' ? '#DC2626' : '#D97706';
+        const posLabel = p.position ? ` &mdash; ${p.position}` : '';
         return `
           <div style="border:2px solid ${borderColor};border-radius:8px;overflow:hidden;break-inside:avoid;">
             <img src="${p.photo}" style="width:100%;height:200px;object-fit:cover;display:block;" />
             <div style="padding:10px 12px;background:${bgColor};">
-              <div style="font-size:13px;font-weight:800;color:#1A1A1A;">${p.name}</div>
+              <div style="font-size:13px;font-weight:800;color:#1A1A1A;">${p.name}${posLabel}</div>
               <div style="font-size:11px;color:#6B7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.4px;">${p.category}</div>
+              ${p.condition ? `<div style="font-size:11px;color:${textColor};margin-top:4px;font-weight:700;">${p.condition}</div>` : ''}
               <span style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:4px;background:${borderColor};color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;">${p.action}</span>
             </div>
           </div>`;
@@ -3849,11 +3947,12 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       photosPageHTML = `
         <div style="page-break-before:always;padding-top:8px;">
           <div style="text-align:center;margin-bottom:20px;">
-            <div style="background:#FFD100;padding:12px 24px;border-radius:8px;display:inline-block;margin-bottom:12px;">
-              <div style="font-family:'Arial Black',sans-serif;font-size:28px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapidé</div>
+            <div style="background:#FFD100;padding:12px 24px;border-radius:8px;display:inline-block;margin-bottom:6px;">
+              <div style="font-family:'Arial Black',sans-serif;font-size:28px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
               <div style="font-size:10px;font-weight:700;letter-spacing:3px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
             </div>
-            <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#1A1A1A;">Inspection Photo Documentation</div>
+            ${branchDisplay ? `<div style="font-size:13px;font-weight:800;color:#1A1A1A;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">${branchDisplay}</div>` : ''}
+            <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#1A1A1A;margin-top:4px;">Inspection Photo Documentation</div>
             <div style="font-size:12px;color:#6B7280;margin-top:4px;">Visual documentation of flagged inspection items &mdash; ${inspection.rif}</div>
             <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${inspection.customerData?.make || ''} ${inspection.customerData?.model || ''} ${inspection.customerData?.year || ''} &bull; ${inspection.customerData?.plateNo || ''} &bull; ${inspection.date}</div>
           </div>
@@ -4517,6 +4616,7 @@ function AppInner() {
   const [barangays, setBarangays] = useState({ ..._barangaysByMunicipality });
   const [technicians, setTechnicians] = useState([]);
   const [fleets, setFleets] = useState([...fleetData.fleet_customers].sort());
+  const [shopBranch, setShopBranch] = useState('');
 
   // Draft tracking — use a ref so RIF is stable across re-renders
   const draftRifRef = useRef(null);
@@ -4793,6 +4893,8 @@ function AppInner() {
           municipalities={municipalities}
           barangays={barangays}
           fleets={fleets}
+          shopBranch={shopBranch}
+          onSetShopBranch={setShopBranch}
           onAddTechnician={handleAddTechnician}
           onEditTechnician={handleEditTechnician}
           onAddBrand={handleAddBrand}
@@ -4824,6 +4926,7 @@ function AppInner() {
       {screen === 'dashboard' && viewingInspection && (
         <ServiceDecisionScreen
           inspection={viewingInspection}
+          shopBranch={shopBranch}
           onSave={(decisions) => {
             const updated = {
               ...viewingInspection,
