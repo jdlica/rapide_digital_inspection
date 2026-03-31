@@ -3228,15 +3228,33 @@ function InspectionScreen({
                             const pf = getPF(ti.name, pos);
                             const issue = pf?.conditionIdx === 1;
                             const issueCond = ti.conditions[1];
+                            const tiKey = getKey(cat.category, ti.name);
+                            const posRefKey = `${tiKey}::${pos}`;
                             return (
-                              <div key={ti.name} onClick={() => handleIssuePos(ti, pos)}
-                                style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: issue ? bgColorMap[issueCond.color] : 'transparent', borderLeft: issue ? `4px solid ${colorMap[issueCond.color]}` : '4px solid transparent', borderBottom: `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <div style={{ width: 22, height: 22, borderRadius: 5, flexShrink: 0, border: `2px solid ${issue ? colorMap[issueCond.color] : BRAND.grayBorder}`, background: issue ? colorMap[issueCond.color] : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 12, fontWeight: 700 }}>{issue && '✓'}</div>
-                                  <span style={{ fontSize: 12, fontWeight: issue ? 700 : 500, color: issue ? colorMap[issueCond.color] : BRAND.black }}>{ti.name === 'Tread <1.7mm' ? '<1.7mm' : ti.name}</span>
+                              <React.Fragment key={ti.name}>
+                                <div onClick={() => handleIssuePos(ti, pos)}
+                                  style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: issue ? bgColorMap[issueCond.color] : 'transparent', borderLeft: issue ? `4px solid ${colorMap[issueCond.color]}` : '4px solid transparent', borderBottom: issue ? 'none' : `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <div style={{ width: 22, height: 22, borderRadius: 5, flexShrink: 0, border: `2px solid ${issue ? colorMap[issueCond.color] : BRAND.grayBorder}`, background: issue ? colorMap[issueCond.color] : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 12, fontWeight: 700 }}>{issue && '✓'}</div>
+                                    <span style={{ fontSize: 12, fontWeight: issue ? 700 : 500, color: issue ? colorMap[issueCond.color] : BRAND.black }}>{ti.name === 'Tread <1.7mm' ? '<1.7mm' : ti.name}</span>
+                                  </div>
+                                  <div style={{ padding: '4px 8px', borderRadius: 6, fontWeight: 800, fontSize: 11, background: issue ? colorMap[issueCond.color] : BRAND.grayLight, color: issue ? BRAND.white : BRAND.gray, minWidth: 56, textAlign: 'center' }}>{issueCond.action}</div>
                                 </div>
-                                <div style={{ padding: '4px 8px', borderRadius: 6, fontWeight: 800, fontSize: 11, background: issue ? colorMap[issueCond.color] : BRAND.grayLight, color: issue ? BRAND.white : BRAND.gray, minWidth: 56, textAlign: 'center' }}>{issueCond.action}</div>
-                              </div>
+                                {issue && (
+                                  <div style={{ padding: '5px 8px', display: 'flex', gap: 4, borderBottom: `1px solid ${BRAND.grayBorder}`, background: bgColorMap[issueCond.color] }}>
+                                    {pf?.photo && (
+                                      <img src={pf.photo} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); window.open(pf.photo, '_blank'); }} />
+                                    )}
+                                    <button onClick={(e) => { e.stopPropagation(); setCameraModal({ key: tiKey, pos }); }} style={{ flex: 1, borderRadius: 5, border: 'none', background: colorMap[issueCond.color], padding: '3px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); posUploadInputRefs.current[posRefKey]?.click(); }} style={{ flex: 1, borderRadius: 5, border: 'none', background: '#6B7280', padding: '3px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </button>
+                                    <input ref={(el) => { posUploadInputRefs.current[posRefKey] = el; }} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePositionPhotoCapture(tiKey, pos, e)} />
+                                  </div>
+                                )}
+                              </React.Fragment>
                             );
                           })}
                           <div onClick={() => handleNoDamagePos(pos)}
