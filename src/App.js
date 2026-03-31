@@ -6303,54 +6303,67 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
   const buildPhotosPageHTML = () => {
     const findings = inspection.findings || {};
+    const cd = inspection.customerData || {};
     const photos = [];
+
     Object.entries(findings).forEach(([key, f]) => {
       const idx = key.indexOf('::');
       const category = idx !== -1 ? key.slice(0, idx) : key;
       const name = idx !== -1 ? key.slice(idx + 2) : key;
-      // Per-position photos
+      // Per-position photos — only red/amber (yellow)
       if (f?.positions) {
         Object.entries(f.positions).forEach(([pos, pf]) => {
-          if (pf?.photo) {
-            photos.push({ category, name: `${name} (${pos})`, photo: pf.photo, color: pf.color, action: pf.action });
+          if (pf?.photo && (pf.color === 'red' || pf.color === 'yellow')) {
+            photos.push({ category, name, pos, photo: pf.photo, color: pf.color, condition: pf.condition || '', action: pf.action || '' });
           }
         });
       }
-      // Non-position photo
-      if (f?.photo) {
-        photos.push({ category, name, photo: f.photo, color: f.color, action: f.action });
+      // Non-position photo — only red/amber (yellow)
+      if (f?.photo && (f.color === 'red' || f.color === 'yellow')) {
+        photos.push({ category, name, pos: null, photo: f.photo, color: f.color, condition: f.condition || '', action: f.action || '' });
       }
     });
+
     if (photos.length === 0) return null;
 
+    // Sort: critical (red) first, then warning (yellow); within each group sort by category then part name
+    photos.sort((a, b) => {
+      if (a.color !== b.color) return a.color === 'red' ? -1 : 1;
+      if (a.category !== b.category) return a.category.localeCompare(b.category);
+      return a.name.localeCompare(b.name);
+    });
+
     const photoCards = photos.map((p) => {
-      const textColor = p.color === 'red' ? '#DC2626' : p.color === 'yellow' ? '#D97706' : '#16A34A';
+      const borderColor = p.color === 'red' ? '#E31E24' : '#F59E0B';
+      const bgColor = p.color === 'red' ? '#FEE2E2' : '#FEF3C7';
+      const severityLabel = p.color === 'red' ? 'CRITICAL' : 'WARNING';
       return `
-        <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;break-inside:avoid;">
+        <div style="border:2px solid ${borderColor};border-radius:8px;overflow:hidden;break-inside:avoid;">
           <img src="${p.photo}" style="width:100%;height:180px;object-fit:cover;display:block;" />
-          <div style="padding:8px 10px;border-top:1px solid #eee;background:#fff;">
-            <div style="font-size:12px;font-weight:700;color:#1A1A1A;">${p.name}</div>
-            <div style="font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;">${p.category}</div>
-            ${p.action ? `<div style="font-size:11px;font-weight:700;color:${textColor};margin-top:4px;">${p.action}</div>` : ''}
+          <div style="padding:10px 12px;background:${bgColor};">
+            <div style="font-size:12px;font-weight:800;color:#1A1A1A;">${p.name}</div>
+            ${p.pos ? `<div style="font-size:10px;color:#555;margin-top:2px;font-weight:600;">Position: ${p.pos}</div>` : ''}
+            <div style="font-size:10px;color:#6B7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;">${p.category}</div>
+            ${p.condition ? `<div style="font-size:11px;color:#1A1A1A;margin-top:4px;font-weight:600;">${p.condition}</div>` : ''}
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+              <span style="padding:2px 10px;border-radius:4px;background:${borderColor};color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;">${severityLabel}</span>
+              ${p.action ? `<span style="padding:2px 10px;border-radius:4px;background:#1A1A1A;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">${p.action}</span>` : ''}
+            </div>
           </div>
         </div>`;
     }).join('');
 
-    const cd = inspection.customerData || {};
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
       <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="background:#FFD100;padding:8px 16px;border-radius:8px;display:inline-block;">
-            <div style="font-family:'Arial Black',Arial,sans-serif;font-size:24px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
+        <div style="text-align:center;margin-bottom:8px;">
+          <div style="background:#FFD100;padding:8px 20px;border-radius:8px;display:inline-block;">
+            <div style="font-family:'Arial Black',Arial,sans-serif;font-size:26px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
             <div style="font-size:8px;font-weight:700;letter-spacing:2.5px;color:#1A1A1A;text-transform:uppercase;">Auto Service Experts</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-weight:800;font-size:13px;color:#1A1A1A;">${cd.branch || 'Rapide San Antonio'}</div>
-            <div style="font-size:9px;color:#6B7280;margin-top:2px;">Branch</div>
-          </div>
+          <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-top:6px;letter-spacing:1px;">${cd.branch || 'Rapide San Antonio'}</div>
         </div>
         <div style="text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:1.5px solid #1A1A1A;">
-          <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Inspection Photo Documentation</div>
+          <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Flagged Conditions &mdash; Photo Summary</div>
           <div style="font-size:10px;color:#888;margin-top:4px;">${inspection.rif || ''} &bull; ${inspection.date || ''} &bull; ${cd.make || ''} ${cd.model || ''} ${cd.year || ''} &bull; ${cd.plateNo || ''}</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
