@@ -6472,41 +6472,120 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </body></html>`;
   };
 
-  const downloadSummary = () => {
-    const formHTML = inspection.packageType === 'express'
-      ? buildExpressFormHTML()
-      : inspection.packageType === 'plus'
-        ? buildPlusFormHTML()
-        : buildQuickFormHTML();
+  const downloadSummary = async () => {
+    // Loading overlay shown while PDF is generated
+    const loadingDiv = document.createElement('div');
+    loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;';
+    loadingDiv.innerHTML = '<div style="background:white;padding:28px 48px;border-radius:12px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#1A1A1A;text-align:center;"><div style="margin-bottom:8px;">Generating PDF…</div><div style="font-size:12px;font-weight:400;color:#6B7280;">Please wait</div></div>';
+    document.body.appendChild(loadingDiv);
 
-    const photosHTML = buildPhotosPageHTML();
+    try {
+      const formHTML = inspection.packageType === 'express'
+        ? buildExpressFormHTML()
+        : inspection.packageType === 'plus'
+          ? buildPlusFormHTML()
+          : buildQuickFormHTML();
+      const photosHTML = buildPhotosPageHTML();
 
-    const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
-    const photosBody = photosHTML
-      ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
-      : '';
+      const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
+      const photosBody = photosHTML
+        ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
+        : '';
 
-    const combined = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        table { border-collapse: collapse; width: 100%; }
-        @media print { body { margin: 0; } @page { size: A4 portrait; margin: 8mm; } .no-print { display: none !important; } }
-        body { font-family: Arial, sans-serif; font-size: 11px; color: #000; background: #fff; }
-        .photos-page { page-break-before: always; }
-        .save-hint { font-family: Arial, sans-serif; font-size: 13px; color: #555; text-align: center; padding: 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-      </style>
-    </head><body>
-      <div class="save-hint no-print">To save as PDF: choose <strong>Save as PDF</strong> as the destination in the print dialog, then click Save.</div>
-      <div>${formBody}</div>
-      ${photosBody ? `<div class="photos-page">${photosBody}</div>` : ''}
-      <script>
-        window.addEventListener('load', function() { window.print(); });
-      </script>
-    </body></html>`;
+      // Render body content using a native iframe so browser fully lays out the HTML
+      const renderBodyContent = async (bodyContent) => {
+        const fullHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;">${bodyContent}</body></html>`;
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('srcdoc', fullHTML);
+        // Visible behind loading overlay so browser paints it at full quality
+        iframe.style.cssText = 'position:fixed;top:0;left:0;width:794px;height:1120px;border:none;z-index:99998;';
+        document.body.appendChild(iframe);
+        await new Promise((res) => { iframe.onload = res; });
+        const doc = iframe.contentDocument;
+        // Wait for images
+        const imgs = Array.from(doc.querySelectorAll('img'));
+        await Promise.all(imgs.map((img) =>
+          img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
+        ));
+        // Expand iframe to full content height then wait for re-layout
+        const scrollH = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight, 100);
+        iframe.style.height = scrollH + 'px';
+        await new Promise((res) => setTimeout(res, 400));
+        try {
+          return await html2canvas(doc.body, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            width: 794,
+            windowWidth: 794,
+            windowHeight: scrollH,
+          });
+        } finally {
+          document.body.removeChild(iframe);
+        }
+      };
 
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(combined);
-    printWindow.document.close();
+      const addCanvasToPdf = (pdf, canvas, addNewPageFirst) => {
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const margin = 6.35;
+        const contentW = pageW - margin * 2;
+        const imgHeightMm = (canvas.height * contentW) / canvas.width;
+        let srcY = 0;
+        let remaining = imgHeightMm;
+        let needNewPage = addNewPageFirst;
+        while (remaining > 0) {
+          if (needNewPage) pdf.addPage();
+          needNewPage = true;
+          const sliceMm = Math.min(remaining, pageH - margin * 2);
+          const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = slicePx;
+          sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
+          pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
+          srcY += slicePx;
+          remaining -= sliceMm;
+        }
+      };
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      if (inspection.packageType === 'plus') {
+        const SPLIT = '<!--SPLIT-->';
+        const splitPos = formBody.indexOf(SPLIT);
+        if (splitPos !== -1) {
+          const styleEnd = formBody.indexOf('</style>') + '</style>'.length;
+          const wrapStart = formBody.indexOf('<div', styleEnd);
+          const wrapTagEnd = formBody.indexOf('>', wrapStart) + 1;
+          const styleSection = formBody.slice(0, styleEnd);
+          const wrapTag = formBody.slice(wrapStart, wrapTagEnd);
+          const innerEnd = formBody.lastIndexOf('</div>');
+          const p1Inner = formBody.slice(wrapTagEnd, splitPos);
+          const p2Inner = formBody.slice(splitPos + SPLIT.length, innerEnd);
+          const mkPage = (inner) => `${styleSection}${wrapTag}${inner}</div>`;
+          addCanvasToPdf(pdf, await renderBodyContent(mkPage(p1Inner)), false);
+          addCanvasToPdf(pdf, await renderBodyContent(mkPage(p2Inner)), true);
+        } else {
+          addCanvasToPdf(pdf, await renderBodyContent(formBody), false);
+        }
+      } else {
+        addCanvasToPdf(pdf, await renderBodyContent(formBody), false);
+      }
+
+      if (photosBody) {
+        addCanvasToPdf(pdf, await renderBodyContent(photosBody), true);
+      }
+
+      pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', err);
+      alert('PDF generation failed. Please use Print Inspection instead.');
+    } finally {
+      document.body.removeChild(loadingDiv);
+    }
   };
 
   const printInspectionForm = () => {
