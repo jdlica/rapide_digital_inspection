@@ -6494,7 +6494,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
 
       // Render body content using a native iframe so browser fully lays out the HTML
       const renderBodyContent = async (bodyContent) => {
-        const fullHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;">${bodyContent}</body></html>`;
+        const fullHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>@font-face{font-family:'Arial Black';src:local('Arial Black'),local('ArialBlack');font-weight:900;font-style:normal;}@font-face{font-family:'Arial Black';src:local('Arial Black'),local('ArialBlack');font-weight:900;font-style:italic;}</style></head><body style="margin:0;padding:0;">${bodyContent}</body></html>`;
         const iframe = document.createElement('iframe');
         iframe.setAttribute('srcdoc', fullHTML);
         // Visible behind loading overlay so browser paints it at full quality
@@ -6502,7 +6502,13 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         document.body.appendChild(iframe);
         await new Promise((res) => { iframe.onload = res; });
         const doc = iframe.contentDocument;
-        // Wait for fonts to load (ensures Arial Black / italic renders correctly)
+        // Force Arial Black font load before capture
+        if (doc.fonts && doc.fonts.load) {
+          await Promise.all([
+            doc.fonts.load('900 italic 26px "Arial Black"'),
+            doc.fonts.load('900 26px "Arial Black"'),
+          ]).catch(() => {});
+        }
         if (doc.fonts && doc.fonts.ready) {
           await doc.fonts.ready;
         }
@@ -6520,6 +6526,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             scale: 2,
             useCORS: true,
             allowTaint: true,
+            foreignObjectRendering: true,
             logging: false,
             width: 794,
             windowWidth: 794,
