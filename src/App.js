@@ -416,6 +416,7 @@ const INSPECTION_DATA = {
             { label: 'Transmission', color: 'red', action: 'Replace' },
             { label: 'Transfer Case', color: 'red', action: 'Replace' },
             { label: 'Differential', color: 'red', action: 'Replace' },
+            { label: 'No Leak', color: 'green', action: 'Good', exclusive: true },
           ],
         },
       ],
@@ -5590,14 +5591,15 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
               <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Brake Pad', 1, bpPos))} 3 – 6 mm ${allPosBadgesPos('Inspect Under Chassis::Brake Pad', 1, bpPos)}</td>${alwaysActionTd('Inspect Under Chassis::Brake Pad', 1, bpPos)}</tr>
               <tr><td style="${T}">${cb(anyAtCondPos('Inspect Under Chassis::Brake Pad', 2, bpPos))} &gt;6 mm ${allPosBadgesPos('Inspect Under Chassis::Brake Pad', 2, bpPos)}</td>${alwaysActionTd('Inspect Under Chassis::Brake Pad', 2, bpPos)}</tr>
               `; })()}
-              <!-- For Leaks (4 rows) -->
+              <!-- For Leaks (5 rows) -->
               <tr>
-                <td style="${T};font-weight:900;font-size:8.5px;text-align:center;" rowspan="4">For<br>Leaks</td>
+                <td style="${T};font-weight:900;font-size:8.5px;text-align:center;" rowspan="5">For<br>Leaks</td>
                 <td style="${T}">${cb(isSelected('Inspect Under Chassis::For Leaks', 0))} Brake Line</td>${actionTd('Replace', isSelected('Inspect Under Chassis::For Leaks', 0))}
               </tr>
               <tr><td style="${T}">${cb(isSelected('Inspect Under Chassis::For Leaks', 1))} Transmission</td>${actionTd('Replace', isSelected('Inspect Under Chassis::For Leaks', 1))}</tr>
               <tr><td style="${T}">${cb(isSelected('Inspect Under Chassis::For Leaks', 2))} Transfer Case</td>${actionTd('Replace', isSelected('Inspect Under Chassis::For Leaks', 2))}</tr>
               <tr><td style="${T}">${cb(isSelected('Inspect Under Chassis::For Leaks', 3))} Differential</td>${actionTd('Replace', isSelected('Inspect Under Chassis::For Leaks', 3))}</tr>
+              <tr><td style="${T}">${cb(isSelected('Inspect Under Chassis::For Leaks', 4))} No Leak</td>${actionTd('Good', isSelected('Inspect Under Chassis::For Leaks', 4))}</tr>
             </table>
           </td>
         </tr>
@@ -7214,6 +7216,16 @@ function AppInner() {
       return [draft, ...prev];
     });
   };
+
+  // Auto-save findings while on the inspection screen
+  useEffect(() => {
+    if (screen !== 'inspection') return;
+    const timer = setTimeout(() => {
+      saveCurrentDraft('inspection', currentCatIdx);
+    }, 800);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [findings, screen]);
 
   const handleResume = (ins) => {
     draftRifRef.current = ins.rif;
