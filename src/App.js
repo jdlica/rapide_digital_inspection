@@ -268,7 +268,7 @@ const INSPECTION_DATA = {
           name: 'Coolant Level',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris', 'Flush'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Oil', 'Sludge', 'Rust', 'Debris'] },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -276,7 +276,7 @@ const INSPECTION_DATA = {
           name: 'Power Steering Fluid',
           conditions: [
             { label: 'Low Level', color: 'yellow', action: 'Top Up' },
-            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris', 'Flush'] },
+            { label: 'Contaminated', color: 'red', action: 'Flush/Replace', subOptions: ['Dark', 'Burnt', 'Rust', 'Debris'] },
             { label: 'Correct Level', color: 'green', action: 'Good' },
           ],
         },
@@ -6394,7 +6394,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     }).join('');
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
-      <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;border:2px solid #1A1A1A;border-radius:8px;box-sizing:border-box;">
+      <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;box-sizing:border-box;">
         <div style="text-align:center;margin-bottom:8px;">
           <div style="background:#FFD100;padding:8px 20px;border-radius:8px;display:inline-block;">
             <div style="font-family:'Arial Black',Arial,sans-serif;font-size:26px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
