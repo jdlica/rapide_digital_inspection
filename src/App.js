@@ -6473,97 +6473,104 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
   };
 
   const downloadSummary = async () => {
-    const html = inspection.packageType === 'express'
-      ? buildExpressFormHTML()
-      : inspection.packageType === 'plus'
-        ? buildPlusFormHTML()
-        : buildQuickFormHTML();
+    try {
+      const formHTML = inspection.packageType === 'express'
+        ? buildExpressFormHTML()
+        : inspection.packageType === 'plus'
+          ? buildPlusFormHTML()
+          : buildQuickFormHTML();
 
-    const photosHTML = buildPhotosPageHTML();
+      const photosHTML = buildPhotosPageHTML();
 
-    const renderCanvas = async (htmlStr) => {
-      const container = document.createElement('div');
-      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;color:#000;box-sizing:border-box;';
-      const bodyMatch = htmlStr.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-      container.innerHTML = bodyMatch ? bodyMatch[1] : '';
-      container.querySelectorAll('script').forEach((s) => s.remove());
-      document.body.appendChild(container);
-      // Wait for all images to fully load before capturing
-      const imgs = Array.from(container.querySelectorAll('img'));
-      await Promise.all(imgs.map((img) =>
-        img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
-      ));
-      try {
-        return await html2canvas(container, { scale: 3, useCORS: true, allowTaint: true, logging: false, width: 794 });
-      } finally {
-        document.body.removeChild(container);
-      }
-    };
+      // Build the same combined HTML as printInspection (without print trigger)
+      const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
+      const photosBody = photosHTML
+        ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
+        : '';
 
-    const addCanvasToPdf = (pdf, canvas, addNewPageFirst) => {
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 6.35;
-      const contentW = pageW - margin * 2;
-      const imgHeightMm = (canvas.height * contentW) / canvas.width;
+      const renderSection = async (bodyContent) => {
+        const container = document.createElement('div');
+        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;box-sizing:border-box;';
+        container.innerHTML = bodyContent;
+        container.querySelectorAll('script').forEach((s) => s.remove());
+        document.body.appendChild(container);
+        const imgs = Array.from(container.querySelectorAll('img'));
+        await Promise.all(imgs.map((img) =>
+          img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
+        ));
+        await new Promise((res) => setTimeout(res, 100));
+        try {
+          return await html2canvas(container, { scale: 2, useCORS: true, allowTaint: true, logging: false, width: 794 });
+        } finally {
+          document.body.removeChild(container);
+        }
+      };
 
-      let srcY = 0;
-      let remaining = imgHeightMm;
-      let needNewPage = addNewPageFirst;
+      const addCanvasToPdf = (pdf, canvas, addNewPageFirst) => {
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const margin = 6.35;
+        const contentW = pageW - margin * 2;
+        const imgHeightMm = (canvas.height * contentW) / canvas.width;
 
-      while (remaining > 0) {
-        if (needNewPage) pdf.addPage();
-        needNewPage = true;
+        let srcY = 0;
+        let remaining = imgHeightMm;
+        let needNewPage = addNewPageFirst;
 
-        const sliceMm = Math.min(remaining, pageH - margin * 2);
-        const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
+        while (remaining > 0) {
+          if (needNewPage) pdf.addPage();
+          needNewPage = true;
 
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = slicePx;
-        sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
+          const sliceMm = Math.min(remaining, pageH - margin * 2);
+          const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
 
-        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, contentW, sliceMm);
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = slicePx;
+          sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
 
-        srcY += slicePx;
-        remaining -= sliceMm;
-      }
-    };
+          pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
 
-    // A4: 210mm × 297mm, 0.25 inch (6.35mm) margins
-    const pdf = new jsPDF('p', 'mm', 'a4');
+          srcY += slicePx;
+          remaining -= sliceMm;
+        }
+      };
 
-    if (inspection.packageType === 'plus') {
-      // Split plus form at <!--SPLIT--> into 2 clean pages
-      const SPLIT = '<!--SPLIT-->';
-      const bodyContent = (html.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', ''])[1];
-      const splitPos = bodyContent.indexOf(SPLIT);
-      if (splitPos !== -1) {
-        const styleEnd = bodyContent.indexOf('</style>') + '</style>'.length;
-        const wrapStart = bodyContent.indexOf('<div', styleEnd);
-        const wrapTagEnd = bodyContent.indexOf('>', wrapStart) + 1;
-        const styleSection = bodyContent.slice(0, styleEnd);
-        const wrapTag = bodyContent.slice(wrapStart, wrapTagEnd);
-        const innerEnd = bodyContent.lastIndexOf('</div>');
-        const p1Inner = bodyContent.slice(wrapTagEnd, splitPos);
-        const p2Inner = bodyContent.slice(splitPos + SPLIT.length, innerEnd);
-        const mkPage = (inner) =>
-          `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${styleSection}${wrapTag}${inner}</div></body></html>`;
-        addCanvasToPdf(pdf, await renderCanvas(mkPage(p1Inner)), false);
-        addCanvasToPdf(pdf, await renderCanvas(mkPage(p2Inner)), true);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      if (inspection.packageType === 'plus') {
+        // Split plus form at <!--SPLIT--> into 2 clean pages
+        const SPLIT = '<!--SPLIT-->';
+        const splitPos = formBody.indexOf(SPLIT);
+        if (splitPos !== -1) {
+          const styleEnd = formBody.indexOf('</style>') + '</style>'.length;
+          const wrapStart = formBody.indexOf('<div', styleEnd);
+          const wrapTagEnd = formBody.indexOf('>', wrapStart) + 1;
+          const styleSection = formBody.slice(0, styleEnd);
+          const wrapTag = formBody.slice(wrapStart, wrapTagEnd);
+          const innerEnd = formBody.lastIndexOf('</div>');
+          const p1Inner = formBody.slice(wrapTagEnd, splitPos);
+          const p2Inner = formBody.slice(splitPos + SPLIT.length, innerEnd);
+          const mkPage = (inner) => `${styleSection}${wrapTag}${inner}</div>`;
+          addCanvasToPdf(pdf, await renderSection(mkPage(p1Inner)), false);
+          addCanvasToPdf(pdf, await renderSection(mkPage(p2Inner)), true);
+        } else {
+          addCanvasToPdf(pdf, await renderSection(formBody), false);
+        }
       } else {
-        addCanvasToPdf(pdf, await renderCanvas(html), false);
+        addCanvasToPdf(pdf, await renderSection(formBody), false);
       }
-    } else {
-      addCanvasToPdf(pdf, await renderCanvas(html), false);
-    }
 
-    if (photosHTML) {
-      const photosCanvas = await renderCanvas(photosHTML);
-      addCanvasToPdf(pdf, photosCanvas, true);
-    }
+      if (photosBody) {
+        addCanvasToPdf(pdf, await renderSection(photosBody), true);
+      }
 
-    pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
+      pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('PDF download failed:', err);
+      alert('PDF download failed. Please use Print Inspection instead.');
+    }
   };
 
   const printInspectionForm = () => {
