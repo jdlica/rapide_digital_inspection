@@ -7016,6 +7016,7 @@ function AppInner() {
   const [inspections, setInspections] = useState([]);
   const [viewingInspection, setViewingInspection] = useState(null);
   const [successToast, setSuccessToast] = useState(null);
+  const customerAutoSaveInitRef = useRef(false);
   const [brands, setBrands] = useState([...CAR_BRANDS]);
   const [models, setModels] = useState({ ...CAR_MODELS });
   const [municipalities, setMunicipalities] = useState([...MUNICIPALITY_LIST]);
@@ -7226,6 +7227,22 @@ function AppInner() {
     return () => clearTimeout(timer);
   }, [findings, screen]); // eslint-disable-line
 
+  // Auto-save customer/vehicle data while on customerVehicle screen
+  useEffect(() => {
+    if (screen !== 'customerVehicle') {
+      customerAutoSaveInitRef.current = false;
+      return;
+    }
+    if (!customerAutoSaveInitRef.current) {
+      customerAutoSaveInitRef.current = true;
+      return;
+    }
+    const timer = setTimeout(() => {
+      saveCurrentDraft('customerVehicle');
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [customerData, screen]); // eslint-disable-line
+
   const handleResume = (ins) => {
     draftRifRef.current = ins.rif;
     setPackageType(ins.packageType);
@@ -7266,14 +7283,18 @@ function AppInner() {
     setScreen('customerVehicle');
   };
 
-  // Called after CustomerVehicle is saved — go directly to service questions
+  // Called after CustomerVehicle is saved — save draft, go to dashboard with success popup
   const handleCustomerVehicleSave = () => {
-    setScreen('serviceQuestions');
+    saveCurrentDraft('serviceQuestions');
+    setScreen('dashboard');
+    setSuccessToast('__customer_vehicle_saved__');
   };
 
-  // Called after ServiceQuestions are saved — go directly to package selection
+  // Called after ServiceQuestions are saved — save draft, go to dashboard with success popup
   const handleServiceQuestionsSave = () => {
-    setScreen('packageSelect');
+    saveCurrentDraft('packageSelect');
+    setScreen('dashboard');
+    setSuccessToast('__service_saved__');
   };
 
   // Called when package is selected — save to dashboard and show success
@@ -7427,13 +7448,22 @@ function AppInner() {
                   The inspection has been saved to the dashboard. Resume it to start filling in the inspection findings.
                 </div>
               </>
-            ) : successToast === '__customer_saved__' ? (
+            ) : successToast === '__customer_vehicle_saved__' ? (
               <>
                 <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
-                  Customer Saved!
+                  Customer &amp; Vehicle Saved!
                 </div>
                 <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 28 }}>
                   The inspection has been added to the dashboard. Resume it to fill in service questions.
+                </div>
+              </>
+            ) : successToast === '__service_saved__' ? (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: BRAND.black, marginBottom: 8 }}>
+                  Service Info Saved!
+                </div>
+                <div style={{ fontSize: 14, color: BRAND.gray, marginBottom: 28 }}>
+                  The inspection has been updated. Resume it to select a service package.
                 </div>
               </>
             ) : (
