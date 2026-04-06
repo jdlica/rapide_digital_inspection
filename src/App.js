@@ -6489,20 +6489,24 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         : '';
 
       const renderSection = async (bodyContent) => {
+        // Wrapper clips the container visually but html2canvas captures full height
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:fixed;left:0;top:0;width:794px;height:1px;overflow:hidden;z-index:-9999;pointer-events:none;';
         const container = document.createElement('div');
-        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;box-sizing:border-box;';
+        container.style.cssText = 'width:794px;background:white;box-sizing:border-box;position:absolute;left:0;top:0;';
         container.innerHTML = bodyContent;
         container.querySelectorAll('script').forEach((s) => s.remove());
-        document.body.appendChild(container);
+        wrapper.appendChild(container);
+        document.body.appendChild(wrapper);
         const imgs = Array.from(container.querySelectorAll('img'));
         await Promise.all(imgs.map((img) =>
           img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
         ));
-        await new Promise((res) => setTimeout(res, 100));
+        await new Promise((res) => setTimeout(res, 200));
         try {
-          return await html2canvas(container, { scale: 2, useCORS: true, allowTaint: true, logging: false, width: 794 });
+          return await html2canvas(container, { scale: 2, useCORS: true, allowTaint: true, logging: false, width: 794, scrollX: 0, scrollY: 0 });
         } finally {
-          document.body.removeChild(container);
+          document.body.removeChild(wrapper);
         }
       };
 
