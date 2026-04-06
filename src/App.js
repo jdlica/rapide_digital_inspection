@@ -4280,6 +4280,7 @@ function AdminDashboard({
   inspections,
   onView,
   onResume,
+  onChangePackage,
   onNewInspection,
   onDelete,
   technicians,
@@ -4574,6 +4575,24 @@ function AdminDashboard({
                           }}
                         >
                           View
+                        </button>
+                      )}
+                      {ins.status === 'in_progress' && ins.packageType && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onChangePackage(ins); }}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: 6,
+                            border: '1px solid #93C5FD',
+                            background: '#EFF6FF',
+                            color: BRAND.black,
+                            fontWeight: 700,
+                            fontSize: 12,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Change Package
                         </button>
                       )}
                       {ins.status === 'draft' && <button
@@ -6330,33 +6349,34 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       const idx = key.indexOf('::');
       const category = idx !== -1 ? key.slice(0, idx) : key;
       const name = idx !== -1 ? key.slice(idx + 2) : key;
-      // Per-position photos — only red/amber (yellow)
+      // Per-position photos — all captured photos
       if (f?.positions) {
         Object.entries(f.positions).forEach(([pos, pf]) => {
-          if (pf?.photo && (pf.color === 'red' || pf.color === 'yellow')) {
-            photos.push({ category, name, pos, photo: pf.photo, color: pf.color, condition: pf.condition || '', action: pf.action || '' });
+          if (pf?.photo) {
+            photos.push({ category, name, pos, photo: pf.photo, color: pf.color || '', condition: pf.condition || '', action: pf.action || '' });
           }
         });
       }
-      // Non-position photo — only red/amber (yellow)
-      if (f?.photo && (f.color === 'red' || f.color === 'yellow')) {
-        photos.push({ category, name, pos: null, photo: f.photo, color: f.color, condition: f.condition || '', action: f.action || '' });
+      // Non-position photo — all captured photos
+      if (f?.photo) {
+        photos.push({ category, name, pos: null, photo: f.photo, color: f.color || '', condition: f.condition || '', action: f.action || '' });
       }
     });
 
     if (photos.length === 0) return null;
 
-    // Sort: critical (red) first, then warning (yellow); within each group sort by category then part name
+    // Sort: critical (red) first, then warning (yellow), then good (green); within each group sort by category then part name
+    const colorRank = (c) => c === 'red' ? 0 : c === 'yellow' ? 1 : c === 'green' ? 2 : 3;
     photos.sort((a, b) => {
-      if (a.color !== b.color) return a.color === 'red' ? -1 : 1;
+      if (a.color !== b.color) return colorRank(a.color) - colorRank(b.color);
       if (a.category !== b.category) return a.category.localeCompare(b.category);
       return a.name.localeCompare(b.name);
     });
 
     const photoCards = photos.map((p) => {
-      const borderColor = p.color === 'red' ? '#E31E24' : '#F59E0B';
-      const bgColor = p.color === 'red' ? '#FEE2E2' : '#FEF3C7';
-      const severityLabel = p.color === 'red' ? 'CRITICAL' : 'WARNING';
+      const borderColor = p.color === 'red' ? '#E31E24' : p.color === 'yellow' ? '#F59E0B' : p.color === 'green' ? '#22C55E' : '#9CA3AF';
+      const bgColor = p.color === 'red' ? '#FEE2E2' : p.color === 'yellow' ? '#FEF3C7' : p.color === 'green' ? '#F0FDF4' : '#F9FAFB';
+      const severityLabel = p.color === 'red' ? 'CRITICAL' : p.color === 'yellow' ? 'WARNING' : p.color === 'green' ? 'GOOD' : 'NOTE';
       return `
         <div style="border:2px solid ${borderColor};border-radius:8px;overflow:hidden;break-inside:avoid;">
           <img src="${p.photo}" style="width:100%;height:180px;object-fit:cover;display:block;" />
@@ -6374,7 +6394,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     }).join('');
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
-      <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;">
+      <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;width:794px;padding:24px;border:2px solid #1A1A1A;border-radius:8px;box-sizing:border-box;">
         <div style="text-align:center;margin-bottom:8px;">
           <div style="background:#FFD100;padding:8px 20px;border-radius:8px;display:inline-block;">
             <div style="font-family:'Arial Black',Arial,sans-serif;font-size:26px;font-weight:900;font-style:italic;color:#1A1A1A;letter-spacing:-1px;">Rapid&#233;</div>
@@ -6383,7 +6403,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
           <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-top:6px;letter-spacing:1px;">${cd.branch || 'Rapide San Antonio'}</div>
         </div>
         <div style="text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:1.5px solid #1A1A1A;">
-          <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Flagged Conditions &mdash; Photo Summary</div>
+          <div style="font-size:15px;font-weight:900;letter-spacing:1.5px;color:#1A1A1A;text-transform:uppercase;">Technician Photo Documentation</div>
           <div style="font-size:10px;color:#888;margin-top:4px;">${inspection.rif || ''} &bull; ${inspection.date || ''} &bull; ${cd.make || ''} ${cd.model || ''} ${cd.year || ''} &bull; ${cd.plateNo || ''}</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
@@ -7255,6 +7275,18 @@ function AppInner() {
     setScreen(ins.savedScreen || 'customerVehicle');
   };
 
+  const handleChangePackage = (ins) => {
+    draftRifRef.current = ins.rif;
+    setPackageType(ins.packageType);
+    setCustomerData({ ...ins.customerData });
+    setServiceData({ ...ins.serviceData });
+    setFindings({ ...ins.findings });
+    setTechComment(ins.techComment || '');
+    setCurrentCatIdx(ins.savedCatIdx || 0);
+    setViewingInspection(null);
+    setScreen('packageSelect');
+  };
+
   const handleLogin = (u) => {
     setUser(u);
     draftRifRef.current = null;
@@ -7611,6 +7643,7 @@ function AppInner() {
           inspections={inspections}
           onView={(ins) => setViewingInspection(ins)}
           onResume={handleResume}
+          onChangePackage={handleChangePackage}
           onNewInspection={handleNewInspection}
           onDelete={(rif) => setInspections((prev) => prev.filter((ins) => ins.rif !== rif))}
           technicians={technicians}
