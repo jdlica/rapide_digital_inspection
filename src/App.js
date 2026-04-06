@@ -7053,14 +7053,11 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           paddingTop: 8,
           paddingBottom: 20,
         }}
       >
-        <PrimaryButton onClick={onBack} variant="secondary">
-          ← Back
-        </PrimaryButton>
         <PrimaryButton onClick={handleSave}>Save Decisions</PrimaryButton>
       </div>
     </div>
