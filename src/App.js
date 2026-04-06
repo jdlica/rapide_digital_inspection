@@ -6433,9 +6433,9 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     });
 
     const photoCards = photos.map((p) => {
-      const borderColor = p.color === 'red' ? '#E31E24' : p.color === 'yellow' ? '#F59E0B' : p.color === 'green' ? '#22C55E' : '#9CA3AF';
+      const borderColor = p.color === 'red' ? '#E31E24' : p.color === 'yellow' ? '#F59E0B' : p.color === 'green' ? '#22C55E' : '#D1D5DB';
       const bgColor = p.color === 'red' ? '#FEE2E2' : p.color === 'yellow' ? '#FEF3C7' : p.color === 'green' ? '#F0FDF4' : '#F9FAFB';
-      const severityLabel = p.color === 'red' ? 'CRITICAL' : p.color === 'yellow' ? 'WARNING' : p.color === 'green' ? 'GOOD' : 'NOTE';
+      const severityLabel = p.color === 'red' ? 'CRITICAL' : p.color === 'yellow' ? 'WARNING' : p.color === 'green' ? 'GOOD' : '';
       return `
         <div style="border:2px solid ${borderColor};border-radius:8px;overflow:hidden;break-inside:avoid;">
           <img src="${p.photo}" style="width:100%;height:180px;object-fit:cover;display:block;" />
@@ -6444,10 +6444,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
             ${p.pos ? `<div style="font-size:10px;color:#555;margin-top:2px;font-weight:600;">Position: ${p.pos}</div>` : ''}
             <div style="font-size:10px;color:#6B7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;">${p.category}</div>
             ${p.condition ? `<div style="font-size:11px;color:#1A1A1A;margin-top:4px;font-weight:600;">${p.condition}</div>` : ''}
-            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
-              <span style="padding:2px 10px;border-radius:4px;background:${borderColor};color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;">${severityLabel}</span>
+            ${(severityLabel || p.action) ? `<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+              ${severityLabel ? `<span style="padding:2px 10px;border-radius:4px;background:${borderColor};color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;">${severityLabel}</span>` : ''}
               ${p.action ? `<span style="padding:2px 10px;border-radius:4px;background:#1A1A1A;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">${p.action}</span>` : ''}
-            </div>
+            </div>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -6502,6 +6502,10 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         document.body.appendChild(iframe);
         await new Promise((res) => { iframe.onload = res; });
         const doc = iframe.contentDocument;
+        // Wait for fonts to load (ensures Arial Black / italic renders correctly)
+        if (doc.fonts && doc.fonts.ready) {
+          await doc.fonts.ready;
+        }
         // Wait for images
         const imgs = Array.from(doc.querySelectorAll('img'));
         await Promise.all(imgs.map((img) =>
@@ -6510,7 +6514,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
         // Expand iframe to full content height then wait for re-layout
         const scrollH = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight, 100);
         iframe.style.height = scrollH + 'px';
-        await new Promise((res) => setTimeout(res, 400));
+        await new Promise((res) => setTimeout(res, 600));
         try {
           return await html2canvas(doc.body, {
             scale: 2,
