@@ -7224,8 +7224,7 @@ function AppInner() {
       saveCurrentDraft('inspection', currentCatIdx);
     }, 800);
     return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [findings, screen]);
+  }, [findings, screen]); // eslint-disable-line
 
   const handleResume = (ins) => {
     draftRifRef.current = ins.rif;
