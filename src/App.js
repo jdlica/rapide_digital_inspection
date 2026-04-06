@@ -6472,114 +6472,41 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </body></html>`;
   };
 
-  const downloadSummary = async () => {
-    try {
-      const formHTML = inspection.packageType === 'express'
-        ? buildExpressFormHTML()
-        : inspection.packageType === 'plus'
-          ? buildPlusFormHTML()
-          : buildQuickFormHTML();
+  const downloadSummary = () => {
+    const formHTML = inspection.packageType === 'express'
+      ? buildExpressFormHTML()
+      : inspection.packageType === 'plus'
+        ? buildPlusFormHTML()
+        : buildQuickFormHTML();
 
-      const photosHTML = buildPhotosPageHTML();
+    const photosHTML = buildPhotosPageHTML();
 
-      // Build the same combined HTML as printInspection (without print trigger)
-      const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
-      const photosBody = photosHTML
-        ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
-        : '';
+    const formBody = (formHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', formHTML])[1];
+    const photosBody = photosHTML
+      ? (photosHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', photosHTML])[1]
+      : '';
 
-      const renderSection = async (bodyContent) => {
-        const container = document.createElement('div');
-        // position:absolute (not fixed) so html2canvas can measure full element height
-        container.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:white;box-sizing:border-box;';
-        container.innerHTML = bodyContent;
-        container.querySelectorAll('script').forEach((s) => s.remove());
-        document.body.appendChild(container);
-        const imgs = Array.from(container.querySelectorAll('img'));
-        await Promise.all(imgs.map((img) =>
-          img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
-        ));
-        // Allow styles + fonts to fully apply before capture
-        await new Promise((res) => setTimeout(res, 500));
-        try {
-          return await html2canvas(container, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: 794,
-            windowWidth: 794,
-          });
-        } finally {
-          document.body.removeChild(container);
-        }
-      };
+    const combined = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        table { border-collapse: collapse; width: 100%; }
+        @media print { body { margin: 0; } @page { size: A4 portrait; margin: 8mm; } .no-print { display: none !important; } }
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #000; background: #fff; }
+        .photos-page { page-break-before: always; }
+        .save-hint { font-family: Arial, sans-serif; font-size: 13px; color: #555; text-align: center; padding: 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+      </style>
+    </head><body>
+      <div class="save-hint no-print">To save as PDF: choose <strong>Save as PDF</strong> as the destination in the print dialog, then click Save.</div>
+      <div>${formBody}</div>
+      ${photosBody ? `<div class="photos-page">${photosBody}</div>` : ''}
+      <script>
+        window.addEventListener('load', function() { window.print(); });
+      </script>
+    </body></html>`;
 
-      const addCanvasToPdf = (pdf, canvas, addNewPageFirst) => {
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-        const margin = 6.35;
-        const contentW = pageW - margin * 2;
-        const imgHeightMm = (canvas.height * contentW) / canvas.width;
-
-        let srcY = 0;
-        let remaining = imgHeightMm;
-        let needNewPage = addNewPageFirst;
-
-        while (remaining > 0) {
-          if (needNewPage) pdf.addPage();
-          needNewPage = true;
-
-          const sliceMm = Math.min(remaining, pageH - margin * 2);
-          const slicePx = Math.round((sliceMm / imgHeightMm) * canvas.height);
-
-          const sliceCanvas = document.createElement('canvas');
-          sliceCanvas.width = canvas.width;
-          sliceCanvas.height = slicePx;
-          sliceCanvas.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, slicePx, 0, 0, canvas.width, slicePx);
-
-          pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, sliceMm);
-
-          srcY += slicePx;
-          remaining -= sliceMm;
-        }
-      };
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      if (inspection.packageType === 'plus') {
-        // Split plus form at <!--SPLIT--> into 2 clean pages
-        const SPLIT = '<!--SPLIT-->';
-        const splitPos = formBody.indexOf(SPLIT);
-        if (splitPos !== -1) {
-          const styleEnd = formBody.indexOf('</style>') + '</style>'.length;
-          const wrapStart = formBody.indexOf('<div', styleEnd);
-          const wrapTagEnd = formBody.indexOf('>', wrapStart) + 1;
-          const styleSection = formBody.slice(0, styleEnd);
-          const wrapTag = formBody.slice(wrapStart, wrapTagEnd);
-          const innerEnd = formBody.lastIndexOf('</div>');
-          const p1Inner = formBody.slice(wrapTagEnd, splitPos);
-          const p2Inner = formBody.slice(splitPos + SPLIT.length, innerEnd);
-          const mkPage = (inner) => `${styleSection}${wrapTag}${inner}</div>`;
-          addCanvasToPdf(pdf, await renderSection(mkPage(p1Inner)), false);
-          addCanvasToPdf(pdf, await renderSection(mkPage(p2Inner)), true);
-        } else {
-          addCanvasToPdf(pdf, await renderSection(formBody), false);
-        }
-      } else {
-        addCanvasToPdf(pdf, await renderSection(formBody), false);
-      }
-
-      if (photosBody) {
-        addCanvasToPdf(pdf, await renderSection(photosBody), true);
-      }
-
-      pdf.save(`Rapide-Inspection-${inspection.rif}.pdf`);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('PDF download failed:', err);
-      alert('PDF download failed. Please use Print Inspection instead.');
-    }
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(combined);
+    printWindow.document.close();
   };
 
   const printInspectionForm = () => {
