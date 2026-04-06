@@ -7290,11 +7290,10 @@ function AppInner() {
     setSuccessToast('__customer_vehicle_saved__');
   };
 
-  // Called after ServiceQuestions are saved — save draft, go to dashboard with success popup
+  // Called after ServiceQuestions are saved — save draft, go to package selection
   const handleServiceQuestionsSave = () => {
     saveCurrentDraft('packageSelect');
-    setScreen('dashboard');
-    setSuccessToast('__service_saved__');
+    setScreen('packageSelect');
   };
 
   // Called when package is selected — save to dashboard and show success
