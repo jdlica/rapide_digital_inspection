@@ -3240,19 +3240,6 @@ function InspectionScreen({
                 <div style={{ fontSize: 10, fontWeight: 800, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>Tires</div>
                 <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>Tire Condition</div>
               </div>
-              {/* Overall No Damage button */}
-              <div
-                onClick={handleNoDamageAll}
-                style={{ padding: '13px 16px', cursor: 'pointer', background: isNoDamageAll ? bgColorMap.green : 'transparent', display: 'flex', alignItems: 'center', gap: 12, borderBottom: `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}
-              >
-                <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, border: `2px solid ${isNoDamageAll ? colorMap.green : BRAND.grayBorder}`, background: isNoDamageAll ? colorMap.green : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 13, fontWeight: 700, transition: 'all 0.15s' }}>
-                  {isNoDamageAll && '✓'}
-                </div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: isNoDamageAll ? colorMap.green : BRAND.black }}>No Damage</div>
-                  <div style={{ fontSize: 11, color: colorMap.green, fontWeight: 600 }}>All tires — Good</div>
-                </div>
-              </div>
               <div style={{ opacity: isNoDamageAll ? 0.35 : 1, pointerEvents: isNoDamageAll ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
               {posGroups.map((group) => (
                 <div key={group.label} style={{ borderBottom: `1px solid ${BRAND.grayBorder}` }}>
@@ -3310,6 +3297,19 @@ function InspectionScreen({
                   </div>
                 </div>
               ))}
+              </div>
+              {/* Overall No Damage button — bottom */}
+              <div
+                onClick={handleNoDamageAll}
+                style={{ padding: '13px 16px', cursor: 'pointer', background: isNoDamageAll ? bgColorMap.green : 'transparent', display: 'flex', alignItems: 'center', gap: 12, borderTop: `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}
+              >
+                <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, border: `2px solid ${isNoDamageAll ? colorMap.green : BRAND.grayBorder}`, background: isNoDamageAll ? colorMap.green : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 13, fontWeight: 700, transition: 'all 0.15s' }}>
+                  {isNoDamageAll && '✓'}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: isNoDamageAll ? colorMap.green : BRAND.black }}>No Damage</div>
+                  <div style={{ fontSize: 11, color: colorMap.green, fontWeight: 600 }}>All tires — Good</div>
+                </div>
               </div>
             </div>
           );
@@ -5679,7 +5679,7 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     </div>
 
     <!-- Signatures -->
-    <table style="margin-top:10px;">
+    <table style="margin-top:60px;">
       <tr>
         <td style="border:none;border-top:0.5px solid #bbb;text-align:center;padding-top:3px;font-size:8px;width:40%;"><strong>${[cd.title, cd.firstName, cd.lastName].filter(Boolean).join(' ')}</strong><br>Client's Printed Name and Signature</td>
         <td style="border:none;width:5%;"></td>
