@@ -3198,7 +3198,30 @@ function InspectionScreen({
             });
             setAttempted(false);
           };
-          const tireUnanswered = attempted && tireGroupItems.some((ti) => {
+          const allPositions = tireGroupItems[0]?.positions || [];
+          const isNoDamageAll = allPositions.length > 0 && allPositions.every((p) => isNoDamagePos(p));
+          const handleNoDamageAll = () => {
+            setFindings((prev) => {
+              const updated = { ...prev };
+              tireGroupItems.forEach((ti) => {
+                const k = getKey(cat.category, ti.name);
+                const existing = updated[k] || { positions: {} };
+                if (isNoDamageAll) {
+                  updated[k] = { ...existing, positions: {} };
+                } else {
+                  const positions = {};
+                  ti.positions.forEach((p) => {
+                    const cond = ti.conditions[0];
+                    positions[p] = { conditionIdx: 0, condition: cond.label, action: cond.action, color: cond.color };
+                  });
+                  updated[k] = { ...existing, positions };
+                }
+              });
+              return updated;
+            });
+            setAttempted(false);
+          };
+          const tireUnanswered = attempted && !isNoDamageAll && tireGroupItems.some((ti) => {
             const f = findings[getKey(cat.category, ti.name)];
             return !f?.positions || !ti.positions.every((p) => f.positions[p]);
           });
@@ -3208,6 +3231,7 @@ function InspectionScreen({
           });
           let tireBorder = BRAND.grayBorder;
           if (tireUnanswered) tireBorder = BRAND.red;
+          else if (isNoDamageAll) tireBorder = colorMap.green;
           else if (allTireColors.includes('red')) tireBorder = colorMap.red;
           else if (allTireColors.length > 0) tireBorder = colorMap.green;
           return (
@@ -3216,6 +3240,20 @@ function InspectionScreen({
                 <div style={{ fontSize: 10, fontWeight: 800, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>Tires</div>
                 <div style={{ fontWeight: 800, fontSize: 15, color: BRAND.black }}>Tire Condition</div>
               </div>
+              {/* Overall No Damage button */}
+              <div
+                onClick={handleNoDamageAll}
+                style={{ padding: '13px 16px', cursor: 'pointer', background: isNoDamageAll ? bgColorMap.green : 'transparent', display: 'flex', alignItems: 'center', gap: 12, borderBottom: `1px solid ${BRAND.grayBorder}`, transition: 'background 0.15s' }}
+              >
+                <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, border: `2px solid ${isNoDamageAll ? colorMap.green : BRAND.grayBorder}`, background: isNoDamageAll ? colorMap.green : BRAND.white, display: 'flex', alignItems: 'center', justifyContent: 'center', color: BRAND.white, fontSize: 13, fontWeight: 700, transition: 'all 0.15s' }}>
+                  {isNoDamageAll && '✓'}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: isNoDamageAll ? colorMap.green : BRAND.black }}>No Damage</div>
+                  <div style={{ fontSize: 11, color: colorMap.green, fontWeight: 600 }}>All tires — Good</div>
+                </div>
+              </div>
+              <div style={{ opacity: isNoDamageAll ? 0.35 : 1, pointerEvents: isNoDamageAll ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
               {posGroups.map((group) => (
                 <div key={group.label} style={{ borderBottom: `1px solid ${BRAND.grayBorder}` }}>
                   <div style={{ padding: '6px 14px', background: BRAND.grayLight, borderBottom: `1px solid ${BRAND.grayBorder}`, fontWeight: 800, fontSize: 11, color: BRAND.gray, textTransform: 'uppercase', letterSpacing: 1 }}>{group.label}</div>
@@ -3272,6 +3310,7 @@ function InspectionScreen({
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           );
         })()}
@@ -6345,6 +6384,23 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
     const cd = inspection.customerData || {};
     const photos = [];
 
+    // Build lookup: 'Category::ItemName' → item, for resolving conditionIdxs labels
+    const pkgData = INSPECTION_DATA[inspection.packageType] || [];
+    const itemLookup = {};
+    pkgData.forEach((cat) => {
+      cat.items.forEach((item) => {
+        itemLookup[`${cat.category}::${item.name}`] = item;
+      });
+    });
+    const resolveCondition = (key, condObj) => {
+      if (condObj.condition) return condObj.condition;
+      if (condObj.conditionIdxs?.length) {
+        const item = itemLookup[key];
+        if (item) return condObj.conditionIdxs.map((i) => item.conditions[i]?.label || '').filter(Boolean).join(', ');
+      }
+      return '';
+    };
+
     Object.entries(findings).forEach(([key, f]) => {
       const idx = key.indexOf('::');
       const category = idx !== -1 ? key.slice(0, idx) : key;
@@ -6353,13 +6409,16 @@ function ServiceDecisionScreen({ inspection, onSave, onBack }) {
       if (f?.positions) {
         Object.entries(f.positions).forEach(([pos, pf]) => {
           if (pf?.photo) {
-            photos.push({ category, name, pos, photo: pf.photo, color: pf.color || '', condition: pf.condition || '', action: pf.action || '' });
+            const condition = resolveCondition(key, pf);
+            photos.push({ category, name, pos, photo: pf.photo, color: pf.color || '', condition, action: pf.action || '' });
           }
         });
       }
       // Non-position photo — all captured photos
       if (f?.photo) {
-        photos.push({ category, name, pos: null, photo: f.photo, color: f.color || '', condition: f.condition || '', action: f.action || '' });
+        const condition = resolveCondition(key, f);
+        const subOpt = f.subOption ? ` (${f.subOption})` : '';
+        photos.push({ category, name, pos: null, photo: f.photo, color: f.color || '', condition: condition + subOpt, action: f.action || '' });
       }
     });
 
